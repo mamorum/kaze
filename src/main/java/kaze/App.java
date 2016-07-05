@@ -16,7 +16,8 @@ import kaze.app.Controller;
 import kaze.app.Http;
 import kaze.app.Json;
 import kaze.app.method.Get;
-import kaze.fw.web.JettyServer;
+import kaze.fw.Action;
+import kaze.fw.Jetty;
 
 public class App {
 	
@@ -54,21 +55,8 @@ public class App {
 		}
 	}
 	
-	private static class Action {
-		Object o; Method m;
-		public Action(Object o, Method m) {
-			this.o = o; this.m = m;
-		}
-		public Object invoke(Http arg) {
-			try { return m.invoke(o, arg); }
-			catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
 	public void start() {
-		JettyServer server = new JettyServer();
+		Jetty server = new Jetty();
 		server.start(this);
 	}
 

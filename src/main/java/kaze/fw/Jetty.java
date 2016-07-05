@@ -1,4 +1,4 @@
-package kaze.fw.web;
+package kaze.fw;
 
 import java.io.IOException;
 
@@ -12,7 +12,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 
 import kaze.App;
 
-public class JettyServer extends AbstractHandler {
+public class Jetty extends AbstractHandler {
 	
 	// TODO to be able to change port.
 	public void start(App app) {
