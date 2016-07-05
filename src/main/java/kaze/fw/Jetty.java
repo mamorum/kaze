@@ -10,14 +10,12 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import kaze.App;
-
 public class Jetty extends AbstractHandler {
 	
 	// TODO to be able to change port.
-	public void start(App app) {
+	public void start(Handler handler) {
 
-		this.app = app;
+		this.handler = handler;
 		
 		Server server = new Server(8080);
 		server.setHandler(this);
@@ -30,13 +28,13 @@ public class Jetty extends AbstractHandler {
 		}
 	}
 
-	private App app;
+	Handler handler;
 	
 	@Override public void handle(
 		String target, Request baseReq,
 		HttpServletRequest req, HttpServletResponse res
 	) throws IOException, ServletException {	
 		baseReq.setHandled(true);
-		app.handle(target, baseReq, req, res);
+		handler.handle(target, baseReq, req, res);
 	}
 }
