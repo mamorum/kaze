@@ -15,14 +15,16 @@ public class App {
 	
 	Handler handler = new Handler();
 	
-	public static App build(String pkg) {
+	public static App start(String pkg, String... pkgs) {
 		App app = new App();
 		try {
+			// TODO support pkgs.
 			app.scan(pkg);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		app.start();
 		return app;
 	}
 	
@@ -47,7 +49,7 @@ public class App {
 		}
 	}
 	
-	public void start() {
+	private void start() {
 		Jetty server = new Jetty();
 		server.start(this.handler);
 	}

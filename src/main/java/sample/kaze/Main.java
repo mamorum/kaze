@@ -10,10 +10,10 @@ import kaze.http.method.Get;
 public class Main {
 	
 	public @Get("/hello") void hello(Req req, Res res) {
-		res.jsonFom("msg", "Hello!");
+		res.json("msg", "Hello!");
 	}
 	 
 	public static void main(String[] args) {
-		App.build("sample.kaze").start();
+		App.start("sample.kaze");
 	}
 }

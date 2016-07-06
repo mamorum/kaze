@@ -1,13 +1,21 @@
-- Log
-  - プロダクトの調査・決定
+## Log
+- プロダクトの調査・決定
 
-- Validation
-  - Hibernate Validator の組み込み
 
-- Coding
-  - Support all http methods.
-  - Implement validation.
-  - Support population from req param to Object.
+## Jetty
+- support serving static content files.
 
-- Check
-  - Req#
+
+## Request
+### Populate Request parameters
+- BeanUtils? (Not support public field.)
+
+### Validation (parameter, body-json)
+- Hibernate Validator ?
+
+### etc
+- Coding to Support all http methods.
+
+
+## Check
+- Req#param, params, jsonTo

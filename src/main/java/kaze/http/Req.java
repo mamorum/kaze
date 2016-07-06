@@ -19,20 +19,19 @@ public class Req {
 		return request.getParameterMap().get(name);
 	}
 	
-	public <T> T paramsTo(Class<T> create) {
+	public <T> T params(Class<T> dist) {
 		try {
-			T o = create.newInstance();
 			// TODO populate parameters to obj.
-			return o; 
+			return dist.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public <T> T jsonTo(Class<T> create) {
+	public <T> T json(Class<T> dist) {
 		try {
 			return gson.fromJson(
-				request.getReader(), create
+				request.getReader(), dist
 			); 
 		} catch (Exception e) {
 			throw new RuntimeException(e);

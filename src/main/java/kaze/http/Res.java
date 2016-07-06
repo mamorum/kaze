@@ -14,30 +14,33 @@ public class Res {
 	public HttpServletResponse response;
 	public Res(HttpServletResponse r) { this.response = r; }
 	
-	private void writeBody(String s) {
+	public Res write(String contentType, String body) {
+		response.setContentType(contentType);
 		try {
-			response.getWriter().print(s);
+			response.getWriter().print(body);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
-		}		
-	}
-	
-	public Res jsonFrom(Object src) {
-		response.setContentType("application/json;charset=utf-8");
-		writeBody(gson.toJson(src));
+		}
 		return this;
 	}
 	
-	public Res jsonFom(Object k, Object v, Object... kv) {
-		Map<Object, Object> map = Collections.singletonMap(k, v);
+	public Res json(Object src) {
+		return write(
+			"application/json;charset=utf-8",
+			gson.toJson(src)
+		);
+	}
+	
+	public Res json(Object k, Object v, Object... kv) {
+		Map<Object, Object> src = Collections.singletonMap(k, v);
 		for (int i = 0; i < kv.length; ) {
-			map.put(kv[i], kv[i + 1]);
+			src.put(kv[i], kv[i + 1]);
 			i = i + 2;
 		}
-		return jsonFrom(map);
+		return json(src);
 	}
-
+	
 	public Res status(int i) {
 		response.setStatus(i);
 		return this;
