@@ -9,38 +9,42 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 
-import kaze.app.Http;
-import kaze.app.Json;
+import kaze.http.Req;
+import kaze.http.Res;
 
 public class Handler {
 
 	// key = URI
-	public Map<String, Action> get = new HashMap<>();
+	public Map<String, Api> get = new HashMap<>();
 	
 	public void handle(
 			String target, Request baseReq,
-			HttpServletRequest req, HttpServletResponse res
+			HttpServletRequest request,
+			HttpServletResponse response
 	) throws IOException {
 		
-		String uri = req.getRequestURI();
-		String method = req.getMethod();
-		System.out.println(method + " " + uri);
+		StringBuilder access = new StringBuilder();
+
+		String method = request.getMethod();
+		String uri = request.getRequestURI();
+		access.append(method).append(" ").append(uri);
 		
-		Action action = get.get(uri);
+		Api api = get.get(uri);
 		
-		if (action == null) {
-			res.setStatus(404);
+		if (api == null) {
+			response.setStatus(404);
+			log(access, 404);
 			return;
 		}
 		
-		Http arg = new Http(req, res);
-		Object result = get.get(uri).invoke(arg);
+		get.get(uri).invoke(
+			new Req(request), new Res(response)
+		);
 		
-		if (result instanceof Json) {
-			res.setContentType("application/json;charset=utf-8");
-	        res.setStatus(200);
-			res.getWriter().print(((Json) result).toJson());
-			return;
-		}
+		log(access, response.getStatus());
 	}	
+	
+	void log(StringBuilder s, int status) {
+		System.out.println(s.append(" ").append(status));
+	}
 }

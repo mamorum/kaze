@@ -5,11 +5,11 @@ import java.util.Set;
 
 import org.reflections.Reflections;
 
-import kaze.app.Controller;
-import kaze.app.method.Get;
-import kaze.fw.Action;
+import kaze.fw.Api;
 import kaze.fw.Handler;
 import kaze.fw.Jetty;
+import kaze.http.WebApi;
+import kaze.http.method.Get;
 
 public class App {
 	
@@ -29,7 +29,7 @@ public class App {
 	private void scan(String pkg) throws Exception {
 		
 		Reflections ref = new Reflections(pkg);
-		Set<Class<?>> classes = ref.getTypesAnnotatedWith(Controller.class);
+		Set<Class<?>> classes = ref.getTypesAnnotatedWith(WebApi.class);
 		
 		for (Class<?> c : classes) {
 			Object obj = c.newInstance();
@@ -39,7 +39,7 @@ public class App {
 				
 				if (atGet != null) {
 					String uri = atGet.value();
-					Action a = new Action(obj, m);
+					Api a = new Api(obj, m);
 					handler.get.put(uri, a);
 					System.out.println(uri +" -> " + obj.getClass().getName() + "#" + m.getName());
 				}

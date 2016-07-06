@@ -1,18 +1,16 @@
 package sample.kaze;
 
-import java.util.Collections;
-
 import kaze.App;
-import kaze.app.Controller;
-import kaze.app.Http;
-import kaze.app.Json;
-import kaze.app.method.Get;
+import kaze.http.Req;
+import kaze.http.Res;
+import kaze.http.WebApi;
+import kaze.http.method.Get;
 
-@Controller
+@WebApi
 public class Main {
 	
-	public @Get("/hello") Json hello(Http http) {
-		return Json.of(Collections.singletonMap("msg", "Hello!"));
+	public @Get("/hello") void hello(Req req, Res res) {
+		res.jsonFom("msg", "Hello!");
 	}
 	 
 	public static void main(String[] args) {
