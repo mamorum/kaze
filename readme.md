@@ -20,12 +20,12 @@ import kaze.App;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.WebApi;
-import kaze.http.method.GET;
+import kaze.http.method.Get;
 
 @WebApi
 public class Main {
   
-  @GET("/hello") public void hello(Req req, Res res) {
+  @Get("/hello") public void hello(Req req, Res res) {
     res.json("msg", "Hello!");
   }
    

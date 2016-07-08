@@ -9,7 +9,7 @@ import kaze.http.method.Get;
 @WebApi
 public class Main {
 	
-	public @Get("/hello") void hello(Req req, Res res) {
+	@Get("/hello") public void hello(Req req, Res res) {
 		res.json("msg", "Hello!");
 	}
 	 
