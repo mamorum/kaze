@@ -12,7 +12,7 @@ public class Main {
 	@Get("/hello") public void hello(Req req, Res res) {
 		res.json("msg", "Hello!");
 	}
-	 
+	
 	public static void main(String[] args) {
 		App.start("sample.kaze");
 	}

@@ -15,11 +15,10 @@ dependencies {
 
     compile 'org.eclipse.jetty:jetty-server:9.3.9.v20160517'
     compile 'org.reflections:reflections:0.9.10'
-    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.5'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.2.0'
-
 }
 
 //provided 'org.projectlombok:lombok:1.16.6'

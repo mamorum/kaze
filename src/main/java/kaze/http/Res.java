@@ -6,16 +6,19 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
+import kaze.http.util.Json;
 
 public class Res {
 	
-	static final Gson gson = new Gson();
+	private boolean isWritten = false;
+	private String contentType = null;
 	public HttpServletResponse response;
 	public Res(HttpServletResponse r) { this.response = r; }
-	
-	public Res write(String contentType, String body) {
-		response.setContentType(contentType);
+
+	private Res write(String body, String defaultType) {
+		if (this.contentType == null) {
+			response.setContentType(defaultType);
+		}
 		try {
 			response.getWriter().print(body);
 		}
@@ -25,10 +28,17 @@ public class Res {
 		return this;
 	}
 	
+	public Res write(String str) {
+		return write(
+			str,
+			"text/plain;charset=utf-8"
+		);
+	}
+	
 	public Res json(Object src) {
 		return write(
-			"application/json;charset=utf-8",
-			gson.toJson(src)
+			Json.of(src),
+			"application/json;charset=utf-8"
 		);
 	}
 	
@@ -39,6 +49,13 @@ public class Res {
 			i = i + 2;
 		}
 		return json(src);
+	}
+	
+	// TODO exception
+	public Res contentType(String type) {
+		if (isWritten) throw new RuntimeException();
+		this.contentType = type;
+		return this;
 	}
 	
 	public Res status(int i) {

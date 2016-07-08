@@ -1,39 +1,48 @@
 package kaze.http;
 
+import java.io.BufferedReader;
+
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.gson.Gson;
+import kaze.http.util.Json;
 
 public class Req {
 
-	static final Gson gson = new Gson();
 	public HttpServletRequest request;
 	public Req(HttpServletRequest r) { this.request = r; }
 
 	public String param(String name) {
-		String[] values = params(name);
-		return  (values == null ? "" : values[0]);
+		return  request.getParameter(name);
 	}
 	
-	public String[] params(String name) {
-		return request.getParameterMap().get(name);
-	}
-	
-	public <T> T params(Class<T> dist) {
+	public <T> T params(Class<T> toObj) {
 		try {
 			// TODO populate parameters to obj.
-			return dist.newInstance();
+			return toObj.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public <T> T json(Class<T> dist) {
-		try {
-			return gson.fromJson(
-				request.getReader(), dist
-			); 
-		} catch (Exception e) {
+	public <T> T json(Class<T> toObj) {
+		return Json.toObj(body(), toObj);
+	}
+	
+	// TODO check program action, when i close the reader.
+	private String body() {
+		try {			
+			if (request.getCharacterEncoding() == null) {
+				request.setCharacterEncoding("utf-8");
+			}			
+			BufferedReader r = request.getReader();
+			StringBuilder body = new StringBuilder();
+			String line = null;
+			while ((line = r.readLine()) != null) {
+				body.append(line);
+			}
+			return body.toString();
+		}
+		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
