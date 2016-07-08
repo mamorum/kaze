@@ -1,5 +1,5 @@
 ## What is this ?
-Simple Web Application Framework for Java.
+Simple Web Application Framework in Java.
 
 
 ## Kaze = Wind
