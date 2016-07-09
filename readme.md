@@ -11,7 +11,6 @@ Developping.
 
 
 ## Sample Application
-Application is written like bellow.
 
 ```
 package sample.kaze;
