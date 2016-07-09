@@ -12,11 +12,17 @@ public class PersonApi {
 		String id = req.param("id");
 		res.json("id", id);
 	}
+
+	// TODO change http method to Post.
+	@Get("/person/params") public void params(Req req, Res res) {
+		Person p = req.params(Person.class);
+		res.json(p);
+	}
 	
 	// TODO change http method to Post.
 	@Get("/person/json") public void jsonBody(Req req, Res res) {
-		Person msg = req.json(Person.class);
-		res.json(msg);
+		Person p = req.json(Person.class);
+		res.json(p);
 	}
 	
 	@Get("/html") public void html(Req req, Res res) {

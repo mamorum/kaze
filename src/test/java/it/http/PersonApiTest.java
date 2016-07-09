@@ -2,8 +2,6 @@ package it.http;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-
 import org.junit.Test;
 
 import com.google.api.client.http.ByteArrayContent;
@@ -11,8 +9,6 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
-
-import kaze.http.util.Json;
 
 // before execute, run PersonAppMain.
 //TODO Run App from JUnit testcase.
@@ -41,20 +37,44 @@ public class PersonApiTest {
         ).isEqualTo("{\"id\":\"123\"}");
 	}
 	
+	@Test public void requestParams() throws Exception {
+		
+		// exe
+		res = requestFactory.buildRequest(
+				"POST",
+				new GenericUrl("http://localhost:8080/person/params"),
+				ByteArrayContent.fromString(
+					"application/x-www-form-urlencoded",
+					"id=1234&name=Tom&langs=Perl&langs=PHP"
+				)
+        ).execute();
+        
+		// check
+        assertThat(res.getStatusCode()).isEqualTo(200);
+        
+        assertThat(
+        		res.getContentType()
+        ).isEqualTo("application/json;charset=utf-8");
+                
+        assertThat(
+        		res.parseAsString()
+        ).isEqualTo(
+        		"{\"id\":1234,\"name\":\"Tom\",\"langs\":[\"Perl\",\"PHP\"]}"
+        );
+	}
+	
 	@Test public void requestJson() throws Exception {
 		
 		// pre
-		Person data = new Person(
-				12345, "Bob", Arrays.asList("C", "Java", "JS")
-		);
-		String bodyJson = Json.of(data);
+		String bodyJson = 
+		"{\"id\":12345,\"name\":\"Bob\",\"langs\":[\"C\",\"Java\",\"JS\"]}";
 		
 		// exe
 		res = requestFactory.buildRequest(
 				"POST",
 				new GenericUrl("http://localhost:8080/person/json"),
 				ByteArrayContent.fromString(
-					"application/json", bodyJson
+					"application/json",	bodyJson
 				)
         ).execute();
 		

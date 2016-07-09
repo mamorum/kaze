@@ -3,7 +3,7 @@ package it.http;
 import java.util.List;
 
 public class Person {
-	public long id;
+	private long id;
 	public String name;
  	public List<String> langs;
  	
@@ -13,4 +13,6 @@ public class Person {
  		this.name = name;
  		this.langs = langs;
  	}
+ 	
+ 	public long id() { return this.id; }
 }

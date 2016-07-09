@@ -39,9 +39,15 @@ public class Handler {
 			return;
 		}
 		
-		get.get(uri).invoke(
-			new Req(request), new Res(response)
-		);
+		try {
+			get.get(uri).invoke(
+				new Req(request), new Res(response)
+			);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		
 		
 		log(access, response.getStatus());
 	}	
