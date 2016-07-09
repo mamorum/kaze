@@ -11,12 +11,11 @@ import kaze.http.util.Json;
 public class Res {
 	
 	private boolean isWritten = false;
-	private String contentType = null;
 	public HttpServletResponse response;
 	public Res(HttpServletResponse r) { this.response = r; }
 
 	private Res write(String body, String defaultType) {
-		if (this.contentType == null) {
+		if (response.getContentType() == null) {
 			response.setContentType(defaultType);
 		}
 		try {
@@ -28,9 +27,9 @@ public class Res {
 		return this;
 	}
 	
-	public Res write(String str) {
+	public Res write(String body) {
 		return write(
-			str,
+			body,
 			"text/plain;charset=utf-8"
 		);
 	}
@@ -54,7 +53,7 @@ public class Res {
 	// TODO exception
 	public Res contentType(String type) {
 		if (isWritten) throw new RuntimeException();
-		this.contentType = type;
+		response.setContentType(type);
 		return this;
 	}
 	
