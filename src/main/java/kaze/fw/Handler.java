@@ -29,6 +29,8 @@ public class Handler {
 		String uri = request.getRequestURI();
 		access.append(method).append(" ").append(uri);
 		
+		// TODO implement all methods.
+		// now, All request methods go to @Get. 
 		Api api = get.get(uri);
 		
 		if (api == null) {

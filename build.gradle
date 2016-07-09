@@ -19,6 +19,7 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.2.0'
+    testCompile 'com.google.http-client:google-http-client:1.22.0'
 }
 
 //provided 'org.projectlombok:lombok:1.16.6'

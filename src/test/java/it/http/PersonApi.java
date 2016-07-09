@@ -1,4 +1,4 @@
-package sample.kaze;
+package it.http;
 
 import kaze.http.Req;
 import kaze.http.Res;
@@ -6,15 +6,16 @@ import kaze.http.WebApi;
 import kaze.http.method.Get;
 
 @WebApi
-public class Check {
-
-	@Get("/search") public void search(Req req, Res res) {
-		String word = req.param("word");
-		res.json("word", word);
+public class PersonApi {
+	
+	@Get("/person") public void param(Req req, Res res) {
+		String id = req.param("id");
+		res.json("id", id);
 	}
 	
-	@Get("/echo") public void echo(Req req, Res res) {
-		Msg msg = req.json(Msg.class);
+	// TODO change http method to Post.
+	@Get("/person/json") public void jsonBody(Req req, Res res) {
+		Person msg = req.json(Person.class);
 		res.json(msg);
 	}
 	
@@ -25,5 +26,5 @@ public class Check {
 			"<html><body><p>Hello !</p><body></html>"
 		);
 	}
-	 
+
 }
