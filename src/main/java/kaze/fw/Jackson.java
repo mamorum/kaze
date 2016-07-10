@@ -32,7 +32,7 @@ public class Jackson {
 		}
 	}
 
-	public static Object convert(Object val, Class<?> type) {
+	public static <T> T convert(Object val, Class<T> type) {
 		return origin.convertValue(val, type);
 	}
 }

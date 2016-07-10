@@ -9,19 +9,19 @@ import kaze.http.method.Get;
 public class PersonApi {
 	
 	@Get("/person") public void param(Req req, Res res) {
-		String id = req.param("id");
+		String id = req.param.val("id");
 		res.json("id", id);
 	}
 
 	// TODO change http method to Post.
 	@Get("/person/params") public void params(Req req, Res res) {
-		Person p = req.params(Person.class);
+		Person p = req.param.bind(Person.class).get();
 		res.json(p);
 	}
 	
 	// TODO change http method to Post.
 	@Get("/person/json") public void jsonBody(Req req, Res res) {
-		Person p = req.json(Person.class);
+		Person p = req.json.bind(Person.class).get();
 		res.json(p);
 	}
 	
