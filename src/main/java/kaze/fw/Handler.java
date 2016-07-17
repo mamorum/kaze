@@ -1,58 +1,14 @@
 package kaze.fw;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Request;
-
-import kaze.http.Req;
-import kaze.http.Res;
-
-public class Handler {
-
-	// key = URI
-	public Map<String, Api> get = new HashMap<>();
+public interface Handler {
 	
-	public void handle(
-			String target, Request baseReq,
-			HttpServletRequest request,
-			HttpServletResponse response
-	) throws IOException {
-		
-		StringBuilder access = new StringBuilder();
-
-		String method = request.getMethod();
-		String uri = request.getRequestURI();
-		access.append(method).append(" ").append(uri);
-		
-		// TODO implement all methods.
-		// now, All request methods go to @Get. 
-		Api api = get.get(uri);
-		
-		if (api == null) {
-			response.setStatus(404);
-			log(access, 404);
-			return;
-		}
-		
-		try {
-			get.get(uri).invoke(
-				new Req(request), new Res(response)
-			);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-		
-		
-		log(access, response.getStatus());
-	}	
+	void listen();
 	
-	void log(StringBuilder s, int status) {
-		System.out.println(s.append(" ").append(status));
-	}
+	void handle(
+		HttpServletRequest request,
+		HttpServletResponse response
+	);
 }

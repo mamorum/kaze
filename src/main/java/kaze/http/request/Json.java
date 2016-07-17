@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.fw.Jackson;
+import kaze.fw.lib.Jackson;
 
 public class Json {
 

@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.fw.Jackson;
+import kaze.fw.lib.Jackson;
 
 public class Param {
 

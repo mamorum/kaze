@@ -8,11 +8,16 @@ import kaze.http.method.Get;
 @WebApi
 public class PersonApi {
 	
+	@Get("/person/:id") public void uri(Req req, Res res) {
+		String id = req.uri.val(":id");
+		res.json("id", id);
+	}
+	
 	@Get("/person") public void param(Req req, Res res) {
 		String id = req.param.val("id");
 		res.json("id", id);
 	}
-
+	
 	// TODO change http method to Post.
 	@Get("/person/params") public void params(Req req, Res res) {
 		Person p = req.param.bind(Person.class).get();

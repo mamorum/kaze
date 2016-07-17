@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.fw.Jackson;
+import kaze.fw.lib.Jackson;
 
 public class Res {
 	
