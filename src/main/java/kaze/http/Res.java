@@ -11,15 +11,15 @@ import kaze.fw.lib.Jackson;
 public class Res {
 	
 	private boolean isWritten = false;
-	public HttpServletResponse response;
-	public Res(HttpServletResponse r) { this.response = r; }
+	public HttpServletResponse servletRes;
+	public Res(HttpServletResponse r) { this.servletRes = r; }
 
 	private Res write(String body, String defaultType) {
-		if (response.getContentType() == null) {
-			response.setContentType(defaultType);
+		if (servletRes.getContentType() == null) {
+			servletRes.setContentType(defaultType);
 		}
 		try {
-			response.getWriter().print(body);
+			servletRes.getWriter().print(body);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -53,12 +53,12 @@ public class Res {
 	// TODO exception
 	public Res contentType(String type) {
 		if (isWritten) throw new RuntimeException();
-		response.setContentType(type);
+		servletRes.setContentType(type);
 		return this;
 	}
 	
 	public Res status(int i) {
-		response.setStatus(i);
+		servletRes.setStatus(i);
 		return this;
 	}		
 }

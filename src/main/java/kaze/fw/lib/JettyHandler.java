@@ -1,7 +1,6 @@
 package kaze.fw.lib;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,10 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
-import kaze.fw.Api;
+import kaze.fw.Func;
 import kaze.fw.Handler;
+import kaze.fw.Routes;
 import kaze.http.Req;
 import kaze.http.Res;
+import kaze.http.request.Uri;
 
 public class JettyHandler extends AbstractHandler implements Handler {
 
@@ -27,8 +28,7 @@ public class JettyHandler extends AbstractHandler implements Handler {
 		handle(request, response);
 	}
 
-	// key = URI
-	public Map<String, Api> get = null;	
+  public Routes routes;	
 	
 	public void listen() {
 		Jetty server = new Jetty();
@@ -45,19 +45,18 @@ public class JettyHandler extends AbstractHandler implements Handler {
 		String uri = request.getRequestURI();
 		access.append(method).append(" ").append(uri);
 		
-		// TODO implement all methods.
-		// now, All request methods go to @Get. 
-		Api api = get.get(uri);
+		Func func = routes.get(method, uri);
 		
-		if (api == null) {
+		if (func == null) {
 			response.setStatus(404);
 			log(access, 404);
 			return;
 		}
 		
 		try {
-			get.get(uri).invoke(
-				new Req(request), new Res(response)
+			func.call(
+				new Req(request, Uri.Factory.create(func.uriIndex, uri)),
+				new Res(response)
 			);
 		} catch (Exception e) {
 			e.printStackTrace();

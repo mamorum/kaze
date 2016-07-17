@@ -7,6 +7,3 @@
 - Request
   - Validation (parameter, body-json)
     - Hibernate Validator ?
-
-- etc
-  - Support all http methods.
