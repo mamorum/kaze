@@ -13,9 +13,10 @@ public class Req {
 	public Json json;
 	public Uri uri;
 	
-	public Req(HttpServletRequest sr) {
-		this.servletReq = sr;
+	public Req(HttpServletRequest sr, Uri uri) {
+    this.servletReq = sr;
+    this.uri = uri;
+    this.param = new Param(sr);
 		this.json = new Json(sr);
-		this.param = new Param(sr);
 	}
 }
