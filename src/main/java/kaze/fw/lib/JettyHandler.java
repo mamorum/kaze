@@ -14,7 +14,7 @@ import kaze.fw.Handler;
 import kaze.fw.Routes;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.http.request.Uri;
+import kaze.http.req.Uri;
 
 public class JettyHandler extends AbstractHandler implements Handler {
 

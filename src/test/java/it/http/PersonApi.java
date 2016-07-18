@@ -14,19 +14,19 @@ public class PersonApi {
 	
 	@Route({"GET", "/person"})
 	public void param(Req req, Res res) {
-		String id = req.param.val("id");
+		String id = req.param("id");
 		res.json("id", id);
 	}
 	
 	@Route({"POST", "/person/params"})
 	public void params(Req req, Res res) {
-		Person p = req.param.bind(Person.class).get();
+		Person p = req.params().bind(Person.class).get();
 		res.json(p);
 	}
 	
 	@Route({"POST", "/person/json"})
 	public void jsonBody(Req req, Res res) {
-		Person p = req.json.bind(Person.class).get();
+		Person p = req.json().bind(Person.class).get();
 		res.json(p);
 	}
 	

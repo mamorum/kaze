@@ -7,7 +7,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 
 import kaze.fw.lib.JettyHandler;
 import kaze.http.Route;
-import kaze.http.request.Uri;
+import kaze.http.req.Uri;
 
 public class Build {
 	

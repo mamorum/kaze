@@ -1,4 +1,4 @@
-package kaze.http.request;
+package kaze.http.req;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -7,25 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import kaze.fw.lib.Jackson;
 
-public class Param {
+public class Params {
 
 	private HttpServletRequest req;	
-	public Param(HttpServletRequest req) {
+	public Params(HttpServletRequest req) {
 		this.req = req;
 	}
-	
-	public String val(String name) {
-		return req.getParameter(name);
-	}
-
-	public String[] vals(String name) {
-		return req.getParameterValues(name);
-	}
-	
-	public <T> T convert(String name, Class<T> to) {
-		return Jackson.convert(val(name), to);
-	}
-	
+		
 	public <T> Data<T> bind(Class<T> to) {
 		return new Data<>(toObj(to));
 	}
