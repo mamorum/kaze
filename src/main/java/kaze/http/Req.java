@@ -10,7 +10,7 @@ import kaze.http.req.Uri;
 public class Req {
 
 	public HttpServletRequest servletReq;
-	public Uri uri;
+	private Uri uri;
 	
 	public Req(HttpServletRequest sr, Uri uri) {
     this.servletReq = sr;
@@ -30,6 +30,10 @@ public class Req {
   
   public Json json() {
     return new Json(servletReq);
+  }
+  
+  public Uri uri() {
+    return uri;
   }
   
   public String[] params(String name) {

@@ -55,7 +55,7 @@ public class JettyHandler extends AbstractHandler implements Handler {
 		
 		try {
 			func.call(
-				new Req(request, Uri.Factory.create(func.uriIndex, uri)),
+				new Req(request, Uri.of(func.uriIndex, uri)),
 				new Res(response)
 			);
 		} catch (Exception e) {

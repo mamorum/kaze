@@ -8,7 +8,7 @@ public class PersonApi {
 	
 	@Route({"GET", "/person/:id"})
 	public void uri(Req req, Res res) {
-		String id = req.uri.val(":id");
+		String id = req.uri().path(":id");
 		res.json("id", id);
 	}
 	

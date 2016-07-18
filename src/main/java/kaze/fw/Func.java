@@ -11,12 +11,8 @@ public class Func {
 	public Object o; Method m;
 	public Map<String, Integer> uriIndex;
 	
-	public Func(
-	  Object o, Method m,
-	  Map<String, Integer> uriIndex
-	) {
+	public Func(Object o, Method m) {
 		this.o = o; this.m = m;
-		this.uriIndex = uriIndex;
 	}
 	
 	public Object call(Req req, Res res) {

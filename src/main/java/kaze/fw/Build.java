@@ -7,7 +7,6 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 
 import kaze.fw.lib.JettyHandler;
 import kaze.http.Route;
-import kaze.http.req.Uri;
 
 public class Build {
 	
@@ -42,8 +41,7 @@ public class Build {
 		  String httpMethod = route.value()[0];
 		  String httpUri = route.value()[1];
 		  Func func = new Func(
-		      m.getDeclaringClass().newInstance(),
-		      m, Uri.Factory.index(httpUri)
+		    m.getDeclaringClass().newInstance(), m
 		  );
 		  routes.add(httpMethod, httpUri, func);
 		}
