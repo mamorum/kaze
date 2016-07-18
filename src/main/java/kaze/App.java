@@ -5,7 +5,7 @@ import kaze.fw.Handler;
 
 public class App {
 	public static void start(String... pkg) {
-		Handler handler = (new Build()).make(pkg);
+		Handler handler = Build.make(pkg);
 		handler.listen();
 	}	
 }

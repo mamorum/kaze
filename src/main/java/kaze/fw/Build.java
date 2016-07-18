@@ -12,7 +12,7 @@ import kaze.http.request.Uri;
 public class Build {
 	
 	// TODO support other handlers.
-	public Handler make(String... pkg) {
+	public static Handler make(String... pkg) {
 		try {
 			Routes routes = scan(pkg);
 			JettyHandler handler = new JettyHandler();
@@ -24,13 +24,14 @@ public class Build {
 		}
 	}
 
-	private Routes scan(String[] pkgs) throws Exception {
+	private static Routes scan(String[] pkgs) throws Exception {
 	  Routes routes = new Routes();
 		for (String pkg : pkgs) scan(pkg, routes);
 		return routes;
 	}
 
-	private void scan(String pkg, Routes routes) throws Exception {
+	private static void scan(String pkg, Routes routes) throws Exception {
+	  // TODO thread safe?
 		Reflections ref = new Reflections(
 		    pkg, new MethodAnnotationsScanner()
 		);
