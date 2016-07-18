@@ -14,7 +14,6 @@ import kaze.fw.Handler;
 import kaze.fw.Routes;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.http.req.Uri;
 
 public class JettyHandler extends AbstractHandler implements Handler {
 
@@ -55,7 +54,7 @@ public class JettyHandler extends AbstractHandler implements Handler {
 		
 		try {
 			func.call(
-				new Req(request, Uri.of(func.uriIndex, uri)),
+				new Req(request, func.uriIndex),
 				new Res(response)
 			);
 		} catch (Exception e) {

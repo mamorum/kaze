@@ -72,7 +72,7 @@ public class Routes {
     
     // resolve from method2pattern
     HashMap<Pattern, Func> pattern2func
-                                                = method2pattern.get(method); 
+                  = method2pattern.get(method); 
     if (pattern2func != null) {
       for(Map.Entry<Pattern, Func> e : pattern2func.entrySet()) {
         if (e.getKey().matcher(uri).matches()) return e.getValue();

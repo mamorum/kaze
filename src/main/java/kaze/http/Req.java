@@ -1,5 +1,7 @@
 package kaze.http;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import kaze.fw.lib.Jackson;
@@ -10,12 +12,16 @@ import kaze.http.req.Uri;
 public class Req {
 
 	public HttpServletRequest servletReq;
-	private Uri uri;
+	private Map<String, Integer> uriIndex;
 	
-	public Req(HttpServletRequest sr, Uri uri) {
+	public Req(
+	    HttpServletRequest sr,
+	    Map<String, Integer> uriIndex
+	) {
     this.servletReq = sr;
-    this.uri = uri;
+    this.uriIndex = uriIndex;
 	}
+	
   public String param(String name) {
     return servletReq.getParameter(name);
   }
@@ -33,7 +39,7 @@ public class Req {
   }
   
   public Uri uri() {
-    return uri;
+    return new Uri(servletReq.getRequestURI(), uriIndex);
   }
   
   public String[] params(String name) {

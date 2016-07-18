@@ -9,14 +9,10 @@ public class Uri {
 	private Map<String, Integer> index;
 	private String uri;
 		
-	private Uri(Map<String, Integer> index, String uri) {
+	public Uri(String uri, Map<String, Integer> index) {
 		this.index = index;
 		this.uri = uri;
 	}
-
-  public static Uri of(Map<String, Integer> index, String real) {
-    return new Uri(index, real);
-  }
   
 	public String path(String expression) {
 		int i = this.index.get(expression);
