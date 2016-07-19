@@ -15,8 +15,8 @@ public class Func {
 		this.o = o; this.m = m;
 	}
 	
-	public Object call(Req req, Res res) {
-		try { return m.invoke(o, req, res); }
+	public void call(Req req, Res res) {
+		try { m.invoke(o, req, res); }
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}

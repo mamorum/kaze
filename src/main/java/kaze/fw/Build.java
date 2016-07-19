@@ -5,31 +5,34 @@ import java.lang.reflect.Method;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 
-import kaze.fw.lib.JettyHandler;
+import kaze.fw.lib.JettyServer;
+import kaze.fw.lib.JettyServlet;
 import kaze.http.Route;
 
 public class Build {
 	
-	// TODO support other handlers.
-	public static Handler make(String... pkg) {
+  public JettyServer server(String[] pkg) {
+    return new JettyServer(
+        new JettyServlet(routes(pkg))
+    );
+  }
+  
+	public Routes routes(String... pkg) {
 		try {
-			Routes routes = scan(pkg);
-			JettyHandler handler = new JettyHandler();
-			handler.routes = routes;
-			return handler;
+			return scan(pkg);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private static Routes scan(String[] pkgs) throws Exception {
+	private Routes scan(String... pkgs) throws Exception {
 	  Routes routes = new Routes();
 		for (String pkg : pkgs) scan(pkg, routes);
 		return routes;
 	}
 
-	private static void scan(String pkg, Routes routes) throws Exception {
+	private void scan(String pkg, Routes routes) throws Exception {
 	  // TODO thread safe?
 		Reflections ref = new Reflections(
 		    pkg, new MethodAnnotationsScanner()
