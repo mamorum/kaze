@@ -13,6 +13,9 @@ import kaze.fw.Routes;
 import kaze.http.Req;
 import kaze.http.Res;
 
+/*
+ * DefaultServlet#init() is called, when server starts.
+ */
 @SuppressWarnings("serial")
 public class JettyServlet extends DefaultServlet {
 
@@ -21,7 +24,7 @@ public class JettyServlet extends DefaultServlet {
     super();
     this.routes = routes;
   }
-  
+    
   protected void service(
     HttpServletRequest req, HttpServletResponse res
   ) throws ServletException, IOException {
