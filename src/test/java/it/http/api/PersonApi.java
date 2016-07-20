@@ -1,5 +1,6 @@
-package it.http;
+package it.http.api;
 
+import it.http.Person;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.Route;

@@ -1,90 +1,55 @@
 package it.http;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.Test;
 
-import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import it.http.util.HttpReq;
+import it.http.util.HttpRes;
 
-// before execute, run PersonAppMain.
+// before execute, run it.http.Main.
 //TODO Run App from JUnit testcase.
 public class PersonApiTest {
 
-	 HttpResponse res;
-	 HttpRequestFactory requestFactory
-	 	= (new NetHttpTransport()).createRequestFactory();
-	
+  HttpRes res;
+	 
 	@Test public void requestParam() throws Exception {
 		
-		// exe
-		res = requestFactory.buildGetRequest(
-			new GenericUrl("http://localhost:8080/person?id=123")
-        ).execute();
+		// do
+		res = HttpReq.get(
+		    "http://localhost:8080/person?id=123"
+		);
         
 		// check
-        assertThat(res.getStatusCode()).isEqualTo(200);
-        
-        assertThat(
-        		res.getContentType()
-        ).isEqualTo("application/json;charset=utf-8");
-        
-        assertThat(
-        		res.parseAsString()
-        ).isEqualTo("{\"id\":\"123\"}");
+    res.statusIs(200).contentTypeIsJson().bodyIs(
+        "{\"id\":\"123\"}"
+    );
 	}
 	
 	@Test public void requestParams() throws Exception {
 		
-		// exe
-		res = requestFactory.buildRequest(
-				"POST",
-				new GenericUrl("http://localhost:8080/person/params"),
-				ByteArrayContent.fromString(
-					"application/x-www-form-urlencoded",
-					"id=1234&name=Tom&langs=Perl&langs=PHP"
-				)
-        ).execute();
+		// do
+		res = HttpReq.postParams(
+		    "http://localhost:8080/person/params",
+				"id=1234&name=Tom&langs=Perl&langs=PHP"
+		);
         
 		// check
-        assertThat(res.getStatusCode()).isEqualTo(200);
-        
-        assertThat(
-        		res.getContentType()
-        ).isEqualTo("application/json;charset=utf-8");
-                
-        assertThat(
-        		res.parseAsString()
-        ).isEqualTo(
-        		"{\"id\":1234,\"name\":\"Tom\",\"langs\":[\"Perl\",\"PHP\"]}"
-        );
+		res.statusIs(200).contentTypeIsJson().bodyIs(
+		    "{\"id\":1234,\"name\":\"Tom\",\"langs\":[\"Perl\",\"PHP\"]}"
+    );
 	}
 	
 	@Test public void requestJson() throws Exception {
 		
-		// pre
-		String bodyJson = 
-		"{\"id\":12345,\"name\":\"Bob\",\"langs\":[\"C\",\"Java\",\"JS\"]}";
-		
-		// exe
-		res = requestFactory.buildRequest(
-				"POST",
-				new GenericUrl("http://localhost:8080/person/json"),
-				ByteArrayContent.fromString(
-					"application/json",	bodyJson
-				)
-        ).execute();
+	  // data
+	  String json = 
+	    "{\"id\":12345,\"name\":\"Bob\",\"langs\":[\"C\",\"Java\",\"JS\"]}";
+	  
+		// do
+		res = HttpReq.postJson(
+		    "http://localhost:8080/person/json", json
+		);
 		
 		// check
-        assertThat(res.getStatusCode()).isEqualTo(200);
-        
-        assertThat(
-        		res.getContentType()
-        ).isEqualTo("application/json;charset=utf-8");
-        
-        assertThat(res.parseAsString()).isEqualTo(bodyJson);
+		res.statusIs(200).contentTypeIsJson().bodyIs(json);
 	}
 }
