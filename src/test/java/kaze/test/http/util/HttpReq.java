@@ -1,4 +1,4 @@
-package it.http.util;
+package kaze.test.http.util;
 
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;

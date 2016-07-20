@@ -1,4 +1,4 @@
-package it.http;
+package kaze.test.http;
 
 import kaze.App;
 import kaze.http.Req;
@@ -7,13 +7,13 @@ import kaze.http.Route;
 
 public class Main {
 
-  @Route({"GET", "/hello"})
-  public void hello(Req req, Res res) {
+  @Route({"GET", "/"})
+  public void index(Req req, Res res) {
     res.json("msg", "Hello!");
   }
   
 	public static void main(String[] args) {
-		App.start("it.http");
+		App.start("kaze.test.http");
 	}
 
 }

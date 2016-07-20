@@ -1,9 +1,9 @@
-package it.http;
+package kaze.test.http.junit;
 
 import org.junit.Test;
 
-import it.http.util.HttpReq;
-import it.http.util.HttpRes;
+import kaze.test.http.util.HttpReq;
+import kaze.test.http.util.HttpRes;
 
 // before execute, run it.http.Main.
 //TODO Run App from JUnit testcase.

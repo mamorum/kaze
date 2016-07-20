@@ -20,7 +20,7 @@ public class Routes {
   }
   
   // Create URI index and, 
-  // Change URI to Pattern (ex. "/:id/:name/" to "/.*/.*")
+  // Change URI to Pattern (ex. "/:id/:name/" to "/[^/]+/[^/]+")
   private void addRegexUri(String method, String uri, Func func) {
     
     Map<String, Integer> index = new HashMap<>();
@@ -35,7 +35,14 @@ public class Routes {
         regex.append(path[i]);
       }
     }
+    if (uri.endsWith("/")) regex.append("/");
     func.uriIndex = index;
+    
+    System.out.println(
+        method + " " + regex.toString().replaceAll("\\[\\^/\\]\\+", "*") +
+        " -> " + func.m.getDeclaringClass().getSimpleName() +
+        "#" + func.m.getName()
+    );
     
     addPattern(
         method, Pattern.compile(regex.toString()), func
@@ -57,6 +64,13 @@ public class Routes {
       uri2func = new HashMap<>();
       method2uri.put(method, uri2func);
     }
+    
+    System.out.println(
+        method + " " + uri +
+        " -> " + func.m.getDeclaringClass().getSimpleName() +
+        "#" + func.m.getName()
+    );
+    
     uri2func.put(uri, func);    
   }
 

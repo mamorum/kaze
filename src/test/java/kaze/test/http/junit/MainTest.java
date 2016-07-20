@@ -1,16 +1,16 @@
-package it.http;
+package kaze.test.http.junit;
 
 import org.junit.Test;
 
-import it.http.util.HttpReq;
-import it.http.util.HttpRes;
+import kaze.test.http.util.HttpReq;
+import kaze.test.http.util.HttpRes;
 
 public class MainTest {
 
   @Test public void testHello() throws Exception {
     
     // do
-    HttpRes res = HttpReq.get("http://localhost:8080/hello");
+    HttpRes res = HttpReq.get("http://localhost:8080/");
     
     // check
     res.statusIs(200).contentTypeIsJson().bodyIs(

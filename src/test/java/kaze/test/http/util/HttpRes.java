@@ -1,4 +1,4 @@
-package it.http.util;
+package kaze.test.http.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

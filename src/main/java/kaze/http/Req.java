@@ -24,6 +24,8 @@ public class Req {
     this.uriIndex = uriIndex;
 	}
 
+	// TODO 何回か呼ばれる可能性がある。
+	// 先にインスタンス化しておいたほうが良いかも。
   public Uri uri() {
     return new Uri(sreq.getRequestURI(), uriIndex);
   }
@@ -45,9 +47,7 @@ public class Req {
   }
   
   public List<String> listParam(String name) {
-    return Arrays.asList(
-        sreq.getParameterValues(name)
-    );
+    return Arrays.asList(sreq.getParameterValues(name));
   }
   
   public <T> T listParam(String name, Class<T> to) {

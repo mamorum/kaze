@@ -2,6 +2,7 @@ package kaze.http;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,8 +42,13 @@ public class Res {
 		);
 	}
 	
-	public Res json(Object k, Object v, Object... kv) {
-		Map<Object, Object> src = Collections.singletonMap(k, v);
+	public Res json(Object... kv) {
+	  if (kv.length == 2) {
+	    return json(
+	        Collections.singletonMap(kv[0], kv[1])
+	    );
+	  }	
+	  Map<Object, Object> src = new LinkedHashMap<>();
 		for (int i = 0; i < kv.length; ) {
 			src.put(kv[i], kv[i + 1]);
 			i = i + 2;
