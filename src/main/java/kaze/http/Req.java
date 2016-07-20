@@ -1,5 +1,7 @@
 package kaze.http;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,19 +13,27 @@ import kaze.http.req.Uri;
 
 public class Req {
 
-	public HttpServletRequest servletReq;
+	public HttpServletRequest sreq;
 	private Map<String, Integer> uriIndex;
 	
 	public Req(
-	    HttpServletRequest sr,
+	    HttpServletRequest sreq,
 	    Map<String, Integer> uriIndex
 	) {
-    this.servletReq = sr;
+    this.sreq = sreq;
     this.uriIndex = uriIndex;
 	}
-	
+
+  public Uri uri() {
+    return new Uri(sreq.getRequestURI(), uriIndex);
+  }
+
+  public Json json() {
+    return new Json(sreq);
+  }
+  
   public String param(String name) {
-    return servletReq.getParameter(name);
+    return sreq.getParameter(name);
   }
 
   public <T> T param(String name, Class<T> to) {
@@ -31,22 +41,16 @@ public class Req {
   }
   
   public Params params() {
-    return new Params(servletReq);
+    return new Params(sreq);
   }
   
-  public Json json() {
-    return new Json(servletReq);
+  public List<String> listParam(String name) {
+    return Arrays.asList(
+        sreq.getParameterValues(name)
+    );
   }
   
-  public Uri uri() {
-    return new Uri(servletReq.getRequestURI(), uriIndex);
-  }
-  
-  public String[] params(String name) {
-    return servletReq.getParameterValues(name);
-  }
-  
-  public <T> T params(String name, Class<T> to) {
-    return Jackson.convert(params(name), to);
+  public <T> T listParam(String name, Class<T> to) {
+    return Jackson.convert(listParam(name), to);
   }
 }
