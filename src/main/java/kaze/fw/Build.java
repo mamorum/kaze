@@ -7,7 +7,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 
 import kaze.fw.lib.JettyServer;
 import kaze.fw.lib.JettyServlet;
-import kaze.http.Route;
+import kaze.http.Http;
 
 public class Build {
 	
@@ -38,11 +38,11 @@ public class Build {
 		    pkg, new MethodAnnotationsScanner()
 		);
 		for (
-		  Method m : ref.getMethodsAnnotatedWith(Route.class)
+		  Method m : ref.getMethodsAnnotatedWith(Http.class)
 		) {
-		  Route route = m.getAnnotation(Route.class);
-		  String httpMethod = route.value()[0];
-		  String httpUri = route.value()[1];
+		  Http http = m.getAnnotation(Http.class);
+		  String httpMethod = http.value()[0];
+		  String httpUri = http.value()[1];
 		  Func func = new Func(
 		    m.getDeclaringClass().newInstance(), m
 		  );

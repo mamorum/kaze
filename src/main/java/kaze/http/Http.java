@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Route {
+public @interface Http {
   
   /**
    * <p>value()[0] is Http Method name.

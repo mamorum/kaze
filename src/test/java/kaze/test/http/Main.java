@@ -3,11 +3,11 @@ package kaze.test.http;
 import kaze.App;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.http.Route;
+import kaze.http.Http;
 
 public class Main {
 
-  @Route({"GET", "/"})
+  @Http({"GET", "/"})
   public void index(Req req, Res res) {
     res.json("msg", "Hello!");
   }

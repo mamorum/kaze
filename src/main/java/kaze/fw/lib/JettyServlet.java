@@ -8,11 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
 
-import kaze.fw.Func;
+import kaze.fw.Route;
 import kaze.fw.Routes;
-import kaze.http.Req;
-import kaze.http.Res;
-import kaze.http.req.Uri;
 
 /*
  * DefaultServlet#init() is called, when server starts.
@@ -30,36 +27,33 @@ public class JettyServlet extends DefaultServlet {
     HttpServletRequest req, HttpServletResponse res
   ) throws ServletException, IOException {
     
-    StringBuilder access = new StringBuilder();
-
     String method = req.getMethod();
-    String uri = req.getRequestURI();
-    access.append(method).append(" ").append(uri);
-    
-    Func func = routes.get(method, uri);
-    
-    if (func == null) { 
-      if ("GET".equals(method) || "POST".equals(method)) {
-        super.doGet(req, res);
-        return;
-      }
-    }
+    String uri = req.getRequestURI();    
+    Route route = routes.get(method, uri);
     
     try {
-      func.call(
-        new Req(req, new Uri(uri, func.uriIndex)),
-        new Res(res)
-      );
-    } catch (Exception e) {
-      e.printStackTrace();
+      if (route != null) {
+        route.run(uri, req, res);
+      }
+      else {
+        // static contents
+        super.service(req, res);
+      }
+    }
+    catch (Exception e) {
+      res.setStatus(500);
       throw e;
     }
-    
-    log(access, res.getStatus());
+    finally {
+      log(method, uri,  res.getStatus());
+    }
   }
   
   
-  void log(StringBuilder s, int status) {
-    System.out.println(s.append(" ").append(status));
+  void log(String method, String uri, int status) {
+    StringBuilder s = new StringBuilder();
+    s.append(method).append(" ")
+       .append(uri).append(" ").append(status);
+    System.out.println(s);
   }
 }
