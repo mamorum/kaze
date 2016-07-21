@@ -8,19 +8,19 @@ public class ReqUriApi {
 
   @Route({"GET", "/uri/name/:name"})
   public void name(Req req, Res res) {
-    res.json("name", req.uri().path(":name"));
+    res.json("name", req.uri(":name"));
   }
   
   @Route({"GET", "/uri/id/:id"})
   public void id(Req req, Res res) {
-    res.json("id", req.uri().path(":id", Long.class));
+    res.json("id", req.uri(":id", Long.class));
   }
   
   @Route({"POST", "/uri/:id/uri/:name"})
   public void idName(Req req, Res res) {
     res.json(
-        "id", req.uri().path(":id", Long.class),
-        "name", req.uri().path(":name")
+        "id", req.uri(":id", Long.class),
+        "name", req.uri(":name")
     );
   }
 }

@@ -2,7 +2,6 @@ package kaze.http;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,24 +13,27 @@ import kaze.http.req.Uri;
 public class Req {
 
 	public HttpServletRequest sreq;
-	private Map<String, Integer> uriIndex;
+	private Uri uri;
 	
-	public Req(
-	    HttpServletRequest sreq,
-	    Map<String, Integer> uriIndex
-	) {
+	public Req(HttpServletRequest sreq, Uri uri) {
     this.sreq = sreq;
-    this.uriIndex = uriIndex;
+    this.uri = uri;
 	}
 
-	// TODO 何回か呼ばれる可能性がある。
-	// 先にインスタンス化しておいたほうが良いかも。
-  public Uri uri() {
-    return new Uri(sreq.getRequestURI(), uriIndex);
+  public String uri(String path) {
+    return uri.path(path);
+  }
+  
+  public <T> T uri(String path, Class<T> to) {
+    return Jackson.convert(uri.path(path), to);
   }
 
   public Json json() {
     return new Json(sreq);
+  }
+
+  public Params params() {
+    return new Params(sreq);
   }
   
   public String param(String name) {
@@ -40,10 +42,6 @@ public class Req {
 
   public <T> T param(String name, Class<T> to) {
     return Jackson.convert(param(name), to);
-  }
-  
-  public Params params() {
-    return new Params(sreq);
   }
   
   public List<String> listParam(String name) {

@@ -12,6 +12,7 @@ import kaze.fw.Func;
 import kaze.fw.Routes;
 import kaze.http.Req;
 import kaze.http.Res;
+import kaze.http.req.Uri;
 
 /*
  * DefaultServlet#init() is called, when server starts.
@@ -46,7 +47,7 @@ public class JettyServlet extends DefaultServlet {
     
     try {
       func.call(
-        new Req(req, func.uriIndex),
+        new Req(req, new Uri(uri, func.uriIndex)),
         new Res(res)
       );
     } catch (Exception e) {
