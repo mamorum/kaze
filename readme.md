@@ -13,22 +13,22 @@ Developping.
 ## Sample Application
 
 ```
-package sample.kaze;
+package kaze.test.http;
 
 import kaze.App;
-import kaze.http.Route;
+import kaze.Http;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class Main {
-  
-  @Route({"GET", "/hello"})
-  public void hello(Req req, Res res) {
+
+  @Http({"GET", "/"})
+  public void index(Req req, Res res) {
     res.json("msg", "Hello!");
   }
   
   public static void main(String[] args) {
-    App.start("sample.kaze");
+    App.start("kaze.test.http");
   }
 }
 ```
@@ -36,7 +36,7 @@ public class Main {
 Run as java application, and serves ...
 
 ```
-$ curl http://localhost:8080/hello -s
+$ curl http://localhost:8080/ -s
 {"msg":"Hello!"}
 ```
 
