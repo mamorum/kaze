@@ -6,8 +6,8 @@ import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 
 import kaze.Http;
-import kaze.fw.embd.JettyServer;
-import kaze.fw.embd.JettyServlet;
+import kaze.fw.embed.JettyServer;
+import kaze.fw.embed.JettyServlet;
 
 public class Build {
 	

@@ -1,4 +1,4 @@
-package kaze.fw.embd;
+package kaze.fw.embed;
 
 import java.io.IOException;
 
@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import kaze.fw.Route;
 import kaze.fw.Routes;
@@ -19,8 +17,6 @@ import kaze.fw.Routes;
 @SuppressWarnings("serial")
 public class JettyServlet extends DefaultServlet {
 
-  private static final Logger logger = LoggerFactory.getLogger(JettyServlet.class);
-  
   private Routes routes;   
   public JettyServlet(Routes routes) {
     super();
@@ -48,16 +44,5 @@ public class JettyServlet extends DefaultServlet {
       res.setStatus(500);
       throw e;
     }
-    finally {
-      log(method, uri,  res.getStatus());
-    }
-  }
-  
-  
-  void log(String method, String uri, int status) {
-    StringBuilder s = new StringBuilder();
-    s.append(method).append(" ")
-       .append(uri).append(" ").append(status);
-    logger.debug(s.toString());
   }
 }

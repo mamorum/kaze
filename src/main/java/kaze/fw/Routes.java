@@ -5,9 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // not thread safe. single thread consumes this class.
 public class Routes {
 
+  private static final Logger logger = LoggerFactory.getLogger(Routes.class);
+  
   public HashMap<String, HashMap<String, Route>>
     method2uri = new HashMap<>();
   

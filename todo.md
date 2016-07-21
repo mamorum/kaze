@@ -1,6 +1,3 @@
-- Log
-  - プロダクトの調査・決定
-
 - Jetty
   - ログ調査（アクセスログ、他には？）
   - ○ support serving static content files.

@@ -16,8 +16,8 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.21'
     testCompile 'ch.qos.logback:logback-classic:1.1.7'
 
-    compile 'org.eclipse.jetty:jetty-server:9.3.9.v20160517'
-    compile 'org.eclipse.jetty:jetty-servlet:9.3.9.v20160517'
+    compile 'org.eclipse.jetty:jetty-server:9.2.17.v20160517'
+    compile 'org.eclipse.jetty:jetty-servlet:9.2.17.v20160517'
 
     compile 'org.reflections:reflections:0.9.10'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.5'
