@@ -1,4 +1,4 @@
-package kaze.fw.lib;
+package kaze.fw.embd;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;

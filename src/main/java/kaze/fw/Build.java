@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 
-import kaze.fw.lib.JettyServer;
-import kaze.fw.lib.JettyServlet;
-import kaze.http.Http;
+import kaze.Http;
+import kaze.fw.embd.JettyServer;
+import kaze.fw.embd.JettyServlet;
 
 public class Build {
 	

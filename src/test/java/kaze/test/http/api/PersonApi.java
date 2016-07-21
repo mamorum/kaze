@@ -1,8 +1,8 @@
 package kaze.test.http.api;
 
+import kaze.Http;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.http.Http;
 import kaze.test.http.model.Person;
 
 public class PersonApi {

@@ -1,4 +1,4 @@
-package kaze.http;
+package kaze;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

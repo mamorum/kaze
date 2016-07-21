@@ -1,4 +1,4 @@
-package kaze.fw.lib;
+package kaze.fw.embd;
 
 import java.io.IOException;
 
