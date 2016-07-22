@@ -1,5 +1,6 @@
 - Jetty
-  - ログ調査（アクセスログ、他には？）
+  - ログ調査（アクセスログ以外は？）
+  - ○アクセスログは出力できるようにした。
   - ○ support serving static content files.
     - jar 内の static contentes も大丈夫か検証。
 

@@ -10,43 +10,31 @@ import kaze.test.http.util.HttpRes;
 public class ReqUriApiTest {
 
   HttpRes res;
-	 
-	@Test public void name() throws Exception {
-		
-		// do
-		res = HttpReq.get(
-		    "http://localhost:8080/uri/name/bob"
-		);
-        
-		// check
-    res.statusIs(200).contentTypeIsJson().bodyIs(
-        "{\"name\":\"bob\"}"
-    );
-	}
-	
-	@Test public void id() throws Exception {
 
-    // do
+  @Test public void id() throws Exception {
     res = HttpReq.get(
-        "http://localhost:8080/uri/id/8"
+        "http://localhost:8080/cake/id/8"
     );
-        
-    // check
     res.statusIs(200).contentTypeIsJson().bodyIs(
         "{\"id\":8}"
+    );
+  }
+  
+	@Test public void name() throws Exception {
+		res = HttpReq.get(
+		    "http://localhost:8080/cake/name/cheese"
+		);
+    res.statusIs(200).contentTypeIsJson().bodyIs(
+        "{\"name\":\"cheese\"}"
     );
 	}
 	
 	@Test public void idName() throws Exception {
-		
-		// do
 		res = HttpReq.postParams(
-		    "http://localhost:8080/uri/7/uri/tom", ""
+		    "http://localhost:8080/cake/id/8/name/cheese", ""
 		);
-		
-		// check
 		res.statusIs(200).contentTypeIsJson().bodyIs(
-        "{\"id\":7,\"name\":\"tom\"}"
+        "{\"id\":8,\"name\":\"cheese\"}"
     );
 	}
 }

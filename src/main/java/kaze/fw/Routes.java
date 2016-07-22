@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// not thread safe. single thread consumes this class.
+// not thread safe. 
 public class Routes {
 
   private static final Logger logger = LoggerFactory.getLogger(Routes.class);
@@ -30,37 +30,43 @@ public class Routes {
   private void addRegex(String method, String uri, Func func) {
     
     Map<String, Integer> index = new HashMap<>();
-    StringBuilder regex = new StringBuilder();
+    StringBuilder sb = new StringBuilder();
     String[] path = uri.substring(1).split("/");
     for (int i = 0; i < path.length; i++) {
-      regex.append("/");
+      sb.append("/");
       if (path[i].contains(":")) {
-        regex.append("[^/]+");
+        sb.append("[^/]+");
         index.put(path[i], i);
       } else {
-        regex.append(path[i]);
+        sb.append(path[i]);
       }
     }
-    if (uri.endsWith("/")) regex.append("/");
+    if (uri.endsWith("/")) sb.append("/");
 
-    Pattern pattern = Pattern.compile(regex.toString());
-    addRegexRoute(
-        method, new Route(func, pattern, index)
-    );
-//    System.out.println(
-//        method + " " + regex.toString().replaceAll("\\[\\^/\\]\\+", "*") +
-//        " -> " + func.m.getDeclaringClass().getSimpleName() +
-//        "#" + func.m.getName()
-//    );
+    String regexUri = sb.toString();
+    addRegexUri(method, regexUri, index, func);
+    
+    if (logger.isDebugEnabled()) {
+      String uri4log = regexUri.replaceAll(
+          "\\[\\^/\\]\\+", "*"
+      );
+      logRoute(method, uri4log, func);
+    }
   }
   
-  private void addRegexRoute(String method, Route route) {
+  private void addRegexUri(
+      String method, String regexUri,
+      Map<String, Integer> uriIndex, Func func
+  ) {
     ArrayList<Route> regexRoutes = method2regex.get(method);
     if (regexRoutes == null) {
       regexRoutes = new ArrayList<>();
       method2regex.put(method, regexRoutes);
     }
-    regexRoutes.add(route);    
+    Pattern pattern = Pattern.compile(regexUri);
+    regexRoutes.add(
+        new Route(func, pattern, uriIndex)
+    );    
   }
 
   private void addUri(String method, String uri, Func func) {
@@ -70,12 +76,14 @@ public class Routes {
       method2uri.put(method, uriRoutes);
     }
     uriRoutes.put(uri, new Route(func));    
-    
-//    System.out.println(
-//        method + " " + uri +
-//        " -> " + func.m.getDeclaringClass().getSimpleName() +
-//        "#" + func.m.getName()
-//    );
+    logRoute(method, uri, func);
+  }
+
+  private void logRoute(String method, String uri, Func func) {
+    logger.debug(
+        "[{} {}] -> [{}#{}]", method, uri, 
+        func.m.getDeclaringClass().getName(), 
+        func.m.getName());
   }
 
   // for app running.
@@ -97,5 +105,5 @@ public class Routes {
     
     // not found
     return null;
-  }
+  }  
 }
