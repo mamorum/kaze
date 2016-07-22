@@ -16,6 +16,10 @@ hs_err_pid*
 .settings/
 .classpath
 .project
+build/
+
+# node, gulp
+node_modules/
 
 # =========================
 # Operating System Files

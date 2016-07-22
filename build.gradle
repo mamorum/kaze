@@ -27,16 +27,6 @@ dependencies {
     testCompile 'com.google.http-client:google-http-client:1.22.0'
 }
 
-//provided 'org.projectlombok:lombok:1.16.6'
-/*
-configurations {
-    provided
+test {
+    testLogging.showStandardStreams = true
 }
-sourceSets {
-    main.compileClasspath += configurations.provided
-    test.compileClasspath += configurations.provided
-}
-eclipse.classpath {
-    plusConfigurations += [configurations.provided]
-}
-*/

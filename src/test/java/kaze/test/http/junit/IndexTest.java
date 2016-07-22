@@ -5,7 +5,7 @@ import org.junit.Test;
 import kaze.test.http.util.HttpReq;
 import kaze.test.http.util.HttpRes;
 
-public class MainTest {
+public class IndexTest {
 
   @Test public void testHello() throws Exception {
     
