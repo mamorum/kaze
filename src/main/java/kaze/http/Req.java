@@ -20,14 +20,6 @@ public class Req {
     this.uri = uri;
 	}
 
-  public String uri(String path) {
-    return uri.path(path);
-  }
-  
-  public <T> T uri(String path, Class<T> to) {
-    return Jackson.convert(uri.path(path), to);
-  }
-
   public Json json() {
     return new Json(sreq);
   }
@@ -50,5 +42,13 @@ public class Req {
   
   public <T> T listParam(String name, Class<T> to) {
     return Jackson.convert(listParam(name), to);
+  }
+
+  public String uri(String path) {
+    return uri.path(path);
+  }
+  
+  public <T> T uri(String path, Class<T> to) {
+    return Jackson.convert(uri.path(path), to);
   }
 }
