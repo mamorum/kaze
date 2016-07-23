@@ -44,11 +44,11 @@ public class Req {
     return Jackson.convert(listParam(name), to);
   }
 
-  public String uri(String path) {
-    return uri.path(path);
+  public String uri(String expr) {
+    return uri.path(expr);
   }
   
-  public <T> T uri(String path, Class<T> to) {
-    return Jackson.convert(uri.path(path), to);
+  public <T> T uri(String expr, Class<T> to) {
+    return Jackson.convert(uri.path(expr), to);
   }
 }
