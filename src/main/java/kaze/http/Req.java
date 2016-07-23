@@ -13,7 +13,7 @@ import kaze.http.req.Uri;
 public class Req {
 
 	public HttpServletRequest sreq;
-	private Uri uri;
+	public Uri uri;
 	
 	public Req(HttpServletRequest sreq, Uri uri) {
     this.sreq = sreq;
