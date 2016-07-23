@@ -18,20 +18,29 @@ public class Route {
 
   private static final Logger logger = LoggerFactory.getLogger(Route.class);
  
-  public String uri;
-	public Pattern uriPattern;
-	public Map<String, Integer> uriIndex;
-  public Func func;
-		
-	public static Route fromUri(String uri, Func func) {
-	  Route r = new Route();
-	  r.uri = uri; r.func = func;
-	  return r;
-	}
+  String uri;
+  Pattern uriPattern;
+  Map<String, Integer> uriIndex;
+  Func func;
+  
+  private Route(String uri, Func func) {
+    this.uri = uri; this.func = func;
+  }
+  
+  private Route(String uri, Map<String, Integer> index, Func func) {
+    this.uri = uri;
+    this.uriPattern = Pattern.compile(uri);
+    this.uriIndex = index;
+    this.func = func;
+  }
+
+  static Route fromUri(String uri, Func func) {
+    return new Route(uri, func);
+  }
 	
   // Create URI index and, 
   // Change URI to Pattern (ex. "/:id/:name/" to "/[^/]+/[^/]+")
-	public static Route fromRegexUri(String uri, Func func) {
+  static Route fromRegexUri(String uri, Func func) {
     Map<String, Integer> uriIndex = new HashMap<>();
     StringBuilder sb = new StringBuilder();
     String[] path = uri.substring(1).split("/");
@@ -46,17 +55,14 @@ public class Route {
     }
     if (uri.endsWith("/")) sb.append("/");
     
-    Route r = new Route();
-    r.uri = sb.toString();
-    r.uriPattern = Pattern.compile(r.uri);
-    r.uriIndex = uriIndex;
-    r.func = func;
-    return r;
+    String regexUri = sb.toString();
+    return new Route(regexUri, uriIndex, func);
 	}
 	
-	public Uri uri(String reqUri) {
-	  if (uriIndex == null) return new Uri(reqUri);
+  private Uri uri(String reqUri) {
+    if (uriIndex == null) return new Uri(reqUri);
     
+    // regex uri
     Map<String, String> uriVals = new HashMap<>();    
     String[] paths = reqUri.substring(1).split("/");
     for (String key : this.uriIndex.keySet()) {
@@ -78,7 +84,7 @@ public class Route {
     );
   }
   
-  public void log(String method) {
+  void log(String method) {
     if (logger.isDebugEnabled()) {
       String uri4log = this.uri.replaceAll(
           "\\[\\^/\\]\\+", "*"
