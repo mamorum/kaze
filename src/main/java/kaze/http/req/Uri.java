@@ -13,7 +13,7 @@ public class Uri {
     );
     String val = vals.get(expr);
     if (val == null) throw new RuntimeException(
-        "Expression [" + expr + "] has no value to return."
+        "Expression [" + expr + "] gets no value."
     );
     return val;
   }
