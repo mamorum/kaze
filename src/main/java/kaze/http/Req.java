@@ -1,8 +1,5 @@
 package kaze.http;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import kaze.fw.lib.Jackson;
@@ -36,12 +33,12 @@ public class Req {
     return Jackson.convert(param(name), to);
   }
   
-  public List<String> listParam(String name) {
-    return Arrays.asList(sreq.getParameterValues(name));
+  public String[] arrayParam(String name) {
+    return sreq.getParameterValues(name);
   }
   
-  public <T> T listParam(String name, Class<T> to) {
-    return Jackson.convert(listParam(name), to);
+  public <T> T arrayParam(String name, Class<T> to) {
+    return Jackson.convert(arrayParam(name), to);
   }
 
   public String uri(String expr) {
