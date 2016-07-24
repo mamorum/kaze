@@ -11,7 +11,6 @@
   - jackson の検証
 
 - Req テスト
-  - param, listParam
   - params
   - json
 
