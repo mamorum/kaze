@@ -6,7 +6,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import kaze.http.ex.ValidateException;
+import kaze.http.ex.ValidateEx;
 
 public class Data<T> {
 	
@@ -14,16 +14,15 @@ public class Data<T> {
 	public Data(T o) { this.o = o; }
 	
 	public T get() {
-		return this.o;
+		return o;
 	}
 	
 	public T validate() {
-	  Set<ConstraintViolation<T>> scv = v.validate(this.o);
-		if (scv.size() == 0) return this.o;  // valid.
-		throw new ValidateException(scv);  // not.
+	  Set<ConstraintViolation<T>> scv = v.validate(o);
+		if (scv.size() == 0) return o;  // valid.
+		throw new ValidateEx(scv);  // not.
 	}
 
   private final static Validator v
 	  = Validation.buildDefaultValidatorFactory().getValidator();
-	
 }
