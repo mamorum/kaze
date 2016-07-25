@@ -13,11 +13,9 @@ public class Data<T> {
 	private T o;
 	public Data(T o) { this.o = o; }
 	
-	public T get() {
-		return o;
-	}
+	public T get() { return o; }
 	
-	public T validate() {
+	public T getValid() {
 	  Set<ConstraintViolation<T>> scv = v.validate(o);
 		if (scv.size() == 0) return o;  // valid.
 		throw new ValidateEx(scv);  // not.
