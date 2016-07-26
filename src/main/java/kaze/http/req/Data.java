@@ -6,21 +6,21 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import kaze.http.ex.ValidateEx;
+import kaze.http.ex.ValidateException;
 
 public class Data<T> {
 	
 	private T o;
-	public Data(T o) { this.o = o; }
+	public Data(T src) { this.o = src; }
 	
 	public T get() { return o; }
 	
-	public T getValid() {
-	  Set<ConstraintViolation<T>> scv = v.validate(o);
-		if (scv.size() == 0) return o;  // valid.
-		throw new ValidateEx(scv);  // not.
-	}
+	public T valid() {
+    Set<ConstraintViolation<Object>> scv = v.validate((Object) o);
+    if (scv.size() == 0) return o;  // valid.
+    throw new ValidateException(scv);  // not.
+  }
 
-  private final static Validator v
-	  = Validation.buildDefaultValidatorFactory().getValidator();
+  static Validator v
+    = Validation.buildDefaultValidatorFactory().getValidator();
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.fw.lib.Jackson;
+import kaze.http.lib.Jackson;
 
 public class Res {
 	
@@ -37,7 +37,7 @@ public class Res {
 	
 	public Res json(Object src) {
 		return write(
-			Jackson.toJson(src),
+		  Jackson.toJson(src),
 			"application/json;charset=utf-8"
 		);
 	}

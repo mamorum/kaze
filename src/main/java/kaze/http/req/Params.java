@@ -5,24 +5,23 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.fw.lib.Jackson;
+import kaze.http.lib.Jackson;
 
 public class Params {
-
-	private HttpServletRequest req;	
-	public Params(HttpServletRequest req) {
-		this.req = req;
-	}
 		
-	public <T> Data<T> bind(Class<T> to) {
-		return new Data<>(toObj(to));
+	public static <T> Data<T> convert(
+	    HttpServletRequest req, Class<T> to
+	) {
+	  return new Data<>(obj(req, to));
 	}
 	
-	private <T> T toObj(Class<T> to) {
+	private static <T> T obj(
+	    HttpServletRequest req, Class<T> to
+	) {
 		try {
 			T o = to.newInstance();
 			for (Field f : to.getDeclaredFields()) {
-				setParam(o, f, f.getName());
+				setParam(req, o, f, f.getName());
 			}
 			return o;
 		}
@@ -31,7 +30,10 @@ public class Params {
 		}
 	}
 	
-	private void setParam(Object o, Field f, String name) {
+	private static void setParam(
+	    HttpServletRequest req, 
+	    Object o, Field f, String name
+	) {
 		// resolve
 		Class<?> fType = f.getType();
 		Object val = null;	

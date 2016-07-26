@@ -13,7 +13,7 @@ public class ReqJsonTest {
   
   @Http({"POST", "/person/json"})
   public void json(Req req, Res res) {
-    Person p = req.json().bind(Person.class).get();
+    Person p = req.json(Person.class).get();
     res.json(p);
   }
   @Test

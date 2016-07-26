@@ -2,7 +2,8 @@ package kaze.http;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.fw.lib.Jackson;
+import kaze.http.lib.Jackson;
+import kaze.http.req.Data;
 import kaze.http.req.Json;
 import kaze.http.req.Params;
 import kaze.http.req.Uri;
@@ -17,12 +18,12 @@ public class Req {
     this.uri = uri;
 	}
 
-  public Json json() {
-    return new Json(sreq);
+  public <T> Data<T> json(Class<T> to) {
+    return Json.convert(sreq, to);
   }
 
-  public Params params() {
-    return new Params(sreq);
+  public <T> Data<T> params(Class<T> to) {
+    return Params.convert(sreq, to);
   }
   
   public String param(String name) {
@@ -45,7 +46,7 @@ public class Req {
     return uri.path(expr);
   }
   
-  public <T> T uri(String expr, Class<T> to) {
+  public <T> T uri(String expr, Class<T> to) {    
     return Jackson.convert(uri.path(expr), to);
   }
 }

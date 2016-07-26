@@ -13,7 +13,7 @@ public class ReqParamsTest {
 
   @Http({"POST", "/person/params"})
   public void params(Req req, Res res) {
-    Person p = req.params().bind(Person.class).get();
+    Person p = req.params(Person.class).get();
     res.json(p);
   }
   @Test
