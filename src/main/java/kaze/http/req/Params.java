@@ -9,10 +9,10 @@ import kaze.http.lib.Jackson;
 
 public class Params {
 		
-	public static <T> Data<T> convert(
+	public static <T> T convert(
 	    HttpServletRequest req, Class<T> to
 	) {
-	  return new Data<>(obj(req, to));
+	  return obj(req, to);
 	}
 	
 	private static <T> T obj(

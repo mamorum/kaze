@@ -8,14 +8,12 @@ import kaze.http.lib.Jackson;
 
 public class Json {
 
-	public static <T> Data<T> convert(
+	public static <T> T convert(
 	    HttpServletRequest req, Class<T> to
 	) {
-	  String json = body(req);
 	  try {
-	    return new Data<>(
-	        Jackson.om.readValue(json, to)
-	    );
+	    String json = body(req);
+	    return Jackson.om.readValue(json, to);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

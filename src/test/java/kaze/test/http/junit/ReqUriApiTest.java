@@ -1,6 +1,9 @@
 package kaze.test.http.junit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
+
+import com.google.api.client.http.HttpResponseException;
 
 import kaze.Http;
 import kaze.http.Req;
@@ -15,7 +18,7 @@ public class ReqUriApiTest {
   public void id(Req req, Res res) {
     res.json("id", req.uri(":id", Long.class));
   }
-  @Test
+  @Test  //OK
   public void id() throws Exception {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/cake/id/8"
@@ -24,6 +27,18 @@ public class ReqUriApiTest {
         "{\"id\":8}"
     );
   }
+  @Test  //NG
+  public void badId() throws Exception {
+    try {
+      HttpReq.get(
+          "http://localhost:8080/cake/id/ng"
+      );
+    } catch (HttpResponseException e) {
+      assertThat(e.getStatusCode()).isEqualTo(400);
+      assertThat(e.getHeaders().getContentType()).isEqualTo("application/json;charset=utf-8");
+      System.out.println(e.getContent());
+    }
+  } 
 
   @Http({"GET", "/cake/name/:name"})
   public void name(Req req, Res res) {
