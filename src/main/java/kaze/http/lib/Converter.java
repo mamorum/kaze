@@ -6,13 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kaze.http.ex.ConvertException;
 
-public class Jackson {
+public class Converter {
 
-  public static final ObjectMapper om;
+  public static final ObjectMapper jcksn;
   
   static {
-    om = new ObjectMapper();
-    om.setVisibility(
+    jcksn = new ObjectMapper();
+    jcksn.setVisibility(
       PropertyAccessor.FIELD,
       JsonAutoDetect.Visibility.ANY
     );
@@ -20,7 +20,7 @@ public class Jackson {
   
   public static String toJson(Object obj) {
     try {
-      return om.writeValueAsString(obj);
+      return jcksn.writeValueAsString(obj);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -28,7 +28,7 @@ public class Jackson {
   
   public static <T> T toObj(String json, Class<T> obj) {
     try {
-      return om.readValue(json, obj);
+      return jcksn.readValue(json, obj);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -36,7 +36,7 @@ public class Jackson {
 
   public static <T> T convert(Object val, Class<T> type) {
     try {
-      return Jackson.om.convertValue(val, type);
+      return Converter.jcksn.convertValue(val, type);
     } catch (IllegalArgumentException e) {
       throw new ConvertException(e);
     }

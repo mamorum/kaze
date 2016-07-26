@@ -5,23 +5,21 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.lib.Jackson;
+import kaze.http.lib.Converter;
 
 public class Params {
-		
-	public static <T> T convert(
-	    HttpServletRequest req, Class<T> to
-	) {
-	  return obj(req, to);
-	}
 	
-	private static <T> T obj(
-	    HttpServletRequest req, Class<T> to
-	) {
+  private HttpServletRequest sr;
+  private Params(HttpServletRequest sr) { this.sr = sr; }
+  public static Params of(HttpServletRequest sr) {
+    return new Params(sr);
+  }
+  
+	public <T> T to(Class<T> to) {
 		try {
 			T o = to.newInstance();
 			for (Field f : to.getDeclaredFields()) {
-				setParam(req, o, f, f.getName());
+				setParam(o, f, f.getName());
 			}
 			return o;
 		}
@@ -30,8 +28,7 @@ public class Params {
 		}
 	}
 	
-	private static void setParam(
-	    HttpServletRequest req, 
+	private void setParam(
 	    Object o, Field f, String name
 	) {
 		// resolve
@@ -41,10 +38,10 @@ public class Params {
 			fType.isArray() ||
 			Collection.class.isAssignableFrom(fType)
 		) {
-			val = req.getParameterValues(name);
+			val = sr.getParameterValues(name);
 		}
 		else {
-			val = req.getParameter(name);
+			val = sr.getParameter(name);
 		}
 		
 		// no value in request
@@ -53,7 +50,7 @@ public class Params {
 		// set
 		try {
 			f.setAccessible(true);
-			f.set(o, Jackson.convert(val, fType));
+			f.set(o, Converter.convert(val, fType));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

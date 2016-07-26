@@ -1,8 +1,10 @@
-- Jetty
-  - ログ調査（アクセスログ以外は？）
-  - ○アクセスログは出力できるようにした。
-  - ○ support serving static content files.
-    - jar 内の static contentes も大丈夫か検証。
+- Convert エラーのテスト
+  - uri, param, arrayParam
+  - json, params
+
+- Validation のテスト
+  - 正常系：json, params
+  - エラー：json, params
 
 - Validation（Hibernate Validator）調査
   - validation の種類、アノテーションの方法
@@ -16,12 +18,12 @@
     - http://d.hatena.ne.jp/Yosuke_Taka/20110827/1314413434
     - http://maru.osdn.jp/m4hv-extensions/index.html
 
-- Convert エラー
-  - jackson の検証
 
-- Req テスト
-  - params
-  - json
+- Jetty
+  - ログ調査（アクセスログ以外は？）
+  - ○アクセスログは出力できるようにした。
+  - ○ support serving static content files.
+    - jar 内の static contentes も大丈夫か検証。
 
 - エラー処理
   - 非検査例外：RuntimeException の箇所。

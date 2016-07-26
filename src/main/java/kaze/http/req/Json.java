@@ -4,28 +4,27 @@ import java.io.BufferedReader;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.lib.Jackson;
+import kaze.http.lib.Converter;
 
 public class Json {
 
-	public static <T> T convert(
-	    HttpServletRequest req, Class<T> to
-	) {
-	  try {
-	    String json = body(req);
-	    return Jackson.om.readValue(json, to);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+  private HttpServletRequest sreq;
+  private Json(HttpServletRequest sreq) { this.sreq = sreq; }
+  public static Json of(HttpServletRequest sreq) {
+    return new Json(sreq);
+  }
+  
+	public <T> T to(Class<T> to) {
+	  return Converter.toObj(json(), to);
 	}
 
 	// TODO check program action, when i close the reader.
-	private static String body(HttpServletRequest req) {
+	private String json() {
 		try {			
-			if (req.getCharacterEncoding() == null) {
-				req.setCharacterEncoding("utf-8");
+			if (sreq.getCharacterEncoding() == null) {
+				sreq.setCharacterEncoding("utf-8");
 			}			
-			BufferedReader r = req.getReader();
+			BufferedReader r = sreq.getReader();
 			StringBuilder body = new StringBuilder();
 			String line = null;
 			while ((line = r.readLine()) != null) {

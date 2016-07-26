@@ -8,25 +8,25 @@ import kaze.http.Res;
 import kaze.test.http.util.HttpReq;
 import kaze.test.http.util.HttpRes;
 
-public class ReqArrayParamTest {
+public class ReqListParamTest {
   
   @Http({"GET", "/ice"})
   public void names(Req req, Res res) {
-    res.json("name", req.arrayParam("name"));
+    res.json("names", req.listParam("names"));
   }
   @Test
   public void names() throws Exception {
     HttpRes res = HttpReq.get(
-        "http://localhost:8080/ice?name=vanilla&name=chocolate"
+        "http://localhost:8080/ice?names=vanilla&names=chocolate"
     );
     res.statusIs(200).contentTypeIsJson().bodyIs(
-        "{\"name\":[\"vanilla\",\"chocolate\"]}"
+        "{\"names\":[\"vanilla\",\"chocolate\"]}"
     );
   }
   
   @Http({"POST", "/ice"})
   public void ids(Req req, Res res) {
-    res.json("id", req.arrayParam("id", Long[].class));
+    res.json("id", req.listParam("id", Long[].class));
   }
   @Test
   public void ids() throws Exception {

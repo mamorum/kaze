@@ -14,6 +14,21 @@ import kaze.test.http.util.HttpRes;
 // before execute, run server.
 public class ReqUriApiTest {
 
+  @Http({"GET", "/cake/name/:name"})
+  public void name(Req req, Res res) {
+    res.json("name", req.uri(":name"));
+  }
+  @Test
+  public void name() throws Exception {
+    HttpRes res = HttpReq.get(
+        "http://localhost:8080/cake/name/cheese"
+    );
+    res.statusIs(200).contentTypeIsJson().bodyIs(
+        "{\"name\":\"cheese\"}"
+    );
+  }
+
+  
   @Http({"GET", "/cake/id/:id"})
   public void id(Req req, Res res) {
     res.json("id", req.uri(":id", Long.class));
@@ -40,20 +55,7 @@ public class ReqUriApiTest {
     }
   } 
 
-  @Http({"GET", "/cake/name/:name"})
-  public void name(Req req, Res res) {
-    res.json("name", req.uri(":name"));
-  }
-	@Test
-	public void name() throws Exception {
-	  HttpRes res = HttpReq.get(
-		    "http://localhost:8080/cake/name/cheese"
-		);
-    res.statusIs(200).contentTypeIsJson().bodyIs(
-        "{\"name\":\"cheese\"}"
-    );
-	}
-
+  
   @Http({"POST", "/cake/id/:id/name/:name"})
   public void idName(Req req, Res res) {
     res.json(

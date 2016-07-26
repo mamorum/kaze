@@ -1,8 +1,12 @@
 package kaze.http;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.lib.Jackson;
+import kaze.http.lib.Converter;
 import kaze.http.lib.Validator;
 import kaze.http.req.Json;
 import kaze.http.req.Params;
@@ -10,50 +14,57 @@ import kaze.http.req.Uri;
 
 public class Req {
 
-	public HttpServletRequest sreq;
-	public Uri uri;
+	public HttpServletRequest sr;
+	private Uri uri;
 	
-	public Req(HttpServletRequest sreq, Uri uri) {
-    this.sreq = sreq;
+	public Req(HttpServletRequest sr, Uri uri) {
+    this.sr = sr;
     this.uri = uri;
 	}
+
+  public <T> Data<T> json(Class<T> to) {
+    return new Data<>(
+        Json.of(sr).to(to)
+    );
+  }
+
+  public <T> Data<T> params(Class<T> to) {
+    return new Data<>(
+        Params.of(sr).to(to)
+    );
+  }
 
   public class Data<T> {
     private T o;
     public Data(T o) { this.o = o; }
     public T get() { return o; }
-    public T valid() { return Validator.valid(o); }
-  }
-  
-  public <T> Data<T> json(Class<T> to) {
-    return new Data<>(Json.convert(sreq, to));
+    public T valid() { return Validator.validate(o); }
   }
 
-  public <T> Data<T> params(Class<T> to) {
-    return new Data<>(Params.convert(sreq, to));
+  public String uri(String path) {
+    return uri.path(path);
   }
-  
+
+  public <T> T uri(String path, Class<T> to) {    
+    return Converter.convert(uri.path(path), to);
+  }  
+
   public String param(String name) {
-    return sreq.getParameter(name);
+    return sr.getParameter(name);
   }
 
   public <T> T param(String name, Class<T> to) {
-    return Jackson.convert(param(name), to);
+    return Converter.convert(param(name), to);
   }
   
-  public String[] arrayParam(String name) {
-    return sreq.getParameterValues(name);
-  }
-  
-  public <T> T arrayParam(String name, Class<T> to) {
-    return Jackson.convert(arrayParam(name), to);
+  public List<String> listParam(String name) {
+    return Arrays.asList(sr.getParameterValues(name));
   }
 
-  public String uri(String expr) {
-    return uri.path(expr);
+  public <T> List<T> listParam(String name, Class<T> to) {
+    List<String> ls = listParam(name);
+    List<T> lt = new ArrayList<>(ls.size());
+    ls.forEach(s -> { lt.add(Converter.convert(s, to)); });
+    return lt;
   }
-  
-  public <T> T uri(String expr, Class<T> to) {    
-    return Jackson.convert(uri.path(expr), to);
-  }  
 }

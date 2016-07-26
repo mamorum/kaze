@@ -7,20 +7,20 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.http.lib.Jackson;
+import kaze.http.lib.Converter;
 
 public class Res {
 	
 	private boolean isWritten = false;
-	public HttpServletResponse sres;
-	public Res(HttpServletResponse sres) { this.sres = sres; }
+	public HttpServletResponse sr;
+	public Res(HttpServletResponse sr) { this.sr = sr; }
 
 	private Res write(String body, String defaultType) {
-		if (sres.getContentType() == null) {
-			sres.setContentType(defaultType);
+		if (sr.getContentType() == null) {
+			sr.setContentType(defaultType);
 		}
 		try {
-			sres.getWriter().print(body);
+			sr.getWriter().print(body);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -37,7 +37,7 @@ public class Res {
 	
 	public Res json(Object src) {
 		return write(
-		  Jackson.toJson(src),
+		  Converter.toJson(src),
 			"application/json;charset=utf-8"
 		);
 	}
@@ -59,12 +59,12 @@ public class Res {
 	// TODO exception
 	public Res contentType(String type) {
 		if (isWritten) throw new RuntimeException();
-		sres.setContentType(type);
+		sr.setContentType(type);
 		return this;
 	}
 	
 	public Res status(int i) {
-		sres.setStatus(i);
+		sr.setStatus(i);
 		return this;
 	}		
 }
