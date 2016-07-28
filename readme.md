@@ -4,14 +4,24 @@ Simple Web Application Framework in Java.
 Kaze means Wind in japanese.（日本語表記：風・かぜ）
 
 
-## Getting Started
+## How to get it ?
+Maven
+
+```
 Comming soon...
+```
+
+Gradle
+
+```
+Comming soon...
+```
 
 
 ## Sample Application
 
 ```java
-package kaze.test.http;
+package sample;
 
 import kaze.App;
 import kaze.Http;
@@ -38,3 +48,14 @@ $ curl http://localhost:8080/hello -s
 {"msg":"Hello!"}
 ```
 
+## Features
+- Simple APIs
+- Routing
+- Serving Static Contents
+- JSON Conversion
+- Java Type Conversion
+- Validation
+
+
+## Details
+- [Kaze - User Guide](user-guide.md)
