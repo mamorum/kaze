@@ -21,7 +21,7 @@ import kaze.http.Res;
 public class Main {
 
   @Http({"GET", "/hello"})
-  public void index(Req req, Res res) {
+  public void hello(Req req, Res res) {
     res.json("msg", "Hello!");
   }
   
