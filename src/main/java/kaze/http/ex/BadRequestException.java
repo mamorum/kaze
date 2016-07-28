@@ -6,7 +6,8 @@ import java.util.HashMap;
 public class BadRequestException extends RuntimeException {
   
   public BadRequestException(Throwable t) { super(t); }
-  
+  public BadRequestException(String msg) { super(msg); }
+
   public int status() { return 400; }
   
   public Object error() {

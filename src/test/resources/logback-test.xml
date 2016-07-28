@@ -15,4 +15,5 @@
   </root>
   <logger name="org.eclipse.jetty" level="INFO" />
   <logger name="org.reflections" level="INFO" />
+  <logger name="org.hibernate.validator" level="INFO" />
 </configuration>

@@ -41,8 +41,13 @@ public class HttpRes {
     return this;
   }
   
-  public HttpRes bodyContains(String str) {
-    assertThat(this.body).contains(str);
+  public HttpRes bodyContains(String... str) {
+    for (String s : str) assertThat(this.body).contains(s);
+    return this;
+  }
+
+  public HttpRes printBody() {
+    System.out.println(this.body);
     return this;
   }
 }

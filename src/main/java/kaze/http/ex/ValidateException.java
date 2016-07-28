@@ -12,7 +12,7 @@ public class ValidateException extends BadRequestException {
   Set<ConstraintViolation<Object>> scv;
     
   public ValidateException(Set<ConstraintViolation<Object>> scv) {
-    super(null);
+    super("Validation Error.");
     this.scv = scv;
   }
   
