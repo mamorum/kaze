@@ -5,8 +5,8 @@ import org.junit.Test;
 import kaze.Http;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.test.http.util.HttpReq;
-import kaze.test.http.util.HttpRes;
+import kaze.test.http.tool.HttpReq;
+import kaze.test.http.tool.HttpRes;
 
 public class ReqListParamTest {
   

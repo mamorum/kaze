@@ -1,4 +1,4 @@
-package kaze.http.lib;
+package kaze.http.tool;
 
 import java.util.Set;
 

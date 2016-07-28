@@ -6,11 +6,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.lib.Converter;
-import kaze.http.lib.Validator;
 import kaze.http.req.Json;
 import kaze.http.req.Params;
 import kaze.http.req.Uri;
+import kaze.http.tool.Converter;
+import kaze.http.tool.Validator;
 
 public class Req {
 

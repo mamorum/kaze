@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.http.lib.Converter;
+import kaze.http.tool.Converter;
 
 public class Res {
 	

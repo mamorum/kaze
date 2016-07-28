@@ -18,6 +18,9 @@ hs_err_pid*
 .project
 build/
 
+# idea
+.idea/
+
 # node, gulp
 node_modules/
 

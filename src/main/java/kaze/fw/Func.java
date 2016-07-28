@@ -14,8 +14,7 @@ public class Func {
 
   private static final Logger logger = LoggerFactory.getLogger(Func.class);
   
-  public Object o; Method m;
-  
+  public Object o; Method m;  
   public Func(Object o, Method m) {
     this.o = o; this.m = m;
   }
@@ -29,12 +28,15 @@ public class Func {
       if (c instanceof BadRequestException) {
         BadRequestException bre =(BadRequestException) c; 
         res.status(bre.status()).json(bre.error());
-        logger.debug(c.getMessage(), c);
+        logger.trace(c.getMessage(), c);
         return;
       }
       throw new RuntimeException(c);
     }
-    catch (Exception e) {
+    catch (
+        IllegalAccessException | 
+        IllegalArgumentException e
+    ) {
       throw new RuntimeException(e);
     }
   }

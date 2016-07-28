@@ -1,18 +1,16 @@
 ## What is this ?
 Simple Web Application Framework in Java.
 
-
-## Kaze = Wind
-Kaze means wind in japanese.（日本語表記：風・かぜ）
+Kaze means Wind in japanese.（日本語表記：風・かぜ）
 
 
-## Status
-Developping. 
+## Getting Started
+Comming soon...
 
 
 ## Sample Application
 
-```
+```java
 package kaze.test.http;
 
 import kaze.App;
@@ -22,7 +20,7 @@ import kaze.http.Res;
 
 public class Main {
 
-  @Http({"GET", "/"})
+  @Http({"GET", "/hello"})
   public void index(Req req, Res res) {
     res.json("msg", "Hello!");
   }
@@ -36,7 +34,7 @@ public class Main {
 Run as java application, and serves ...
 
 ```
-$ curl http://localhost:8080/ -s
+$ curl http://localhost:8080/hello -s
 {"msg":"Hello!"}
 ```
 

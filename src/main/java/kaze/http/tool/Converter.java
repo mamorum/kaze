@@ -1,4 +1,4 @@
-package kaze.http.lib;
+package kaze.http.tool;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -22,7 +22,7 @@ public class Converter {
     try {
       return jcksn.writeValueAsString(obj);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ConvertException(e);
     }
   }
   
@@ -30,7 +30,7 @@ public class Converter {
     try {
       return jcksn.readValue(json, obj);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new ConvertException(e);
     }
   }
 

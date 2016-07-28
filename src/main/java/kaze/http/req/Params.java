@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.lib.Converter;
+import kaze.http.tool.Converter;
 
 public class Params {
 	
