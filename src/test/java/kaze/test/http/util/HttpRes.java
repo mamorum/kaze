@@ -2,27 +2,47 @@ package kaze.test.http.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
+
 import com.google.api.client.http.HttpResponse;
+import com.google.api.client.http.HttpResponseException;
 
 public class HttpRes {
 
-  HttpResponse res;
-  public HttpRes(HttpResponse res) { this.res = res; }
+  int status;
+  String contentType, body;
+  
+  public HttpRes(HttpResponse res) throws IOException { 
+    this.status = res.getStatusCode();
+    this.contentType = res.getContentType();
+    this.body = res.parseAsString();
+  }
+  
+  public HttpRes(HttpResponseException e) {
+    this.status = e.getStatusCode();
+    this.contentType = e.getHeaders().getContentType();
+    this.body = e.getContent();
+  }
   
   public HttpRes statusIs(int status) {
-    assertThat(res.getStatusCode()).isEqualTo(status);
+    assertThat(this.status).isEqualTo(status);
     return this;
   }
   
   public HttpRes contentTypeIsJson() {
-    assertThat(
-        res.getContentType()
-    ).isEqualTo("application/json;charset=utf-8");
+    assertThat(this.contentType).isEqualTo(
+        "application/json;charset=utf-8"
+    );
     return this;
   }
   
-  public HttpRes bodyIs(String body) throws Exception{
-    assertThat(res.parseAsString()).isEqualTo(body);
+  public HttpRes bodyIs(String body) {
+    assertThat(this.body).isEqualTo(body);
+    return this;
+  }
+  
+  public HttpRes bodyContains(String str) {
+    assertThat(this.body).contains(str);
     return this;
   }
 }

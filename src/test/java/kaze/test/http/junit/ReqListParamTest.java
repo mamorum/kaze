@@ -26,7 +26,7 @@ public class ReqListParamTest {
   
   @Http({"POST", "/ice"})
   public void ids(Req req, Res res) {
-    res.json("id", req.listParam("id", Long[].class));
+    res.json("id", req.listParam("id", Long.class));
   }
   @Test
   public void ids() throws Exception {

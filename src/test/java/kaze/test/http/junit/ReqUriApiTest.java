@@ -1,9 +1,6 @@
 package kaze.test.http.junit;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
-
-import com.google.api.client.http.HttpResponseException;
 
 import kaze.Http;
 import kaze.http.Req;
@@ -34,25 +31,20 @@ public class ReqUriApiTest {
     res.json("id", req.uri(":id", Long.class));
   }
   @Test  //OK
-  public void id() throws Exception {
-    HttpRes res = HttpReq.get(
+  public void id() {
+    HttpReq.get(
         "http://localhost:8080/cake/id/8"
-    );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    ).statusIs(200).contentTypeIsJson().bodyIs(
         "{\"id\":8}"
     );
   }
   @Test  //NG
-  public void badId() throws Exception {
-    try {
-      HttpReq.get(
-          "http://localhost:8080/cake/id/ng"
-      );
-    } catch (HttpResponseException e) {
-      assertThat(e.getStatusCode()).isEqualTo(400);
-      assertThat(e.getHeaders().getContentType()).isEqualTo("application/json;charset=utf-8");
-      System.out.println(e.getContent());
-    }
+  public void badId() {
+    HttpReq.get(
+        "http://localhost:8080/cake/id/ng"
+    ).statusIs(400).contentTypeIsJson().bodyContains(
+        "\"cause\":\"convert\""
+    );
   } 
 
   
@@ -64,12 +56,11 @@ public class ReqUriApiTest {
     );
   }
 	@Test
-	public void idName() throws Exception {
-	  HttpRes res = HttpReq.postParams(
+	public void idName() {
+	  HttpReq.postParams(
 		    "http://localhost:8080/cake/id/8/name/cheese",
 		    ""
-		);
-		res.statusIs(200).contentTypeIsJson().bodyIs(
+		).statusIs(200).contentTypeIsJson().bodyIs(
         "{\"id\":8,\"name\":\"cheese\"}"
     );
 	}
