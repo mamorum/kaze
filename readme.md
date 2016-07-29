@@ -1,7 +1,7 @@
 ## What is this ?
-Simple Web Application Framework in Java.
+Simple Web Application Framework in Java. 
 
-Kaze means Wind in japanese.（日本語表記：風・かぜ）
+Kaze means Wind in japanese. 風 is a Kanji character of kaze.
 
 
 ## How to get it ?
@@ -21,7 +21,7 @@ Comming soon...
 ## Sample Application
 
 ```java
-package sample;
+package kaze.sample;
 
 import kaze.App;
 import kaze.Http;
@@ -36,7 +36,7 @@ public class Main {
   }
   
   public static void main(String[] args) {
-    App.start("kaze.test.http");
+    App.start("kaze.sample");
   }
 }
 ```
