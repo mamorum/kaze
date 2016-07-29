@@ -1,7 +1,5 @@
 ## What is this ?
-Simple Web Application Framework in Java. 
-
-Kaze means Wind in japanese. 風 is a Kanji character of kaze.
+Java Web Application Framework. Kaze means Wind in japanese.
 
 
 ## How to get it ?
