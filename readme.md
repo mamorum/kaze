@@ -1,5 +1,17 @@
 ## What is this ?
-Java Web Application Framework. Kaze means Wind in japanese.
+Java Web Application Framework.
+
+Kaze means Wind in japanese.
+
+
+## Features
+- Simple and Fluent APIs
+- Light Weight
+- Routing
+- JSON Conversion
+- Java Type Conversion
+- Validation
+- Serving Static Contents
 
 
 ## How to get it ?
@@ -45,14 +57,6 @@ Run as java application, and serves ...
 $ curl http://localhost:8080/hello -s
 {"msg":"Hello!"}
 ```
-
-## Features
-- Simple and Fluent APIs
-- Routing
-- Serving Static Contents
-- JSON Conversion
-- Java Type Conversion
-- Validation
 
 
 ## Details
