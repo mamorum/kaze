@@ -9,7 +9,7 @@ import kaze.test.http.tool.HttpReq;
 import kaze.test.http.tool.HttpRes;
 
 // before execute, run server.
-public class ReqUriApiTest {
+public class ReqUriTest {
 
   @Http({"GET", "/cake/name/:name"})
   public void name(Req req, Res res) {

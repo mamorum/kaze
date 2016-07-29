@@ -1,26 +1,32 @@
-package kaze.http.tool;
+package kaze.http;
+
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kaze.http.ex.ConvertException;
+import kaze.http.ex.ValidateException;
 
-public class Converter {
+public class Tool {
 
-  public static final ObjectMapper jcksn;
+  public static final ObjectMapper om;
   
   static {
-    jcksn = new ObjectMapper();
-    jcksn.setVisibility(
+    om = new ObjectMapper();
+    om.setVisibility(
       PropertyAccessor.FIELD,
       JsonAutoDetect.Visibility.ANY
     );
   }
-  
+
   public static String toJson(Object obj) {
     try {
-      return jcksn.writeValueAsString(obj);
+      return om.writeValueAsString(obj);
     } catch (Exception e) {
       throw new ConvertException(e);
     }
@@ -28,7 +34,7 @@ public class Converter {
   
   public static <T> T toObj(String json, Class<T> obj) {
     try {
-      return jcksn.readValue(json, obj);
+      return om.readValue(json, obj);
     } catch (Exception e) {
       throw new ConvertException(e);
     }
@@ -36,9 +42,17 @@ public class Converter {
 
   public static <T> T convert(Object val, Class<T> type) {
     try {
-      return Converter.jcksn.convertValue(val, type);
+      return om.convertValue(val, type);
     } catch (IllegalArgumentException e) {
       throw new ConvertException(e);
     }
-  }
+  }  
+
+  public static final javax.validation.Validator v
+    = Validation.buildDefaultValidatorFactory().getValidator();
+  
+  public static void validate(Object o) {
+    Set<ConstraintViolation<Object>> scv = v.validate(o);
+    if (scv.size() != 0) throw new ValidateException(scv);
+  }  
 }

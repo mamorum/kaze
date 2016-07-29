@@ -49,7 +49,7 @@ $ curl http://localhost:8080/hello -s
 ```
 
 ## Features
-- Simple APIs
+- Simple and Fluent APIs
 - Routing
 - Serving Static Contents
 - JSON Conversion

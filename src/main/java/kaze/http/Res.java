@@ -7,8 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.http.tool.Converter;
-
 public class Res {
 	
 	private boolean isWritten = false;
@@ -37,7 +35,7 @@ public class Res {
 	
 	public Res json(Object src) {
 		return write(
-		  Converter.toJson(src),
+		  Tool.toJson(src),
 			"application/json;charset=utf-8"
 		);
 	}

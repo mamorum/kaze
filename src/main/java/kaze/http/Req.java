@@ -6,16 +6,13 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.req.Json;
-import kaze.http.req.Params;
+import kaze.http.req.Data;
 import kaze.http.req.Uri;
-import kaze.http.tool.Converter;
-import kaze.http.tool.Validator;
 
 public class Req {
 
 	public HttpServletRequest sr;
-	private Uri uri;
+	public Uri uri;
 	
 	public Req(HttpServletRequest sr, Uri uri) {
     this.sr = sr;
@@ -23,22 +20,11 @@ public class Req {
 	}
 
   public <T> Data<T> json(Class<T> to) {
-    return new Data<>(
-        Json.of(sr).to(to)
-    );
+    return Data.jsonToObj(sr, to);
   }
 
   public <T> Data<T> params(Class<T> to) {
-    return new Data<>(
-        Params.of(sr).to(to)
-    );
-  }
-
-  public class Data<T> {
-    private T o;
-    public Data(T o) { this.o = o; }
-    public T get() { return o; }
-    public T valid() { return Validator.validate(o); }
+    return Data.paramsToObj(sr, to);
   }
 
   public String uri(String path) {
@@ -46,7 +32,7 @@ public class Req {
   }
 
   public <T> T uri(String path, Class<T> to) {    
-    return Converter.convert(uri.path(path), to);
+    return Tool.convert(uri.path(path), to);
   }  
 
   public String param(String name) {
@@ -54,7 +40,7 @@ public class Req {
   }
 
   public <T> T param(String name, Class<T> to) {
-    return Converter.convert(param(name), to);
+    return Tool.convert(param(name), to);
   }
   
   public List<String> listParam(String name) {
@@ -64,7 +50,7 @@ public class Req {
   public <T> List<T> listParam(String name, Class<T> to) {
     List<String> ls = listParam(name);
     List<T> lt = new ArrayList<>(ls.size());
-    ls.forEach(s -> { lt.add(Converter.convert(s, to)); });
+    ls.forEach(s -> { lt.add( Tool.convert(s, to) ); });
     return lt;
   }
 }
