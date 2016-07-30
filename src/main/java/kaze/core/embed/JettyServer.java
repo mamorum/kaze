@@ -1,4 +1,4 @@
-package kaze.fw.embed;
+package kaze.core.embed;
 
 import java.util.TimeZone;
 

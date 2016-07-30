@@ -1,4 +1,4 @@
-package kaze.fw;
+package kaze.core;
 
 import java.lang.reflect.Method;
 
@@ -6,8 +6,8 @@ import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 
 import kaze.Http;
-import kaze.fw.embed.JettyServer;
-import kaze.fw.embed.JettyServlet;
+import kaze.core.embed.JettyServer;
+import kaze.core.embed.JettyServlet;
 
 public class Build {
 	

@@ -1,6 +1,6 @@
 package kaze;
 
-import kaze.fw.Build;
+import kaze.core.Build;
 
 public class App {
 	public static void start(String... pkg) {

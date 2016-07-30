@@ -1,4 +1,4 @@
-package kaze.fw.embed;
+package kaze.core.embed;
 
 import java.io.IOException;
 
@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
 
-import kaze.fw.Route;
-import kaze.fw.Routes;
+import kaze.core.Route;
+import kaze.core.Routes;
 
 /*
  * DefaultServlet#init() is called, when server starts.
