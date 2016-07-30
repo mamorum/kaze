@@ -6,7 +6,7 @@
   <version>0.0.1</version>
 
   <name>Kaze</name>
-  <description>Java web application framework</description>
+  <description>Java Web Application Framework</description>
   <url>https://github.com/mamorum/kaze/</url>
 
   <licenses>
@@ -113,6 +113,39 @@
       </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <!-- To sign and release. -->  
+      <!-- mvn -DperformRelease=true deploy -->
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- mvn verify -Dgpg.passphrase=thephrase -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
     <defaultGoal>package</defaultGoal>
     
@@ -120,14 +153,13 @@
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.5.1</version>
+          <version>3.5.1</version>
           <configuration>
               <source>1.8</source>
               <target>1.8</target>
           </configuration>
       </plugin>
 
-      <!--
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
@@ -142,12 +174,11 @@
               </execution>
           </executions>
       </plugin>
-      -->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.0.1</version>
         <executions>
           <execution>
             <goals>
@@ -160,7 +191,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.1</version>
+        <version>2.10.4</version>
         <configuration>
           <show>public</show>
           <charset>UTF-8</charset>
