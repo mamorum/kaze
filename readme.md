@@ -1,17 +1,18 @@
 ## What is this ?
-Java Web Application Framework.
+Java Web Application Framework. Kaze makes it easy to create Web API, RESTful API, and so on.
 
-Kaze means Wind in japanese.
+## What does kaze means ?
+Kaze means Wind in Japanese.
 
 
 ## Features
-- Simple and Fluent APIs
-- Light Weight
 - Routing
+- Serving Static Contents
 - JSON Conversion
 - Java Type Conversion
 - Validation
-- Serving Static Contents
+- Simple and Fluent APIs
+- Light Weight
 
 
 ## How to get it ?
