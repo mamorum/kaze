@@ -1,16 +1,17 @@
-package kaze.test.http.junit;
+package kaze.it.http.junit;
 
 import org.junit.Test;
 
 import kaze.Http;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.test.http.model.Address;
-import kaze.test.http.model.Person;
-import kaze.test.http.tool.HttpReq;
-import kaze.test.http.tool.HttpRes;
+import kaze.it.http.model.Address;
+import kaze.it.http.model.Person;
+import kaze.it.http.tool.HttpReq;
+import kaze.it.http.tool.HttpRes;
+import kaze.it.http.tool.ItCase;
 
-public class ReqParamsTest {
+public class ReqParamsTest extends ItCase {
 
   @Http({"POST", "/person/params"})
   public void pp(Req req, Res res) {

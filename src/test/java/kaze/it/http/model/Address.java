@@ -1,4 +1,4 @@
-package kaze.test.http.model;
+package kaze.it.http.model;
 
 import javax.validation.constraints.Size;
 

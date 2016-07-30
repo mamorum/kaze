@@ -1,10 +1,11 @@
-package kaze.test.http.junit;
+package kaze.it.http.junit;
 
 import org.junit.Test;
 
-import kaze.test.http.tool.HttpReq;
+import kaze.it.http.tool.HttpReq;
+import kaze.it.http.tool.ItCase;
 
-public class ResJsonTest {
+public class ResJsonTest extends ItCase {
 
   @Test  // for kaze.test.http.Main#hello
   public void hello() throws Exception {

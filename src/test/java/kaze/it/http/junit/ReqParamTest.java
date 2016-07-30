@@ -1,14 +1,15 @@
-package kaze.test.http.junit;
+package kaze.it.http.junit;
 
 import org.junit.Test;
 
 import kaze.Http;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.test.http.tool.HttpReq;
-import kaze.test.http.tool.HttpRes;
+import kaze.it.http.tool.HttpReq;
+import kaze.it.http.tool.HttpRes;
+import kaze.it.http.tool.ItCase;
 
-public class ReqParamTest {
+public class ReqParamTest extends ItCase {
   
   @Http({"GET", "/candy"})
   public void name(Req req, Res res) {
