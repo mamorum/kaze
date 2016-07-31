@@ -11,42 +11,30 @@ import kaze.core.embed.JettyServlet;
 
 public class Build {
 	
-  public JettyServer server(String[] pkg) {
+  public JettyServer server(String... pkgs) {
     return new JettyServer(
-        new JettyServlet(routes(pkg))
+        new JettyServlet(routes(pkgs))
     );
   }
   
-	public Routes routes(String... pkg) {
-		try {
-			return scan(pkg);
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+  public Routes routes(String... pkgs) {
+    return scan(pkgs);
+  }
 
-	private Routes scan(String... pkgs) throws Exception {
-	  Routes routes = new Routes();
-		for (String pkg : pkgs) scan(pkg, routes);
-		return routes;
-	}
-
-	private void scan(String pkg, Routes routes) throws Exception {
-	  // TODO thread safe?
-		Reflections ref = new Reflections(
-		    pkg, new MethodAnnotationsScanner()
+	private Routes scan(String... pkgs) {
+	  Reflections ref = new Reflections(
+		    pkgs, new MethodAnnotationsScanner()
 		);
+	  Routes routes = new Routes();
 		for (
 		  Method m : ref.getMethodsAnnotatedWith(Http.class)
 		) {
 		  Http http = m.getAnnotation(Http.class);
-		  String httpMethod = http.value()[0];
+		  String httpMethod = http.value()[0].toUpperCase();
 		  String httpUri = http.value()[1];
-		  Func func = new Func(
-		    m.getDeclaringClass().newInstance(), m
-		  );
+		  Func func = Func.of(m);
 		  routes.add(httpMethod, httpUri, func);
 		}
+		return routes;
 	}
 }

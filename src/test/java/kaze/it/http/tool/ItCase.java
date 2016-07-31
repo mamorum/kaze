@@ -2,7 +2,7 @@ package kaze.it.http.tool;
 
 import org.junit.BeforeClass;
 
-import kaze.it.http.AppStartMain;
+import kaze.App;
 
 public class ItCase {
   
@@ -15,7 +15,7 @@ public class ItCase {
       if (t != null) return;
       t = new Thread(new Runnable() {
         @Override public void run() {
-          AppStartMain.main(null);
+          App.start("kaze.it.http.req", "kaze.it.http.res");
         }
       });
       t.start();

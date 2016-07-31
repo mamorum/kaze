@@ -1,5 +1,6 @@
 package kaze.core;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.req.Uri;
+import kaze.http.util.BadRequestException;
 
 public class Route {
 
@@ -75,28 +77,31 @@ public class Route {
 
   public void run(
       String reqUri,
-      HttpServletRequest req,
-      HttpServletResponse res
+      HttpServletRequest sreq,
+      HttpServletResponse sres
   ) {
-    func.call(
-        new Req(req, uri(reqUri)),
-        new Res(res)
-    );
-  }
-  
-  void log(String method) {
-    if (logger.isDebugEnabled()) {
-      String uri4log = this.uri.replaceAll(
-          "\\[\\^/\\]\\+", "*"
-      );
-      log(method, uri4log);
+    encoding(sreq, "utf-8");
+    Req req = new Req(sreq, uri(reqUri));
+    Res res = new Res(sres);
+    try {
+      func.call(req, res);
+    }
+    catch (Throwable e) {
+      if (e instanceof BadRequestException) {
+        BadRequestException bre =(BadRequestException) e; 
+        res.status(bre.status()).json(bre.error());
+        logger.trace(e.getMessage(), e);
+        return;
+      }
+      throw new RuntimeException(e);
     }
   }
-
-  private void log(String method, String uri4log) {
-    logger.debug(
-        "[{} {}] -> [{}#{}]", method, uri4log, 
-        func.m.getDeclaringClass().getName(), 
-        func.m.getName());
+  
+  private void encoding(HttpServletRequest r, String enc) {
+    if (r.getCharacterEncoding() != null) return;
+    try { r.setCharacterEncoding(enc); }
+    catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

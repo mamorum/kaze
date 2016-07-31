@@ -5,7 +5,7 @@ import kaze.Http;
 import kaze.http.Req;
 import kaze.http.Res;
 
-public class AppStartMain {
+public class Main {
 
   @Http({"GET", "/hello"})
   public void hello(Req req, Res res) {

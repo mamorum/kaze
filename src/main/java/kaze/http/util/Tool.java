@@ -1,4 +1,4 @@
-package kaze.http;
+package kaze.http.util;
 
 import java.util.Set;
 
@@ -8,9 +8,6 @@ import javax.validation.Validation;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import kaze.http.ex.ConvertException;
-import kaze.http.ex.ValidateException;
 
 public class Tool {
 

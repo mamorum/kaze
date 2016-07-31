@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.Tool;
+import kaze.http.util.Tool;
 
 public class Data<T> {
 
@@ -26,10 +26,6 @@ public class Data<T> {
 
   private static String json(HttpServletRequest sr) {
     try {
-      // TODO set encoding when get params.
-      if (sr.getCharacterEncoding() == null) {
-        sr.setCharacterEncoding("utf-8");
-      }     
       BufferedReader r = sr.getReader();
       StringBuilder body = new StringBuilder();
       String line = null;

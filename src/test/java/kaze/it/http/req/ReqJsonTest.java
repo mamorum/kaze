@@ -1,4 +1,4 @@
-package kaze.it.http.junit;
+package kaze.it.http.req;
 
 import org.junit.Test;
 
@@ -40,7 +40,7 @@ public class ReqJsonTest extends ItCase {
   @Test  //OK
   public void aj() throws Exception {
     String adrs = 
-      "{\"zip\":\"1234567\",\"pref\":\"Tokyo\"}";
+      "{\"zip\":\"1234567\",\"pref\":\"東京\"}";
     
     HttpReq.postJson(
         "http://localhost:8080/address/json",

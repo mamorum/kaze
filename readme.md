@@ -36,7 +36,7 @@ Comming soon...
 ## Sample Application
 
 ```java
-package kaze.sample;
+package kaze.it.http;
 
 import kaze.App;
 import kaze.Http;
@@ -49,9 +49,9 @@ public class Main {
   public void hello(Req req, Res res) {
     res.json("msg", "Hello!");
   }
-  
+
   public static void main(String[] args) {
-    App.start("kaze.sample");
+    App.start("kaze.it.http");
   }
 }
 ```

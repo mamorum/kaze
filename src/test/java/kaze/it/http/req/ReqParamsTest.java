@@ -1,4 +1,4 @@
-package kaze.it.http.junit;
+package kaze.it.http.req;
 
 import org.junit.Test;
 
@@ -39,9 +39,9 @@ public class ReqParamsTest extends ItCase {
   public void ap() throws Exception {
     HttpReq.postParams(
         "http://localhost:8080/address/params",
-        "zip=1234567&pref=Tokyo"
+        "zip=1234567&pref=東京"
     ).statusIs(200).contentTypeIsJson().bodyIs(
-        "{\"zip\":\"1234567\",\"pref\":\"Tokyo\"}"
+        "{\"zip\":\"1234567\",\"pref\":\"東京\"}"
     );
   }
   @Test  //ValidateError

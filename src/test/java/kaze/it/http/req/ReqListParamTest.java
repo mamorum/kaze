@@ -1,4 +1,4 @@
-package kaze.it.http.junit;
+package kaze.it.http.req;
 
 import org.junit.Test;
 

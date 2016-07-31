@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import kaze.http.req.Data;
 import kaze.http.req.Uri;
+import kaze.http.util.Tool;
 
 public class Req {
 

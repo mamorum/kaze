@@ -3,8 +3,13 @@ package kaze.core;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // not thread safe. 
 public class Routes {
+
+  private static final Logger logger = LoggerFactory.getLogger(Routes.class);
   
   public HashMap<String, HashMap<String, Route>>
     method2uri = new HashMap<>();
@@ -26,7 +31,7 @@ public class Routes {
     }
     Route route = Route.fromRegexUri(uri, func);
     regexRoutes.add(route);
-    route.log(method);
+    logRegex(method, uri, func);
   }
 
   private void addUri(String method, String uri, Func func) {
@@ -37,7 +42,23 @@ public class Routes {
     }
     Route route = Route.fromUri(uri, func);
     uriRoutes.put(uri, route);
-    route.log(method);
+    logUri(method, uri, func);
+  }
+
+  private void logRegex(String method, String regex, Func f) {
+    if (logger.isDebugEnabled()) {
+      String uri = regex.replaceAll(
+          "\\[\\^/\\]\\+", "*"
+      );
+      logUri(method, uri, f);
+    }
+  }
+
+  private void logUri(String method, String uri, Func f) {
+    logger.debug(
+        "[{} {}] -> [{}#{}]", method, uri, 
+        f.m.getDeclaringClass().getName(), 
+        f.m.getName());
   }
 
   // for app running.
@@ -59,5 +80,5 @@ public class Routes {
     
     // not found
     return null;
-  }  
+  }
 }

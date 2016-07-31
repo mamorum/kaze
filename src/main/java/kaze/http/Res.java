@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import kaze.http.util.Tool;
+
 public class Res {
 	
 	private boolean isWritten = false;
