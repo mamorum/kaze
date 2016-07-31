@@ -1,12 +1,10 @@
 package kaze.core.embed;
 
-import java.util.TimeZone;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerCollection;
@@ -15,6 +13,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+
+import ch.qos.logback.access.jetty.RequestLogImpl;
 
 public class JettyServer {
 	
@@ -49,22 +49,31 @@ public class JettyServer {
     server.setConnectors(new Connector[] { con });
 
     HandlerCollection handlers = new HandlerCollection();
-    RequestLogHandler logHandler = new RequestLogHandler();
-    logHandler.setRequestLog(requestLog());
-    handlers.setHandlers(new Handler[]{handler,logHandler});
+    RequestLogHandler logHandler = logHandler();
+    handlers.setHandlers(
+        logHandler == null ?
+            new Handler[]{handler} :
+            new Handler[]{handler,logHandler}
+    );
     server.setHandler(handlers);
     
     return server;
 	}
-	
-	public NCSARequestLog requestLog() {
+
+  // http://logback.qos.ch/access.html
+	public RequestLogHandler logHandler() {
+	  if (this.getClass().getResource("/logback-access.xml") == null) return null;
+    RequestLogImpl reqlog = new RequestLogImpl();
+    reqlog.setResource("/logback-access.xml");
+	  RequestLogHandler logHandler = new RequestLogHandler();
+    logHandler.setRequestLog(reqlog);
 //	  NCSARequestLog log =
 //	      new NCSARequestLog("/var/logs/jetty/jetty-yyyy_mm_dd.request.log");
-	  NCSARequestLog log = new NCSARequestLog();  // output -> System.err
-	  log.setAppend(true);
-	  log.setExtended(false); // turn off referer, user-agent.
-	  log.setLogTimeZone(TimeZone.getDefault().getID());
-	  return log;
+//	  NCSARequestLog log = new NCSARequestLog();  // output -> System.err
+//	  log.setAppend(true);
+//	  log.setExtended(false); // turn off referer, user-agent.
+//	  log.setLogTimeZone(TimeZone.getDefault().getID());
+	  return logHandler;
 	}
 
   public void start() {
