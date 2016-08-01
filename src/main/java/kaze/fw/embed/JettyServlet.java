@@ -1,4 +1,4 @@
-package kaze.core.embed;
+package kaze.fw.embed;
 
 import java.io.IOException;
 
@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
 
-import kaze.core.Route;
-import kaze.core.Routes;
+import kaze.App;
+import kaze.fw.Route;
 
 /*
  * DefaultServlet#init() is called, when server starts.
@@ -17,19 +17,15 @@ import kaze.core.Routes;
 @SuppressWarnings("serial")
 public class JettyServlet extends DefaultServlet {
 
-  private Routes routes;   
-  public JettyServlet(Routes routes) {
-    super();
-    this.routes = routes;
-  }
-    
   protected void service(
     HttpServletRequest req, HttpServletResponse res
   ) throws ServletException, IOException {
     
+    // TODO Routeの解決と処理は、Routes内で完結するようにする。
+    // -> 他のサーブレットでも Routes が使えるように。
     String method = req.getMethod();
     String uri = req.getRequestURI();    
-    Route route = routes.get(method, uri);
+    Route route = App.routes.get(method, uri);
     
     try {
       if (route != null) {

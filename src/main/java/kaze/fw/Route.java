@@ -1,4 +1,4 @@
-package kaze.core;
+package kaze.fw;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kaze.data.ex.BadRequestException;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.req.Uri;
-import kaze.http.util.BadRequestException;
 
 public class Route {
 

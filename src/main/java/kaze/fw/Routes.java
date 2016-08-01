@@ -1,4 +1,4 @@
-package kaze.core;
+package kaze.fw;
 
 import java.util.ArrayList;
 import java.util.HashMap;

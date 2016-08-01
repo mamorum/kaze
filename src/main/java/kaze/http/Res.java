@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.http.util.Tool;
+import kaze.data.Tool;
 
 public class Res {
 	

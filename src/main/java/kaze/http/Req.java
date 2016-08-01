@@ -6,9 +6,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import kaze.data.Tool;
 import kaze.http.req.Data;
 import kaze.http.req.Uri;
-import kaze.http.util.Tool;
 
 public class Req {
 

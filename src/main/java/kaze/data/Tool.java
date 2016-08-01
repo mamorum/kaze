@@ -1,5 +1,6 @@
-package kaze.http.util;
+package kaze.data;
 
+import java.net.URL;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -8,6 +9,9 @@ import javax.validation.Validation;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kaze.data.ex.ConvertException;
+import kaze.data.ex.ValidateException;
 
 public class Tool {
 
@@ -32,6 +36,14 @@ public class Tool {
   public static <T> T toObj(String json, Class<T> obj) {
     try {
       return om.readValue(json, obj);
+    } catch (Exception e) {
+      throw new ConvertException(e);
+    }
+  }
+  
+  public static <T> T toObj(URL jsonFile, Class<T> obj) {
+    try {
+      return om.readValue(jsonFile, obj);
     } catch (Exception e) {
       throw new ConvertException(e);
     }

@@ -1,4 +1,4 @@
-package kaze.http.util;
+package kaze.data.ex;
 
 import java.util.HashMap;
 

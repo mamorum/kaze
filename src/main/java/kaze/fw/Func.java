@@ -1,4 +1,4 @@
-package kaze.core;
+package kaze.fw;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,7 +13,7 @@ public class Func {
     this.m = m; this.o = o;
   }
 
-  static Func of(Method m) {
+  public static Func of(Method m) {
      try {
        return new Func(
          m, m.getDeclaringClass()
