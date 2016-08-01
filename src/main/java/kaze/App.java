@@ -11,25 +11,25 @@ import kaze.fw.Config;
 import kaze.fw.Func;
 import kaze.fw.Routes;
 import kaze.fw.embed.JettyServer;
+import kaze.fw.embed.JettyServlet;
 
 public class App {
-
-  public static Config config;
-  public static Routes routes;
   
 	public static void start(String... pkgs) {
-	  config = config();
-	  routes = routes(pkgs);
-	  (new JettyServer()).start();
+	  Config c = config();
+	  Routes r = routes(pkgs);
+	  (new JettyServer(
+	      c, new JettyServlet(r)
+	  )).start();
 	}
 
-  private static Config config() {
+  public static Config config() {
     URL json = App.class.getResource("/config.json");
     if (json == null) return Config.defaults();
     return Tool.toObj(json, Config.class);
   }	
   
-  private static Routes routes(String... pkgs) {
+  public static Routes routes(String... pkgs) {
     return scan(pkgs);
   }
   

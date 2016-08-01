@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kaze.data.ex.ConvertException;
-import kaze.data.ex.ValidateException;
+import kaze.ex.ConvertException;
+import kaze.ex.ValidateException;
 
 public class Tool {
 

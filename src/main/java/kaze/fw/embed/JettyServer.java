@@ -18,17 +18,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
-import kaze.App;
 import kaze.fw.Config;
 
 public class JettyServer {
 
   private static final Logger logger = LoggerFactory.getLogger(JettyServer.class);
   
-  Config.Jetty jetty = App.config.jetty;
+  private static Config.Jetty conf;
+  private static JettyServlet servlet;
+  
+  public JettyServer(Config c, JettyServlet s) {
+    conf = c.jetty;
+    servlet = s;
+  }
   
   public void start() {
-    logger.info("Jetty Config {}", jetty.toString());
+    logger.info("Jetty Config {}", conf.toString());
     try {
       Server s = server();
       s.start();
@@ -40,77 +45,91 @@ public class JettyServer {
 
 	private Server server() {
 		QueuedThreadPool tp = new QueuedThreadPool(
-		    jetty.threadMax, jetty.threadMin, jetty.threadTimeout
+		    conf.threadMax, conf.threadMin, conf.threadTimeout
 		);
     Server sv = new Server(tp);
-    sv.setConnectors(connectors(sv));
-    HandlerCollection hanc = new HandlerCollection();
-    hanc.setHandlers(handlers());
-    sv.setHandler(hanc);    
+    sv.setConnectors(Connectors.build(sv));
+    HandlerCollection hc = new HandlerCollection();
+    hc.setHandlers(Handlers.build());
+    sv.setHandler(hc);    
     return sv;
 	}
 	
-	private Connector[] connectors(Server sv) {
-    HttpConfiguration config = new HttpConfiguration();
-    config.setSendServerVersion(false);  // always.
-    HttpConnectionFactory conFcty = new HttpConnectionFactory(config);
-    ServerConnector con = new ServerConnector(sv, conFcty);
-    con.setHost(jetty.httpHost);
-    con.setPort(port());
-    con.setIdleTimeout(jetty.httpTimeout);
-    return new Connector[] { con };
-	}
-	
-	private int port() {
-	  String port = System.getProperty("port");
-	  if (port == null) return jetty.httpPort;
-	  logger.info(
-	      "Overwrite Jetty Config {}",
-	      "[http: port=" + port + "]"
-	  );
-	  return Integer.parseInt(port);
-	}
-	
-	private Handler[] handlers() {
-    ServletContextHandler handler = new ServletContextHandler(
-        ServletContextHandler.SESSIONS
-    );
-    Resource r = null;
-    if (jetty.staticDir != null) {
-      r = Resource.newResource(
-          new File(jetty.staticDir)
-      );
-    } else {
-      r =  Resource.newClassPathResource(
-          jetty.staticPath
-      );
+	// Parts of Server ->
+	private static class Connectors {
+    static Connector[] build(Server sv) {
+      HttpConfiguration c = new HttpConfiguration();
+      c.setSendServerVersion(false);  // always.
+      HttpConnectionFactory fac = new HttpConnectionFactory(c);
+      ServerConnector con = new ServerConnector(sv, fac);
+      con.setIdleTimeout(conf.httpTimeout);
+      con.setHost(conf.httpHost);
+      con.setPort(port());
+      return new Connector[] { con };
     }
-    handler.setBaseResource(r);
-    handler.addServlet(svltHolder(), "/");
-
-    RequestLogHandler logHandler = logHandler();
-    
-    return logHandler == null ?
-        new Handler[]{handler} :
-        new Handler[]{handler, logHandler};
+    static int port() {
+      String key = "port";
+      String p = System.getProperty(key);
+      if (p == null) return conf.httpPort;
+      logger.info(
+        "Change http port to system property {} {}",
+        "[key=" + key + "]", "[val=" + p + "]"
+      );
+      return Integer.parseInt(p);
+    }
 	}
 	
-	private ServletHolder svltHolder() {
-	  ServletHolder h = new ServletHolder(
-	      "default", new JettyServlet()
-	  );
-    h.setInitParameter("dirAllowed", "false");  // always.
-    return h;
+	private static class Handlers {
+    static Handler[] build() {
+      Handler sh = ServletHandler.build();
+      Handler lh = LogHandler.build();
+      return (lh == null) ?
+          new Handler[]{sh} :
+          new Handler[]{sh, lh};
+    }
+	}
+	
+	private static class ServletHandler {
+	  static Handler build() {
+      ServletContextHandler h = new ServletContextHandler(
+          ServletContextHandler.SESSIONS
+      );
+      h.setBaseResource(base());
+      h.addServlet(servlet(), "/");
+      return h;
+    }
+    static Resource base() {
+      if (conf.staticDir != null) {
+        return Resource.newResource(
+            new File(conf.staticDir)
+        );
+      }
+      return Resource.newClassPathResource(
+            conf.staticPath
+      );
+    } 
+    static ServletHolder servlet() {
+      ServletHolder h = new ServletHolder(
+          "default", servlet
+      );
+      // always.
+      h.setInitParameter("dirAllowed", "false");
+      return h;
+    }
 	}
 
   // http://logback.qos.ch/access.html
-	RequestLogHandler logHandler() {
-	  String xml =  "/logback-access.xml";
-	  if (this.getClass().getResource(xml) == null) return null;
-    RequestLogImpl log = new RequestLogImpl();
-    log.setResource(xml);
-	  RequestLogHandler h = new RequestLogHandler();
-    h.setRequestLog(log);
-	  return h;
+	private static class LogHandler {
+    static RequestLogHandler build() {
+      String xml =  "/logback-access.xml";
+      if (
+        LogHandler.class.getResource(xml) == null
+      ) return null;
+      RequestLogImpl log = new RequestLogImpl();
+      log.setResource(xml);
+      RequestLogHandler h = new RequestLogHandler();
+      h.setRequestLog(log);
+      return h;
+    }
 	}
 }

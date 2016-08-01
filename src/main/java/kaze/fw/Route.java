@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.data.ex.BadRequestException;
+import kaze.ex.BadRequestException;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.req.Uri;
@@ -75,7 +75,7 @@ public class Route {
     return new Uri(reqUri, uriVals);
   }
 
-  public void run(
+  void run(
       String reqUri,
       HttpServletRequest sreq,
       HttpServletResponse sres

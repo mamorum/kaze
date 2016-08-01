@@ -8,37 +8,26 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
 
-import kaze.App;
-import kaze.fw.Route;
+import kaze.ex.NoRouteException;
+import kaze.fw.Routes;
 
-/*
- * DefaultServlet#init() is called, when server starts.
- */
 @SuppressWarnings("serial")
 public class JettyServlet extends DefaultServlet {
 
+  private Routes routes;
+  public JettyServlet(Routes r) {
+    super();
+    this.routes = r; 
+  }
+  
   protected void service(
-    HttpServletRequest req, HttpServletResponse res
-  ) throws ServletException, IOException {
-    
-    // TODO Routeの解決と処理は、Routes内で完結するようにする。
-    // -> 他のサーブレットでも Routes が使えるように。
-    String method = req.getMethod();
-    String uri = req.getRequestURI();    
-    Route route = App.routes.get(method, uri);
-    
-    try {
-      if (route != null) {
-        route.run(uri, req, res);
-      }
-      else {
-        // static contents
-        super.service(req, res);
-      }
-    }
-    catch (Exception e) {
-      res.setStatus(500);
-      throw e;
+    HttpServletRequest sreq, HttpServletResponse sres)
+    throws ServletException, IOException
+  {
+    try { routes.run(sreq, sres); }
+    catch (NoRouteException e) {
+      // serve static contents.
+      super.service(sreq, sres);
     }
   }
 }

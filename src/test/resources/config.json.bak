@@ -1,5 +1,5 @@
 {
   "jetty" : {
-    "httpPort": 8080
+    "httpPort": 8888
   }
 }
