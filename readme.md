@@ -4,7 +4,7 @@
 
 Kaze makes it easy to create Web API, RESTful API, etc. 
 
-To create API, Kaze provides method annotaiton `@Http`. 
+To create API, Kaze provides `@Http` method annotaiton. 
 
 ```java
 @Http({"GET", "/hello"})
