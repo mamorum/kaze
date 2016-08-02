@@ -23,20 +23,24 @@ Kaze means Wind in Japanese.
 Maven
 
 ```
-Comming soon...
+<dependency>
+  <groupId>com.github.mamorum</groupId>
+  <artifactId>kaze</artifactId>
+  <version>0.0.1</version>
+</dependency>
 ```
 
 Gradle
 
 ```
-Comming soon...
+compile 'com.github.mamorum:kaze:0.0.1'
 ```
 
 
 ## Sample Application
 
 ```java
-package kaze.it.http;
+package sample.kaze;
 
 import kaze.App;
 import kaze.Http;
@@ -51,7 +55,7 @@ public class Main {
   }
 
   public static void main(String[] args) {
-    App.start("kaze.it.http");
+    App.start("sample.kaze");
   }
 }
 ```
