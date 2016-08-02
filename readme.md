@@ -1,72 +1,39 @@
+## Kaze: Java web application framework
 [![Build Status](https://travis-ci.org/mamorum/kaze.svg?branch=master)](https://travis-ci.org/mamorum/kaze)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze)
+
+Kaze makes it easy to create Web API, RESTful API, etc. 
+
+To create API, Kaze provides method annotaiton `@Http`. 
+
+```java
+@Http({"GET", "/hello"})
+public void hello(Req req, Res res) {
+  res.json("msg", "Hello World!");
+}
+// ==> #hello(Req, Res) processes request "GET /hello".
+```
+
+Besides `@Http`, there are some features in Kaze.
 
 
-## Kaze - Java web application framework
-Kaze makes it easy to create Web API, RESTful API, etc.
-
-
-## Meaning
-Kaze means Wind in Japanese.
-
-
-## Features
+### Features
 - Routing
 - Serving Static Contents
-- JSON Conversion
-- Java Type Conversion
+- Conversion (JSON, Java ype)
 - Validation
 - Simple and Fluent APIs
 - Light Weight
 
 
-## How to get it ?
-Maven
-
-```xml
-<dependency>
-  <groupId>com.github.mamorum</groupId>
-  <artifactId>kaze</artifactId>
-  <version>0.0.1</version>
-</dependency>
-```
-
-Gradle
-
-```gradle
-compile 'com.github.mamorum:kaze:0.0.1'
-```
+### Getting Started
+- [Kaze - Getting Started](getting-started.md)
 
 
-## Sample Application
-
-```java
-package sample.kaze;
-
-import kaze.App;
-import kaze.Http;
-import kaze.http.Req;
-import kaze.http.Res;
-
-public class Main {
-
-  @Http({"GET", "/hello"})
-  public void hello(Req req, Res res) {
-    res.json("msg", "Hello!");
-  }
-
-  public static void main(String[] args) {
-    App.start("sample.kaze");
-  }
-}
-```
-
-Run as java application, and serves ...
-
-```
-$ curl http://localhost:8080/hello -s
-{"msg":"Hello!"}
-```
+### Guide
+- User Guide - Creating
+- Sample Application - Creating
 
 
-## Details
-- [Kaze - User Guide](user-guide.md)
+### Meaning
+Kaze means Wind in Japanese.
