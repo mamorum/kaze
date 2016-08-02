@@ -22,7 +22,7 @@ Kaze means Wind in Japanese.
 ## How to get it ?
 Maven
 
-```
+```xml
 <dependency>
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
@@ -32,7 +32,7 @@ Maven
 
 Gradle
 
-```
+```gradle
 compile 'com.github.mamorum:kaze:0.0.1'
 ```
 
