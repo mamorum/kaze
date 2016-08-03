@@ -51,7 +51,7 @@ public class Req {
   public <T> List<T> listParam(String name, Class<T> to) {
     List<String> ls = listParam(name);
     List<T> lt = new ArrayList<>(ls.size());
-    ls.forEach(s -> { lt.add( Tool.convert(s, to) ); });
+    for (String s : ls) lt.add( Tool.convert(s, to) );
     return lt;
   }
 }
