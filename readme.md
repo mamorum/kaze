@@ -20,7 +20,7 @@ Besides `@Http`, there are some features in Kaze.
 ### Features
 - Routing
 - Serving Static Contents
-- Conversion (JSON, Java ype)
+- Conversion (JSON, Java type)
 - Validation
 - Simple and Fluent APIs
 - Light Weight
