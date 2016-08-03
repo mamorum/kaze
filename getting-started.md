@@ -1,3 +1,8 @@
+# Kaze Getting Started
+
+<!-- TODO : Table of Contents -->
+
+
 ## Installing
 ### kaze
 Maven
