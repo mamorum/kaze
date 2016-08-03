@@ -36,7 +36,7 @@ public class Routes {
     }
     Route route = Route.fromRegexUri(uri, func);
     regexRoutes.add(route);
-    logRegex(method, uri, func);
+    log(method, uri, func);
   }
 
   private void addUri(String method, String uri, Func func) {
@@ -47,20 +47,11 @@ public class Routes {
     }
     Route route = Route.fromUri(uri, func);
     uriRoutes.put(uri, route);
-    logUri(method, uri, func);
+    log(method, uri, func);
   }
 
-  private void logRegex(String method, String regex, Func f) {
-    if (logger.isDebugEnabled()) {
-      String uri = regex.replaceAll(
-          "\\[\\^/\\]\\+", "*"
-      );
-      logUri(method, uri, f);
-    }
-  }
-
-  private void logUri(String method, String uri, Func f) {
-    logger.debug(
+  private void log(String method, String uri, Func f) {
+    logger.info(
         "[{} {}] -> [{}#{}]", method, uri, 
         f.m.getDeclaringClass().getName(), 
         f.m.getName());
