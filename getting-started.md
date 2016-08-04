@@ -18,14 +18,14 @@ Maven
 <dependency>
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 
 Gradle
 
 ```gradle
-compile 'com.github.mamorum:kaze:0.0.1'
+compile 'com.github.mamorum:kaze:0.0.2'
 ```
 
 ### logback-classic
