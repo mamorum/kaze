@@ -1,23 +1,57 @@
-## Kaze: Java web application framework
+# Kaze: Java web application framework
 [![Build Status](https://travis-ci.org/mamorum/kaze.svg?branch=master)](https://travis-ci.org/mamorum/kaze)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze)
 
 Kaze makes it easy to create Web API, RESTful API, etc. 
 
-To create API, Kaze provides `@Http` method annotaiton. 
+
+## Hello World example
+Following code is [Main.java](https://github.com/mamorum/kaze/blob/master/src/test/java/kaze/it/http/Main.java) in `kaze/src/test/java/kaze/it/http`.
 
 ```java
-@Http({"GET", "/hello"})
-public void hello(Req req, Res res) {
-  res.json("msg", "Hello World!");
+package kaze.it.http;
+
+import static kaze.Http.Method.*;
+
+import kaze.App;
+import kaze.Http;
+import kaze.http.Req;
+import kaze.http.Res;
+
+public class Main {
+
+  @Http({GET, "/hello"})
+  public void hello(Req req, Res res) {
+    res.json("msg", "Hello World!");
+  }
+
+  public static void main(String[] args) {
+    App.start("kaze.it.http");
+  }
 }
-// ==> #hello(Req, Res) processes request "GET /hello".
 ```
 
-Besides `@Http`, there are some features in Kaze.
+Run as java application, and it serves on port `8080`.
+
+```txt
+$ curl -X GET http://localhost:8080/hello -s
+{"msg":"Hello World!"}
+```
 
 
-### Features
+## Getting Started
+- [Kaze - Getting Started](getting-started.md)
+
+
+## Guides
+- Creating ...
+
+
+## Sample Application
+- Creating ...
+
+
+## Features
 - Routing
 - Serving Static Contents
 - Conversion (JSON, Java type)
@@ -26,14 +60,5 @@ Besides `@Http`, there are some features in Kaze.
 - Light Weight
 
 
-### Getting Started
-- [Kaze - Getting Started](getting-started.md)
-
-
-### Guide
-- User Guide - Creating
-- Sample Application - Creating
-
-
-### Meaning
+## Meaning
 Kaze means Wind in Japanese.
