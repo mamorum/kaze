@@ -3,6 +3,7 @@ package kaze.it.http.req;
 import org.junit.Test;
 
 import kaze.Http;
+import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.it.http.tool.HttpReq;
@@ -12,7 +13,9 @@ import kaze.it.http.tool.ItCase;
 // before execute, run server.
 public class ReqUriTest extends ItCase {
 
-  @Http({"GET", "/cake/name/:name"})
+  final String uri = "/cake";
+  
+  @Http({Method.GET, uri + "/name/:name"})
   public void name(Req req, Res res) {
     res.json("name", req.uri(":name"));
   }
@@ -27,7 +30,7 @@ public class ReqUriTest extends ItCase {
   }
 
   
-  @Http({"GET", "/cake/id/:id"})
+  @Http({Method.GET, uri + "/id/:id"})
   public void id(Req req, Res res) {
     res.json("id", req.uri(":id", Long.class));
   }
@@ -49,7 +52,7 @@ public class ReqUriTest extends ItCase {
   } 
 
   
-  @Http({"POST", "/cake/id/:id/name/:name"})
+  @Http({Method.POST, uri + "/id/:id/name/:name"})
   public void idName(Req req, Res res) {
     res.json(
         "id", req.uri(":id", Long.class),

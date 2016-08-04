@@ -3,6 +3,7 @@ package kaze.it.http.req;
 import org.junit.Test;
 
 import kaze.Http;
+import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.it.http.model.Address;
@@ -13,7 +14,7 @@ import kaze.it.http.tool.ItCase;
 
 public class ReqParamsTest extends ItCase {
 
-  @Http({"POST", "/person/params"})
+  @Http({Method.POST, "/person/params"})
   public void pp(Req req, Res res) {
     Person p = req.params(Person.class).get();
     res.json(p);
@@ -30,7 +31,7 @@ public class ReqParamsTest extends ItCase {
   }
   
   
-  @Http({"POST", "/address/params"})
+  @Http({Method.POST, "/address/params"})
   public void ap(Req req, Res res) {
     Address p = req.params(Address.class).valid();
     res.json(p);

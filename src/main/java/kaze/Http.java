@@ -9,4 +9,20 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Http {
   String[] value();
+  
+  // See "org.eclipse.jetty.http.HttpMethod"
+  public class Method {
+    public static final String
+      GET = "GET",
+      POST = "POST",
+      HEAD = "HEAD",
+      PUT = "PUT",
+      OPTIONS = "OPTIONS",
+      DELETE = "DELETE",
+      TRACE = "TRACE",
+      CONNECT = "CONNECT",
+      MOVE = "MOVE",
+      PROXY = "PROXY",
+      PRI = "PRI";
+  }
 }

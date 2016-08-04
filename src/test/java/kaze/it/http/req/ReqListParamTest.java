@@ -3,6 +3,7 @@ package kaze.it.http.req;
 import org.junit.Test;
 
 import kaze.Http;
+import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.it.http.tool.HttpReq;
@@ -11,7 +12,9 @@ import kaze.it.http.tool.ItCase;
 
 public class ReqListParamTest extends ItCase {
   
-  @Http({"GET", "/ice"})
+  final String uri = "/ice";
+  
+  @Http({Method.GET, uri})
   public void names(Req req, Res res) {
     res.json("names", req.listParam("names"));
   }
@@ -25,7 +28,7 @@ public class ReqListParamTest extends ItCase {
     );
   }
   
-  @Http({"POST", "/ice"})
+  @Http({Method.POST, uri})
   public void ids(Req req, Res res) {
     res.json("id", req.listParam("id", Long.class));
   }
