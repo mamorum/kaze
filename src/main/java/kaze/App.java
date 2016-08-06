@@ -1,10 +1,13 @@
 package kaze;
 
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
 import java.net.URL;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import kaze.data.Tool;
 import kaze.fw.Config;
@@ -15,12 +18,38 @@ import kaze.fw.embed.JettyServlet;
 
 public class App {
   
+  private static final Logger log = LoggerFactory.getLogger(App.class);
+  
+  private static class Log {
+    private static long start;
+    static void starts() {
+      start = System.currentTimeMillis();
+      log.info("Kaze starts");
+    }
+    static void started() {
+      long started = System.currentTimeMillis();
+      log.info(
+          "Kaze started in {}ms ( jvm uptime {}ms )",
+          started - start,
+          ManagementFactory
+            .getRuntimeMXBean().getUptime()
+      );
+    }
+  }
+  
 	public static void start(String... pkgs) {
-	  Config c = config();
-	  Routes r = routes(pkgs);
-	  (new JettyServer(
-	      c, new JettyServlet(r)
-	  )).start();
+	  Log.starts();
+	  JettyServer jetty = new JettyServer(
+	    config(),
+	    new JettyServlet(routes(pkgs))
+	  );
+	  jetty.start();
+	  Log.started();
+	  
+	  // TODO:
+	  //  Connect to livereload server.
+	  
+	  jetty.listen();
 	}
 
   public static Config config() {

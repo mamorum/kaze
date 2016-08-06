@@ -1,13 +1,19 @@
 package kaze.fw.embed;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -22,10 +28,11 @@ import kaze.fw.Config;
 
 public class JettyServer {
 
-  private static final Logger logger = LoggerFactory.getLogger(JettyServer.class);
+  private static final Logger log = LoggerFactory.getLogger(JettyServer.class);
   
   private static Config.Jetty conf;
   private static JettyServlet servlet;
+  private static Server server;
   
   public JettyServer(Config c, JettyServlet s) {
     conf = c.jetty;
@@ -33,12 +40,17 @@ public class JettyServer {
   }
   
   public void start() {
-    logger.info("Jetty Config {}", conf.toString());
-    try {
-      Server s = server();
-      s.start();
-      s.join();
-    } catch (Exception e) {
+    log.info("Jetty Config {}", conf.toString());
+    server = server();
+    try { server.start(); }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  public void listen() {
+    try { server.join(); }
+    catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -51,7 +63,7 @@ public class JettyServer {
     sv.setConnectors(Connectors.build(sv));
     HandlerCollection hc = new HandlerCollection();
     hc.setHandlers(Handlers.build());
-    sv.setHandler(hc);    
+    sv.setHandler(hc);
     return sv;
 	}
 	
@@ -71,7 +83,7 @@ public class JettyServer {
       String key = "port";
       String p = System.getProperty(key);
       if (p == null) return conf.httpPort;
-      logger.info(
+      log.info(
         "Change http port to system property {} {}",
         "[key=" + key + "]", "[val=" + p + "]"
       );
@@ -96,6 +108,7 @@ public class JettyServer {
       );
       h.setBaseResource(base());
       h.addServlet(servlet(), "/");
+      h.setErrorHandler(ErrHandler.build());
       return h;
     }
     static Resource base() {
@@ -131,5 +144,21 @@ public class JettyServer {
       h.setRequestLog(log);
       return h;
     }
+	}
+	
+	private static class ErrHandler {
+	  static ErrorHandler build() {
+	    return new ErrorHandler() {
+	      @Override public void handleErrorPage(
+	        HttpServletRequest req, Writer writer,
+	        int code, String msg) throws IOException
+	      {
+	        if (msg == null) {
+	          msg = HttpStatus.getMessage(code);
+	        }
+	        writer.write(msg);
+	      }
+	    };
+	  }
 	}
 }
