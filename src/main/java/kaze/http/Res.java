@@ -8,10 +8,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import kaze.data.Tool;
+import kaze.http.res.Type;
 
 public class Res {
 	
-	private boolean isWritten = false;
 	public HttpServletResponse sr;
 	public Res(HttpServletResponse sr) { this.sr = sr; }
 
@@ -19,9 +19,7 @@ public class Res {
 		if (sr.getContentType() == null) {
 			sr.setContentType(defaultType);
 		}
-		try {
-			sr.getWriter().print(body);
-		}
+		try { sr.getWriter().print(body); }
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -29,25 +27,23 @@ public class Res {
 	}
 	
 	public Res write(String body) {
-		return write(
-			body,
-			"text/plain;charset=utf-8"
-		);
+	  return write(body, Type.PLAIN);
 	}
 	
 	public Res json(Object src) {
-		return write(
-		  Tool.toJson(src),
-			"application/json;charset=utf-8"
+	  if (src instanceof String) return write(
+	    (String) src, Type.JSON
+	  );
+	  return write(
+		  Tool.toJson(src), Type.JSON
 		);
 	}
 	
 	public Res json(Object... kv) {
-	  if (kv.length == 2) {
-	    return json(
-	        Collections.singletonMap(kv[0], kv[1])
-	    );
-	  }	
+	  if (kv.length < 2) return this;
+	  if (kv.length == 2) return json(
+	    Collections.singletonMap(kv[0], kv[1])
+	  );
 	  Map<Object, Object> src = new LinkedHashMap<>();
 		for (int i = 0; i < kv.length; ) {
 			src.put(kv[i], kv[i + 1]);
@@ -56,9 +52,7 @@ public class Res {
 		return json(src);
 	}
 	
-	// TODO exception
-	public Res contentType(String type) {
-		if (isWritten) throw new RuntimeException();
+	public Res type(String type) {
 		sr.setContentType(type);
 		return this;
 	}
@@ -66,5 +60,10 @@ public class Res {
 	public Res status(int i) {
 		sr.setStatus(i);
 		return this;
-	}		
+	}	
+	
+	public Res redirect(String url) {
+	  sr.setHeader("Location", sr.encodeRedirectURL(url));
+	  return this;
+	}
 }

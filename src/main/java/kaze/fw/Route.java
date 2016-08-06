@@ -61,27 +61,27 @@ public class Route {
     return new Route(regexUri, uriIndex, func);
 	}
 	
-  private Uri uri(String reqUri) {
-    if (uriIndex == null) return new Uri(reqUri);
+  private Uri uri(String uri) {
+    if (uriIndex == null) return new Uri(uri);
     
     // regex uri
     Map<String, String> uriVals = new HashMap<>();    
-    String[] paths = reqUri.substring(1).split("/");
+    String[] paths = uri.substring(1).split("/");
     for (String key : this.uriIndex.keySet()) {
       int index = this.uriIndex.get(key);
       String value = paths[index];
       uriVals.put(key, value);
     }
-    return new Uri(reqUri, uriVals);
+    return new Uri(uri, uriVals);
   }
 
   void run(
-      String reqUri,
+      String uri,
       HttpServletRequest sreq,
       HttpServletResponse sres
   ) {
-    encoding(sreq, "utf-8");
-    Req req = new Req(sreq, uri(reqUri));
+    utf8(sreq, sres);
+    Req req = new Req(sreq, uri(uri));
     Res res = new Res(sres);
     try {
       func.call(req, res);
@@ -93,15 +93,24 @@ public class Route {
         logger.trace(e.getMessage(), e);
         return;
       }
+      // TODO RuntimeException でラップし続けるのは避ける。
       throw new RuntimeException(e);
     }
   }
   
-  private void encoding(HttpServletRequest r, String enc) {
-    if (r.getCharacterEncoding() != null) return;
-    try { r.setCharacterEncoding(enc); }
+  private void utf8(
+      HttpServletRequest req,
+      HttpServletResponse res
+  ) {
+    // req
+    if (req.getCharacterEncoding() != null) return;
+    try { req.setCharacterEncoding(utf8); }
     catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
+    // res
+    res.setCharacterEncoding(utf8);
   }
+  
+  private static final String utf8 = "UTF-8";
 }
