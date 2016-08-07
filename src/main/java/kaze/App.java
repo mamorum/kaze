@@ -24,12 +24,12 @@ public class App {
     private static long start;
     static void starts() {
       start = System.currentTimeMillis();
-      log.info("Kaze starts");
+      log.info("Starts");
     }
     static void started() {
       long started = System.currentTimeMillis();
       log.info(
-          "Kaze started in {}ms ( jvm uptime {}ms )",
+          "Started in {}ms ( jvm uptime {}ms )",
           started - start,
           ManagementFactory
             .getRuntimeMXBean().getUptime()
