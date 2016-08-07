@@ -25,7 +25,7 @@ public class ReqParamsTest extends ItCase {
         "http://localhost:8080/person/params",
         "id=1234&name=Tom&langs=Perl&langs=PHP"
     );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":1234,\"name\":\"Tom\",\"langs\":[\"Perl\",\"PHP\"]}"
     );
   }
@@ -41,7 +41,7 @@ public class ReqParamsTest extends ItCase {
     HttpReq.postParams(
         "http://localhost:8080/address/params",
         "zip=1234567&pref=東京"
-    ).statusIs(200).contentTypeIsJson().bodyIs(
+    ).statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"zip\":\"1234567\",\"pref\":\"東京\"}"
     );
   }
@@ -50,7 +50,7 @@ public class ReqParamsTest extends ItCase {
     HttpReq.postParams(
         "http://localhost:8080/address/params",
         "zip=12345&pref="
-    ).statusIs(400).contentTypeIsJson().bodyContains(
+    ).statusIs(400).typeIsJsonUtf8().bodyContains(
         "\"cause\":\"validate\"",
         "\"fields\":[{",
         "\"name\":\"pref\",\"cause\":\"NotEmpty\",\"msg\":",

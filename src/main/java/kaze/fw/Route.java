@@ -103,10 +103,11 @@ public class Route {
       HttpServletResponse res
   ) {
     // req
-    if (req.getCharacterEncoding() != null) return;
-    try { req.setCharacterEncoding(utf8); }
-    catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
+    if (req.getCharacterEncoding() == null) {
+      try { req.setCharacterEncoding(utf8); }
+      catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
     }
     // res
     res.setCharacterEncoding(utf8);

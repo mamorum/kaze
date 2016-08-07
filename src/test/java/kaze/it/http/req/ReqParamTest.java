@@ -23,7 +23,7 @@ public class ReqParamTest extends ItCase {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/candy?name=apple"
     );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"name\":\"apple\"}"
     );
   }
@@ -38,7 +38,7 @@ public class ReqParamTest extends ItCase {
         "http://localhost:8080/candy",
         "id=8"
     );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":8}"
     );
   }

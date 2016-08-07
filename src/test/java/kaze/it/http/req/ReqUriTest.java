@@ -24,7 +24,7 @@ public class ReqUriTest extends ItCase {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/cake/name/cheese"
     );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"name\":\"cheese\"}"
     );
   }
@@ -38,7 +38,7 @@ public class ReqUriTest extends ItCase {
   public void id() {
     HttpReq.get(
         "http://localhost:8080/cake/id/8"
-    ).statusIs(200).contentTypeIsJson().bodyIs(
+    ).statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":8}"
     );
   }
@@ -46,7 +46,7 @@ public class ReqUriTest extends ItCase {
   public void badId() {
     HttpReq.get(
         "http://localhost:8080/cake/id/ng"
-    ).statusIs(400).contentTypeIsJson().bodyContains(
+    ).statusIs(400).typeIsJsonUtf8().bodyContains(
         "\"cause\":\"convert\""
     );
   } 
@@ -64,7 +64,7 @@ public class ReqUriTest extends ItCase {
 	  HttpReq.postParams(
 		    "http://localhost:8080/cake/id/8/name/cheese",
 		    ""
-		).statusIs(200).contentTypeIsJson().bodyIs(
+		).statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":8,\"name\":\"cheese\"}"
     );
 	}

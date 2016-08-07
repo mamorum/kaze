@@ -24,25 +24,37 @@ public class HttpRes {
     this.body = e.getContent();
   }
   
-  public HttpRes statusIs(int status) {
-    assertThat(this.status).isEqualTo(status);
+  public HttpRes statusIs(int s) {
+    assertThat(this.status).isEqualTo(s);
     return this;
   }
   
-  public HttpRes contentTypeIsJson() {
+  public HttpRes typeIsJsonUtf8() {
     assertThat(this.contentType).isEqualTo(
-        "application/json;charset=utf-8"
+        "application/json; charset=UTF-8"
     );
     return this;
   }
   
-  public HttpRes bodyIs(String body) {
-    assertThat(this.body).isEqualTo(body);
+  public HttpRes typeIs(String type) {
+    assertThat(this.contentType).isEqualTo(
+        type
+    );
+    return this;
+  }
+  
+  public HttpRes bodyIs(String b) {
+    assertThat(this.body).isEqualTo(b);
     return this;
   }
   
   public HttpRes bodyContains(String... str) {
     for (String s : str) assertThat(this.body).contains(s);
+    return this;
+  }
+  
+  public HttpRes bodyIsEmpty() {
+    assertThat(this.body).isNullOrEmpty();
     return this;
   }
 

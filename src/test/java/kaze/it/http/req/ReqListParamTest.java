@@ -23,7 +23,7 @@ public class ReqListParamTest extends ItCase {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/ice?names=vanilla&names=chocolate"
     );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"names\":[\"vanilla\",\"chocolate\"]}"
     );
   }
@@ -38,7 +38,7 @@ public class ReqListParamTest extends ItCase {
         "http://localhost:8080/ice",
         "id=1&id=2&id=3"
     );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":[1,2,3]}"
     );
   }

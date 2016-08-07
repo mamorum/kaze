@@ -28,7 +28,7 @@ public class ReqJsonTest extends ItCase {
         "http://localhost:8080/person/json",
         json
     );
-    res.statusIs(200).contentTypeIsJson().bodyIs(
+    res.statusIs(200).typeIsJsonUtf8().bodyIs(
         json
     );
   }
@@ -46,7 +46,7 @@ public class ReqJsonTest extends ItCase {
     HttpReq.postJson(
         "http://localhost:8080/address/json",
         adrs
-    ).statusIs(200).contentTypeIsJson().bodyIs(
+    ).statusIs(200).typeIsJsonUtf8().bodyIs(
         adrs
     );
   }
@@ -58,7 +58,7 @@ public class ReqJsonTest extends ItCase {
     HttpReq.postJson(
         "http://localhost:8080/address/json",
         adrs
-    ).statusIs(400).contentTypeIsJson().bodyContains(
+    ).statusIs(400).typeIsJsonUtf8().bodyContains(
         "\"cause\":\"validate\"",
         "\"fields\":[{",
         "\"name\":\"pref\",\"cause\":\"NotEmpty\",\"msg\":",
