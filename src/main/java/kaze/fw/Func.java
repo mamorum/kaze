@@ -28,11 +28,9 @@ public class Func {
    }
   
   void call(Req req, Res res) throws Throwable {
-    try {
-      m.invoke(o, req, res);
-    }
-    // InvocationTargetException wraps a cause.
+    try { m.invoke(o, req, res);}
     catch (InvocationTargetException e) {
+      // InvocationTargetException wraps a cause.
       throw e.getCause();
     }
   }

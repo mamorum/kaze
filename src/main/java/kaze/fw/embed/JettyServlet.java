@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.servlet.DefaultServlet;
 
-import kaze.ex.NoRouteException;
+import kaze.fw.Route;
 import kaze.fw.Routes;
 
 @SuppressWarnings("serial")
@@ -24,10 +24,10 @@ public class JettyServlet extends DefaultServlet {
     HttpServletRequest sreq, HttpServletResponse sres)
     throws ServletException, IOException
   {
-    try { routes.run(sreq, sres); }
-    catch (NoRouteException e) {
-      // serve static contents.
-      super.service(sreq, sres);
-    }
+    String m = sreq.getMethod();
+    String uri = sreq.getRequestURI();
+    Route route = routes.route(m, uri);    
+    if (route != null) route.run(uri, sreq, sres);
+    else super.service(sreq, sres);  // static contens
   }
 }

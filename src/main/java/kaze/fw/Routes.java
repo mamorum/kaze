@@ -3,13 +3,8 @@ package kaze.fw;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import kaze.ex.NoRouteException;
 
 // not thread safe. 
 public class Routes {
@@ -58,17 +53,7 @@ public class Routes {
   }
 
   // for app running.
-  public void run(
-      HttpServletRequest sreq,
-      HttpServletResponse sres
-  ) {
-    String m = sreq.getMethod();
-    String uri = sreq.getRequestURI();
-    Route route = route(m, uri);
-    route.run(uri, sreq, sres);
-  }
-  
-  private Route route(String method, String uri) {    
+  public Route route(String method, String uri) {    
     // resolve from method2uri
     Route route = null;
     HashMap<String, Route> uriRoutes = method2uri.get(method);
@@ -81,9 +66,9 @@ public class Routes {
       for(Route r : regexRoutes) {
         if (r.uriPattern.matcher(uri).matches()) return r;
       }
-    }    
-    throw new NoRouteException(
-        "Route not found. [" + method + " " + uri + "]"
-    );
+    }
+    
+    // not found
+    return null;
   }
 }

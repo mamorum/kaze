@@ -11,15 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.ex.BadRequestException;
+import kaze.fw.ex.Recoverable;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.req.Uri;
 
 public class Route {
-
-  private static final Logger logger = LoggerFactory.getLogger(Route.class);
- 
+  
+  private static final Logger log = LoggerFactory.getLogger(Route.class);
+  
   String uri;
   Pattern uriPattern;
   Map<String, Integer> uriIndex;
@@ -75,7 +75,7 @@ public class Route {
     return new Uri(uri, uriVals);
   }
 
-  void run(
+  public void run(
       String uri,
       HttpServletRequest sreq,
       HttpServletResponse sres
@@ -83,33 +83,30 @@ public class Route {
     utf8(sreq, sres);
     Req req = new Req(sreq, uri(uri));
     Res res = new Res(sres);
-    try {
-      func.call(req, res);
-    }
+    try { func.call(req, res); }
     catch (Throwable e) {
-      if (e instanceof BadRequestException) {
-        BadRequestException bre =(BadRequestException) e; 
-        res.status(bre.status()).json(bre.error());
-        logger.trace(e.getMessage(), e);
+      if (e instanceof Recoverable) {
+        log.debug(e.getMessage(), e);
+        ((Recoverable) e).respond(req, res);
         return;
       }
-      // TODO RuntimeException でラップし続けるのは避ける。
+      if (e instanceof RuntimeException) {
+          throw (RuntimeException) e;
+      }
       throw new RuntimeException(e);
     }
   }
   
   private void utf8(
-      HttpServletRequest req,
-      HttpServletResponse res
-  ) {
-    // req
+    HttpServletRequest req,
+    HttpServletResponse res) 
+  {
     if (req.getCharacterEncoding() == null) {
       try { req.setCharacterEncoding(utf8); }
       catch (UnsupportedEncodingException e) {
         throw new RuntimeException(e);
       }
     }
-    // res
     res.setCharacterEncoding(utf8);
   }
   

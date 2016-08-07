@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.data.Tool;
+import kaze.http.data.Tool;
 
 public class Data<T> {
 

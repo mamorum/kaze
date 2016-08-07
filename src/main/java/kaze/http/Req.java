@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.data.Tool;
+import kaze.http.data.Tool;
 import kaze.http.req.Data;
 import kaze.http.req.Uri;
 

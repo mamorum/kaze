@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.data.Tool;
+import kaze.http.data.Tool;
 import kaze.http.res.Type;
 
 public class Res {
@@ -35,7 +35,7 @@ public class Res {
 	    (String) src, Type.JSON
 	  );
 	  return write(
-		  Tool.toJson(src), Type.JSON
+	      Tool.toJson(src), Type.JSON
 		);
 	}
 	

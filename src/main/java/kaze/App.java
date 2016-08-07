@@ -9,34 +9,17 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.data.Tool;
 import kaze.fw.Config;
 import kaze.fw.Func;
 import kaze.fw.Routes;
 import kaze.fw.embed.JettyServer;
 import kaze.fw.embed.JettyServlet;
+import kaze.fw.lib.Jackson;
 
 public class App {
   
   private static final Logger log = LoggerFactory.getLogger(App.class);
-  
-  private static class Log {
-    private static long start;
-    static void starts() {
-      start = System.currentTimeMillis();
-      log.info("Starts");
-    }
-    static void started() {
-      long started = System.currentTimeMillis();
-      log.info(
-          "Started in {}ms ( jvm uptime {}ms )",
-          started - start,
-          ManagementFactory
-            .getRuntimeMXBean().getUptime()
-      );
-    }
-  }
-  
+
 	public static void start(String... pkgs) {
 	  Log.starts();
 	  JettyServer jetty = new JettyServer(
@@ -55,7 +38,7 @@ public class App {
   public static Config config() {
     URL json = App.class.getResource("/config.json");
     if (json == null) return Config.defaults();
-    return Tool.toObj(json, Config.class);
+    return Jackson.toObj(json, Config.class);
   }	
   
   public static Routes routes(String... pkgs) {
@@ -79,4 +62,20 @@ public class App {
     return routes;
   }
 
+  private static class Log {
+    private static long start;
+    static void starts() {
+      start = System.currentTimeMillis();
+      log.info("Starts");
+    }
+    static void started() {
+      long started = System.currentTimeMillis();
+      log.info(
+          "Started in {}ms ( jvm uptime {}ms )",
+          started - start,
+          ManagementFactory
+            .getRuntimeMXBean().getUptime()
+      );
+    }
+  }  
 }
