@@ -2,11 +2,10 @@ package kaze.http.ex;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import javax.validation.ConstraintViolation;
 
-import kaze.fw.ex.Recoverable;
-import kaze.http.Req;
 import kaze.http.Res;
 
 @SuppressWarnings("serial")
@@ -20,17 +19,16 @@ public class ValidateException
     this.scv = scv;
   }
   
-  @Override
-  public void respond(Req req, Res res) {
-    response.apply(req, res, this);
+  @Override public void reply(Res res) {
+    response.accept(res, this);
   }
 
   // If other response is needed, change it before kaze.App#start.
-  public static Recoverable.Response<Req, Res, ValidateException>
-    response = (req, res, err) ->
+  public static BiConsumer<Res, ValidateException>
+    response = (res, e) ->
   {
     ArrayList<ErrorProperty> ep =  new ArrayList<>();
-    for (ConstraintViolation<Object> cv : err.scv) {
+    for (ConstraintViolation<Object> cv : e.scv) {
       ep.add(new ErrorProperty(
           cv.getPropertyPath().toString(),
           cv.getConstraintDescriptor().getAnnotation()

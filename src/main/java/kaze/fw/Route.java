@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.fw.ex.Recoverable;
 import kaze.http.Req;
 import kaze.http.Res;
+import kaze.http.ex.Recoverable;
 import kaze.http.req.Uri;
 
 public class Route {
@@ -87,7 +87,7 @@ public class Route {
     catch (Throwable e) {
       if (e instanceof Recoverable) {
         log.debug(e.getMessage(), e);
-        ((Recoverable) e).respond(req, res);
+        ((Recoverable) e).reply(res);
         return;
       }
       if (e instanceof RuntimeException) {

@@ -1,7 +1,7 @@
 package kaze.http.ex;
 
-import kaze.fw.ex.Recoverable;
-import kaze.http.Req;
+import java.util.function.BiConsumer;
+
 import kaze.http.Res;
 
 @SuppressWarnings("serial")
@@ -12,18 +12,17 @@ public class ConvertException
     super(e);
   }
 
-  @Override
-  public void respond(Req req, Res res) {
-    response.apply(req, res, this);
+  @Override public void reply(Res res) {
+    response.accept(res, this);
   }
   
   // If other response is needed, change it before kaze.App#start.
-  public static Recoverable.Response<Req, Res, ConvertException>
-    response = (req, res, err) ->
+  public static BiConsumer<Res, ConvertException>
+    response = (res, e) ->
   {
     res.status(400).json(
         "cause", "convert",
-        "msg", err.getMessage()
+        "msg", e.getMessage()
     );
   };
 }
