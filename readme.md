@@ -39,16 +39,13 @@ $ curl -X GET http://localhost:8080/hello -s
 ```
 
 
-## Getting Started
-- [Kaze - Getting Started](getting-started.md)
-
-
 ## Guides
-- Creating ...
+- [Getting Started](doc/getting-started.md)
+- User Guide - Creating ...
 
 
-## Sample Application
-- Creating ...
+## Samples
+- [kaze-sample-rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb) : web app accessing relational database.
 
 
 ## Features
