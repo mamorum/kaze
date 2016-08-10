@@ -23,17 +23,9 @@ public class ItCase {
   public static void beforeHttpTest() throws InterruptedException {
     synchronized (lock) {
       if (serving) return;
-      serving = true;
       t.start();
-      waits();
+      lock.wait(2500);
+      serving = true;
     }
-  }
-  
-  private static void waits() {
-    HttpReq.get(
-        "http://localhost:8080/hello"
-    ).bodyIs(
-        "{\"msg\":\"Hello World!\"}"
-    ).close();
   }
 }
