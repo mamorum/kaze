@@ -19,13 +19,13 @@ public class ReqParamTest extends ItCase {
     res.json("name", req.param("name"));
   }
   @Test
-  public void name() throws Exception {
+  public void name() {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/candy?name=apple"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"name\":\"apple\"}"
-    );
+    ).close();
   }
   
   @Http({Method.POST, uri})
@@ -33,13 +33,13 @@ public class ReqParamTest extends ItCase {
     res.json("id", req.param("id", Long.class));
   }
   @Test
-  public void id() throws Exception {
+  public void id() {
     HttpRes res = HttpReq.postParams(
         "http://localhost:8080/candy",
         "id=8"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":8}"
-    );
+    ).close();
   }
 }

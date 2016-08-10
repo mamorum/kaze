@@ -16,12 +16,12 @@ public class ResJsonTest extends ItCase {
     res.json("msg", "Hi!");
   }
   @Test
-  public void hi() throws Exception {
+  public void hi() {
     HttpReq.get(
         "http://localhost:8080/res/json/hi"
     ).statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"msg\":\"Hi!\"}"
-    );
+    ).close();
   }
   
   @Http({Method.GET, "/res/json/error"})
@@ -32,12 +32,12 @@ public class ResJsonTest extends ItCase {
     );
   }
   @Test
-  public void error() throws Exception {
+  public void error() {
     HttpReq.get(
         "http://localhost:8080/res/json/error"
     ).statusIs(400).typeIsJsonUtf8().bodyIs(
         "{\"msg\":\"name is required.\"," +
           "\"cause\":\"validation\"}"
-    );
+    ).close();
   }
 }

@@ -20,14 +20,14 @@ public class ReqParamsTest extends ItCase {
     res.json(p);
   }
   @Test
-  public void pp() throws Exception {
+  public void pp() {
     HttpRes res = HttpReq.postParams(
         "http://localhost:8080/person/params",
         "id=1234&name=Tom&langs=Perl&langs=PHP"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":1234,\"name\":\"Tom\",\"langs\":[\"Perl\",\"PHP\"]}"
-    );
+    ).close();
   }
   
   
@@ -37,16 +37,16 @@ public class ReqParamsTest extends ItCase {
     res.json(p);
   }
   @Test  //OK
-  public void ap() throws Exception {
+  public void ap() {
     HttpReq.postParams(
         "http://localhost:8080/address/params",
         "zip=1234567&pref=東京"
     ).statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"zip\":\"1234567\",\"pref\":\"東京\"}"
-    );
+    ).close();
   }
   @Test  //ValidateError
-  public void badAp() throws Exception {
+  public void badAp() {
     HttpReq.postParams(
         "http://localhost:8080/address/params",
         "zip=12345&pref="
@@ -55,6 +55,6 @@ public class ReqParamsTest extends ItCase {
         "\"fields\":[{",
         "\"name\":\"pref\",\"cause\":\"NotEmpty\",\"msg\":",
         "\"name\":\"zip\",\"cause\":\"Size\",\"msg\":"
-    );
+    ).close();
   }
 }

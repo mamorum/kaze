@@ -11,8 +11,10 @@ public class HttpRes {
 
   int status;
   String contentType, body;
+  HttpResponse res;
   
-  public HttpRes(HttpResponse res) throws IOException { 
+  public HttpRes(HttpResponse res) throws IOException {
+    this.res = res;
     this.status = res.getStatusCode();
     this.contentType = res.getContentType();
     this.body = res.parseAsString();
@@ -61,5 +63,10 @@ public class HttpRes {
   public HttpRes printBody() {
     System.out.println(this.body);
     return this;
+  }
+
+  public void close() {
+    try { if (res != null) res.disconnect();}
+    catch (IOException e) {throw new RuntimeException(e);}
   }
 }

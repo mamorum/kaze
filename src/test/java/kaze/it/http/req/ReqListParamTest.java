@@ -19,13 +19,13 @@ public class ReqListParamTest extends ItCase {
     res.json("names", req.listParam("names"));
   }
   @Test
-  public void names() throws Exception {
+  public void names() {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/ice?names=vanilla&names=chocolate"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"names\":[\"vanilla\",\"chocolate\"]}"
-    );
+    ).close();
   }
   
   @Http({Method.POST, uri})
@@ -33,13 +33,13 @@ public class ReqListParamTest extends ItCase {
     res.json("id", req.listParam("id", Long.class));
   }
   @Test
-  public void ids() throws Exception {
+  public void ids() {
     HttpRes res = HttpReq.postParams(
         "http://localhost:8080/ice",
         "id=1&id=2&id=3"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":[1,2,3]}"
-    );
+    ).close();
   }
 }

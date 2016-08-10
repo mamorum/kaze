@@ -16,12 +16,12 @@ public class ResWriteTest extends ItCase {
     res.write("Hi!");
   }
   @Test
-  public void hi() throws Exception {
+  public void hi() {
     HttpReq.get(
         "http://localhost:8080/res/write/hi"
     ).statusIs(200).typeIs(
         "text/plain; charset=UTF-8"
-    ).bodyIs("Hi!");
+    ).bodyIs("Hi!").close();
   }
   
   @Http({Method.GET, "/res/write/error"})
@@ -29,11 +29,11 @@ public class ResWriteTest extends ItCase {
     res.status(400).write("Error.");
   }
   @Test
-  public void error() throws Exception {
+  public void error() {
     HttpReq.get(
         "http://localhost:8080/res/write/error"
     ).statusIs(400).typeIs(
         "text/plain; charset=UTF-8"
-    ).bodyIs("Error.");
+    ).bodyIs("Error.").close();
   }
 }

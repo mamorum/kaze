@@ -25,12 +25,12 @@ public class ResTypeTest extends ItCase {
     );
   }
   @Test
-  public void ok() throws Exception {
+  public void ok() {
     HttpReq.get(
         "http://localhost:8080/res/type/ok"
     ).statusIs(200).typeIs(
         "text/html; charset=UTF-8"
-    ).bodyIs(HTML_OK);
+    ).bodyIs(HTML_OK).close();
   }
   
   @Http({Method.GET, "/res/type/ng"})
@@ -40,11 +40,11 @@ public class ResTypeTest extends ItCase {
     );
   }
   @Test
-  public void ng() throws Exception {
+  public void ng() {
     HttpReq.get(
         "http://localhost:8080/res/type/ng"
     ).statusIs(400).typeIs(
         "text/html; charset=UTF-8"
-    ).bodyIs(HTML_NG);
+    ).bodyIs(HTML_NG).close();
   }
 }

@@ -20,7 +20,7 @@ public class ReqJsonTest extends ItCase {
     res.json(p);
   }
   @Test
-  public void pj() throws Exception {
+  public void pj() {
     String json = 
       "{\"id\":12345,\"name\":\"Bob\",\"langs\":[\"C\",\"Java\",\"JS\"]}";
     
@@ -30,7 +30,7 @@ public class ReqJsonTest extends ItCase {
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         json
-    );
+    ).close();
   }
   
   @Http({Method.POST, "/address/json"})
@@ -39,7 +39,7 @@ public class ReqJsonTest extends ItCase {
     res.json(p);
   }
   @Test  //OK
-  public void aj() throws Exception {
+  public void aj() {
     String adrs = 
       "{\"zip\":\"1234567\",\"pref\":\"東京\"}";
     
@@ -48,10 +48,10 @@ public class ReqJsonTest extends ItCase {
         adrs
     ).statusIs(200).typeIsJsonUtf8().bodyIs(
         adrs
-    );
+    ).close();
   }
   @Test  //ValidateError
-  public void badAj() throws Exception {
+  public void badAj() {
     String adrs = 
       "{\"zip\":\"12345\",\"pref\":\"\"}";
     
@@ -63,6 +63,6 @@ public class ReqJsonTest extends ItCase {
         "\"fields\":[{",
         "\"name\":\"pref\",\"cause\":\"NotEmpty\",\"msg\":",
         "\"name\":\"zip\",\"cause\":\"Size\",\"msg\":"
-    );
+    ).close();
   }
 }

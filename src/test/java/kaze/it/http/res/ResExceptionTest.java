@@ -22,7 +22,7 @@ public class ResExceptionTest extends ItCase {
         "http://localhost:8080/res/ex"
     ).statusIs(500).typeIs(
         "text/html; charset=ISO-8859-1"
-    ).bodyIs("Server Error");
+    ).bodyIs("Server Error").close();
   }
   
   // unchecked
@@ -36,6 +36,6 @@ public class ResExceptionTest extends ItCase {
         "http://localhost:8080/res/rex"
     ).statusIs(500).typeIs(
         "text/html; charset=ISO-8859-1"
-    ).bodyIs("Server Error");
+    ).bodyIs("Server Error").close();
   }
 }

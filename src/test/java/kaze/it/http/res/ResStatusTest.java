@@ -18,15 +18,15 @@ public class ResStatusTest extends ItCase {
     );
   }
   @Test
-  public void s200() throws Exception {
+  public void s200() {
     HttpReq.get(
         "http://localhost:8080/res/status/200"
-    ).statusIs(200).typeIs(null).bodyIsEmpty();
+    ).statusIs(200).typeIs(null).bodyIsEmpty().close();
   }
   @Test
-  public void s500() throws Exception {
+  public void s500() {
     HttpReq.get(
         "http://localhost:8080/res/status/500"
-    ).statusIs(500).typeIs(null).bodyIsEmpty();
+    ).statusIs(500).typeIs(null).bodyIsEmpty().close();
   }
 }

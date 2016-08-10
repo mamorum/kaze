@@ -20,13 +20,13 @@ public class ReqUriTest extends ItCase {
     res.json("name", req.uri(":name"));
   }
   @Test
-  public void name() throws Exception {
+  public void name() {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/cake/name/cheese"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"name\":\"cheese\"}"
-    );
+    ).close();
   }
 
   
@@ -40,7 +40,7 @@ public class ReqUriTest extends ItCase {
         "http://localhost:8080/cake/id/8"
     ).statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":8}"
-    );
+    ).close();
   }
   @Test  //NG
   public void badId() {
@@ -48,7 +48,7 @@ public class ReqUriTest extends ItCase {
         "http://localhost:8080/cake/id/ng"
     ).statusIs(400).typeIsJsonUtf8().bodyContains(
         "\"cause\":\"convert\""
-    );
+    ).close();
   } 
 
   
@@ -66,6 +66,6 @@ public class ReqUriTest extends ItCase {
 		    ""
 		).statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":8,\"name\":\"cheese\"}"
-    );
+    ).close();
 	}
 }
