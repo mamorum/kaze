@@ -1,10 +1,14 @@
 package kaze.it.http.tool;
 
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import kaze.App;
 
 public class ItCase {
+  
+  protected static final Logger log = LoggerFactory.getLogger(ItCase.class);
   
   static volatile boolean serving = false;
   static final Object lock = new Object();
@@ -18,14 +22,20 @@ public class ItCase {
         );
       }
   });
+  static int time = 0;
+  static {
+    String v = System.getProperty("testWait");
+    if (v != null) time = Integer.parseInt(v);
+    log.info("Wait time is {}ms for server starting", time);
+  }
   
   @BeforeClass
   public static void beforeHttpTest() throws InterruptedException {
     synchronized (lock) {
       if (serving) return;
       t.start();
-      lock.wait(2500);
       serving = true;
+      if (time != 0) lock.wait(time);
     }
   }
 }
