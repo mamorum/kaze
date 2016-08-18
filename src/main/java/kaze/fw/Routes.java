@@ -78,6 +78,8 @@ public class Routes {
   }
 
   public static Routes build(String... pkgs) {
+    if (pkgs == null) return new Routes();
+    if (pkgs.length == 0) return new Routes();
     return scan(pkgs);
   }
   

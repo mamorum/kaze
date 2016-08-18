@@ -24,11 +24,7 @@ public class App {
 	
 	public static void build(String... pkgs) {
 	  conf = Conf.build();
-	  // TODO
-	  // - 静的コンテンツのみ扱う場合は pkgs が null。
-	  // - その場合の処理を改善する。Jetty, Servlet とも連携する。
-	  if (pkgs == null || pkgs.length == 0) return;
-    routes = Routes.build(pkgs);
+	  routes = Routes.build(pkgs);
 	}
   
   private static class Log {

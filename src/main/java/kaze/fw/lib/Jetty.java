@@ -30,12 +30,14 @@ import ch.qos.logback.access.jetty.RequestLogImpl;
 import kaze.App;
 import kaze.fw.Conf;
 import kaze.fw.Route;
+import kaze.fw.Routes;
 
 public class Jetty {
 
   private static final Logger log = LoggerFactory.getLogger(Jetty.class);
   
   private static Conf.Http http = App.conf.http;
+  private static Routes routes = App.routes;
   private static Server server;
   
   public static void start() {
@@ -136,10 +138,9 @@ public class Jetty {
 	    HttpServletRequest sreq, HttpServletResponse sres)
 	    throws ServletException, IOException
 	  {
-	    if (App.routes == null) super.service(sreq, sres);
 	    String m = sreq.getMethod();
 	    String uri = sreq.getRequestURI();
-	    Route route = App.routes.route(m, uri);    
+	    Route route = routes.route(m, uri);    
 	    if (route != null) route.run(uri, sreq, sres);
 	    else super.service(sreq, sres);  // static contens
 	  }
