@@ -1,24 +1,23 @@
 package kaze;
 
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
-import java.net.URL;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.yaml.snakeyaml.Yaml;
 
-import kaze.fw.Config;
 import kaze.fw.Func;
 import kaze.fw.Routes;
 import kaze.fw.embed.JettyServer;
 import kaze.fw.embed.JettyServlet;
-import kaze.fw.lib.Jackson;
 
 public class App {
   
-  private static final Logger log = LoggerFactory.getLogger(App.class);
+  public Conf conf; 
 
 	public static void start(String... pkgs) {
 	  Log.starts();
@@ -28,17 +27,16 @@ public class App {
 	  );
 	  jetty.start();
 	  Log.started();
-	  
-	  // TODO:
-	  //  Connect to livereload server.
-	  
 	  jetty.listen();
 	}
 
-  public static Config config() {
-    URL json = App.class.getResource("/config.json");
-    if (json == null) return Config.defaults();
-    return Jackson.toObj(json, Config.class);
+  public static Conf config() {
+    InputStream s = App.class.getResourceAsStream("/config.yml");
+    if (s == null) return new Conf();  // original setting.
+    Yaml yaml = new Yaml();
+    return yaml.loadAs(s, Conf.class);
+    
+//    return Jackson.toObj(yml, Conf.class);  // default setting.
   }	
   
   public static Routes routes(String... pkgs) {
@@ -63,6 +61,7 @@ public class App {
   }
 
   private static class Log {
+    private static final Logger log = LoggerFactory.getLogger(App.class);
     private static long start;
     static void starts() {
       start = System.currentTimeMillis();

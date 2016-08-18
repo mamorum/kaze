@@ -24,17 +24,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
-import kaze.fw.Config;
+import kaze.Conf;
 
 public class JettyServer {
 
   private static final Logger log = LoggerFactory.getLogger(JettyServer.class);
   
-  private static Config.Jetty conf;
+  private static Conf.Jetty conf;
   private static JettyServlet servlet;
   private static Server server;
   
-  public JettyServer(Config c, JettyServlet s) {
+  public JettyServer(Conf c, JettyServlet s) {
     conf = c.jetty;
     servlet = s;
   }

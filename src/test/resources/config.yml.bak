@@ -1,0 +1,3 @@
+jetty:
+  httpPort: 8888
+  threadMin: 10

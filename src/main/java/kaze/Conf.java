@@ -1,15 +1,10 @@
-package kaze.fw;
+package kaze;
 
-public class Config {
+public class Conf {
 
   public Jetty jetty;
-  
-  public static Config defaults() {
-    Config c = new Config();
-    c.jetty = new Jetty();
-    return c;
-  }
-  
+  Conf() { jetty = new Jetty(); }
+
   public static class Jetty {
     public int 
       threadMax=200, threadMin=8, threadTimeout=60000,
