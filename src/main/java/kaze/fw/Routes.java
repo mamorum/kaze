@@ -1,10 +1,15 @@
 package kaze.fw;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import kaze.Http;
 
 // not thread safe. 
 public class Routes {
@@ -18,7 +23,7 @@ public class Routes {
     method2regex = new HashMap<>();
   
   // for fw init.
-  public void add(String method, String uri, Func func) {
+  private void add(String method, String uri, Func func) {
     if (uri.contains(":")) addRegex(method, uri, func);
     else addUri(method, uri, func);
   }
@@ -70,5 +75,26 @@ public class Routes {
     
     // not found
     return null;
+  }
+
+  public static Routes build(String... pkgs) {
+    return scan(pkgs);
+  }
+  
+  private static Routes scan(String... pkgs) {
+    Reflections ref = new Reflections(
+        pkgs, new MethodAnnotationsScanner()
+    );
+    Routes routes = new Routes();
+    for (
+      Method m : ref.getMethodsAnnotatedWith(Http.class)
+    ) {
+      Http http = m.getAnnotation(Http.class);
+      String httpMethod = http.value()[0].toUpperCase();
+      String httpUri = http.value()[1];
+      Func func = Func.of(m);
+      routes.add(httpMethod, httpUri, func);
+    }
+    return routes;
   }
 }

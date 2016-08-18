@@ -1,10 +1,12 @@
-package kaze.fw.embed;
+package kaze.fw.lib;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Connector;
@@ -16,6 +18,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
@@ -24,23 +27,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
-import kaze.Conf;
+import kaze.App;
+import kaze.fw.Conf;
+import kaze.fw.Route;
 
-public class JettyServer {
+public class Jetty {
 
-  private static final Logger log = LoggerFactory.getLogger(JettyServer.class);
+  private static final Logger log = LoggerFactory.getLogger(Jetty.class);
   
-  private static Conf.Jetty conf;
-  private static JettyServlet servlet;
+  private static Conf.Http http = App.conf.http;
   private static Server server;
   
-  public JettyServer(Conf c, JettyServlet s) {
-    conf = c.jetty;
-    servlet = s;
-  }
-  
-  public void start() {
-    log.info("Jetty Config {}", conf.toString());
+  public static void start() {
+    log.info("Config http {}", http.toString());
     server = server();
     try { server.start(); }
     catch (Exception e) {
@@ -48,16 +47,16 @@ public class JettyServer {
     }
   }
   
-  public void listen() {
+  public static void listen() {
     try { server.join(); }
     catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
   }
 
-	private Server server() {
+	private static Server server() {
 		QueuedThreadPool tp = new QueuedThreadPool(
-		    conf.threadMax, conf.threadMin, conf.threadTimeout
+		    http.maxThread, http.minThread, http.threadTimeout
 		);
     Server sv = new Server(tp);
     sv.setConnectors(Connectors.build(sv));
@@ -74,15 +73,15 @@ public class JettyServer {
       c.setSendServerVersion(false);  // always.
       HttpConnectionFactory fac = new HttpConnectionFactory(c);
       ServerConnector con = new ServerConnector(sv, fac);
-      con.setIdleTimeout(conf.httpTimeout);
-      con.setHost(conf.httpHost);
+      con.setIdleTimeout(http.timeout);
+      con.setHost(http.host);
       con.setPort(port());
       return new Connector[] { con };
     }
     static int port() {
       String key = "port";
       String p = System.getProperty(key);
-      if (p == null) return conf.httpPort;
+      if (p == null) return http.port;
       log.info(
         "Change http port to system property {} {}",
         "[key=" + key + "]", "[val=" + p + "]"
@@ -112,23 +111,38 @@ public class JettyServer {
       return h;
     }
     static Resource base() {
-      if (conf.staticDir != null) {
+      if (http.staticDir != null) {
         return Resource.newResource(
-            new File(conf.staticDir)
+            new File(http.staticDir)
         );
       }
       return Resource.newClassPathResource(
-            conf.staticPath
+            http.staticPath
       );
     } 
     static ServletHolder servlet() {
       ServletHolder h = new ServletHolder(
-          "default", servlet
+          "default", new Servlet()
       );
       // always.
       h.setInitParameter("dirAllowed", "false");
       return h;
     }
+	}
+	
+	@SuppressWarnings("serial")
+	private static class Servlet extends DefaultServlet {
+	  protected void service(
+	    HttpServletRequest sreq, HttpServletResponse sres)
+	    throws ServletException, IOException
+	  {
+	    if (App.routes == null) super.service(sreq, sres);
+	    String m = sreq.getMethod();
+	    String uri = sreq.getRequestURI();
+	    Route route = App.routes.route(m, uri);    
+	    if (route != null) route.run(uri, sreq, sres);
+	    else super.service(sreq, sres);  // static contens
+	  }
 	}
 
   // http://logback.qos.ch/access.html
