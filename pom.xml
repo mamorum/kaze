@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.3-SNAPSHOT</version>
 
   <name>Kaze</name>
   <description>Java Web Application Framework</description>

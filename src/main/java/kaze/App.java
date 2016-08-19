@@ -1,6 +1,9 @@
 package kaze;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +22,39 @@ public class App {
 	  build(pkgs);
 	  Jetty.start();
 	  Log.started();
+	  browserSync();
 	  Jetty.listen();
 	}
 	
-	public static void build(String... pkgs) {
+  public static void build(String... pkgs) {
 	  conf = Conf.build();
 	  routes = Routes.build(pkgs);
 	}
+
+  private static void browserSync() {
+    String url = System.getProperty("bs-url");
+    if (url == null || !url.startsWith("http")) return;
+    int status = 500;
+    try {
+      HttpURLConnection con = (HttpURLConnection) (
+          new URL(url)
+      ).openConnection();
+      status = con.getResponseCode();
+      con.disconnect();
+    } catch (IOException e) {
+      log.debug(bsLogMsg, "fail", url, e);
+      return;
+    }
+    log.debug(bsLogMsg, status, url);
+  }
+  
+  private static final String bsLogMsg
+        = "Requested to BrowserSync [status={}] [url={}]";
+
+  private static final Logger log
+        = LoggerFactory.getLogger(App.class);
   
   private static class Log {
-    private static final Logger log = LoggerFactory.getLogger(App.class);
     private static long start;
     static void starts() {
       start = System.currentTimeMillis();
