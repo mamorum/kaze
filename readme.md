@@ -51,7 +51,7 @@ $ curl -X GET http://localhost:8080/hello -s
 ## Features
 - Routing
 - Serving Static Contents
-- Conversion (JSON, Java type)
+- Conversion (JSON, Java types)
 - Validation
 - Simple and Fluent APIs
 - Light Weight
