@@ -34,21 +34,21 @@ public class App {
   private static void browserSync() {
     String url = System.getProperty("bs-url");
     if (url == null || !url.startsWith("http")) return;
-    int status = 500;
+    HttpURLConnection con = null;
     try {
-      HttpURLConnection con = (HttpURLConnection) (
+      con = (HttpURLConnection) (
           new URL(url)
       ).openConnection();
-      status = con.getResponseCode();
-      con.disconnect();
+      int status = con.getResponseCode();
+      log.debug(bsMsg, status, url);
     } catch (IOException e) {
-      log.debug(bsLogMsg, "fail", url, e);
-      return;
+      log.debug(bsMsg, "fail", url, e);
+    } finally {
+      if (con != null) con.disconnect();
     }
-    log.debug(bsLogMsg, status, url);
   }
   
-  private static final String bsLogMsg
+  private static final String bsMsg
         = "Requested to BrowserSync [status={}] [url={}]";
 
   private static final Logger log
