@@ -44,8 +44,36 @@ Kaze depends on [SLF4J](http://www.slf4j.org/index.html). To output logging, ple
 
 
 ## Routing
-Comming Soon ...
+Routing means selecting application method to handle a request. Kaze determines the app method, using http request method and URI.
 
+In Kaze, `@Http` method annotation represents a route.
+
+```java
+@Http({METHOD, URI})
+```
+
+- __METHOD__ is a http method (GET, POST, etc), defined also in [kaze.Http](https://github.com/mamorum/kaze/blob/master/src/main/java/kaze/Http.java)
+- __URI__ is a path (`/`, `/user`, etc)
+- __URI variable__ is supported (`/:id`, `/user/:name`, etc)
+
+Following codes are example of routing.
+
+```java
+@Http({POST, "/user"})
+public void create(Req req, Res res) {
+  // create user.
+} 
+```
+
+```java
+@Http({DELETE, "/user/:id"})
+public void delete(Req req, Res res) {
+  Long id = req.uri(":id", Long.class);
+  // delete user, using id.
+} 
+```
+
+Static import `import static kaze.Http.Method.*` is convenient to define http method (GET, POST, etc) at `@Http`.
 
 ## Serving Static Contents
 Comming Soon ...
