@@ -29,7 +29,7 @@ compile 'com.github.mamorum:kaze:0.0.2'
 ```
 
 ### logback-classic
-Maven
+Maven (latest version is in [Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22ch.qos.logback%22%20AND%20a%3A%22logback-classic%22) or [Logback Web Site](http://logback.qos.ch/))
 
 ```xml
 <dependency>
@@ -37,8 +37,6 @@ Maven
   <artifactId>logback-classic</artifactId>
 </dependency>
 ```
-
-Latest version can be checked on [Central Repository (logback-classic)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22ch.qos.logback%22%20AND%20a%3A%22logback-classic%22) or [Logback Web Site](http://logback.qos.ch/).
 
 Kaze depends on [SLF4J](http://www.slf4j.org/index.html). To output logging, please add logback-classic or other logging implementation to your app. The way to switch logging frameworks is written in the [SLF4J user manual](http://www.slf4j.org/manual.html).
 
@@ -73,8 +71,12 @@ public void delete(Req req, Res res) {
 } 
 ```
 
-Static import `import static kaze.Http.Method.*` is convenient to define http method (GET, POST, etc) at `@Http`.
+Static import `import static kaze.Http.Method.*` is convenient to define http method (GET, POST, etc) in `@Http`.
+
 
 ## Serving Static Contents
-Comming Soon ...
+If there are no route for a request, Kaze will find content from `public` directory in the classpath. Please put the static contents on `src/main/resources/public`, if you are using Maven or Gradle.
 
+
+## Start Application
+Comming soon ...
