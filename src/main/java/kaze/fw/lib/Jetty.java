@@ -23,8 +23,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
 import kaze.App;
@@ -34,14 +32,12 @@ import kaze.fw.Routes;
 
 public class Jetty {
 
-  private static final Logger log = LoggerFactory.getLogger(Jetty.class);
-  
-  private static Conf.Http http = App.conf.http;
+  private static Conf.Server svconf = App.conf.server;
   private static Routes routes = App.routes;
   private static Server server;
   
   public static void start() {
-    log.info("Config http {}", http.toString());
+    svconf.log();
     server = server();
     try { server.start(); }
     catch (Exception e) {
@@ -58,7 +54,7 @@ public class Jetty {
 
 	private static Server server() {
 		QueuedThreadPool tp = new QueuedThreadPool(
-		    http.maxThread, http.minThread, http.threadTimeout
+		    svconf.maxThread, svconf.minThread, svconf.threadTimeout
 		);
     Server sv = new Server(tp);
     sv.setConnectors(Connectors.build(sv));
@@ -75,20 +71,10 @@ public class Jetty {
       c.setSendServerVersion(false);  // always.
       HttpConnectionFactory fac = new HttpConnectionFactory(c);
       ServerConnector con = new ServerConnector(sv, fac);
-      con.setIdleTimeout(http.timeout);
-      con.setHost(http.host);
-      con.setPort(port());
+      con.setHost(svconf.httpHost);
+      con.setPort(svconf.httpPort);
+      con.setIdleTimeout(svconf.httpTimeout);
       return new Connector[] { con };
-    }
-    static int port() {
-      String key = "port";
-      String p = System.getProperty(key);
-      if (p == null) return http.port;
-      log.info(
-        "Change http port to system property {} {}",
-        "[key=" + key + "]", "[val=" + p + "]"
-      );
-      return Integer.parseInt(p);
     }
 	}
 	
@@ -113,13 +99,13 @@ public class Jetty {
       return h;
     }
     static Resource base() {
-      if (http.staticDir != null) {
+      if (svconf.staticDir != null) {
         return Resource.newResource(
-            new File(http.staticDir)
+            new File(svconf.staticDir)
         );
       }
       return Resource.newClassPathResource(
-            http.staticPath
+            svconf.staticPath
       );
     } 
     static ServletHolder servlet() {
@@ -146,7 +132,7 @@ public class Jetty {
 	  }
 	}
 
-  // http://logback.qos.ch/access.html
+  // see http://logback.qos.ch/access.html
 	private static class LogHandler {
     static RequestLogHandler build() {
       String xml =  "/logback-access.xml";

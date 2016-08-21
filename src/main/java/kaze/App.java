@@ -8,6 +8,7 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import kaze.fw.Arg;
 import kaze.fw.Conf;
 import kaze.fw.Routes;
 import kaze.fw.lib.Jetty;
@@ -32,7 +33,7 @@ public class App {
 	}
 
   private static void browserSync() {
-    String url = System.getProperty("bs-url");
+    String url = Arg.dev.syncUrl();
     if (url == null || !url.startsWith("http")) return;
     HttpURLConnection con = null;
     try {

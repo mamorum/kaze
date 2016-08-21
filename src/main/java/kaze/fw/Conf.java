@@ -2,39 +2,59 @@ package kaze.fw;
 
 import java.io.InputStream;
 
-import org.yaml.snakeyaml.Yaml;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import kaze.App;
+import kaze.fw.lib.Snake;
 
 public class Conf {
 
-  public Http http;
-  Conf() { http = new Http(); }
+  private static final Logger log = LoggerFactory.getLogger(Conf.class);
+  
+  public Server server;  
 
-  public static class Http {
-    public int 
-      maxThread=200, minThread=8, threadTimeout=60000,
-      port=8080, timeout=30000;
-    public String
-      host, staticDir, staticPath="/public";
-    @Override
-    public String toString() {
-      StringBuilder s = new StringBuilder();
-      return s.append("[host=").append(host)
-          .append(", port=").append(port)
-          .append(", timeout=").append(timeout)
-          .append("] [thread: min=").append(minThread)
-          .append(", max=").append(maxThread)
-          .append(", timeout=").append(threadTimeout)
-          .append("] [static: dir=").append(staticDir)
-          .append(", path=").append(staticPath)
-          .append("]").toString();
-    }
+  private static Conf original() {
+    Conf c = new Conf();
+    c.server = new Server();
+    return c;
   }
 
   public static Conf build() {
-    InputStream s = App.class.getResourceAsStream("/conf.yml");
-    if (s == null) return new Conf();  // original setting.
-    return (new Yaml()).loadAs(s, Conf.class);// default setting.
+    Conf conf = null;
+    
+    InputStream is = Conf.class.getResourceAsStream("/conf.yml");
+    if (is == null) conf = original();
+    else conf = Snake.load(is);
+    
+    String env = Arg.d("kaze.env");
+    if (env == null) return Arg.push(conf);
+    
+    String eyml = "/conf-" + env + ".yml";
+    InputStream eis = Conf.class.getResourceAsStream(eyml);
+    if (eis == null) return Arg.push(conf);
+    
+    // TODO overwrite conf, using env specific yaml.
+    // Conf econf = Snake.load(eis);
+    // ... 
+    return Arg.push(conf);
+  }
+
+  public static class Server {
+    public int 
+      maxThread=200, minThread=8, threadTimeout=60000,
+      httpPort=8080, httpTimeout=30000;
+    public String
+      httpHost, staticDir, staticPath="/public";
+    public void log() {
+      log.info(msg,
+          httpHost, httpPort, httpTimeout,
+          minThread, maxThread, threadTimeout,
+          staticDir, staticPath
+      );
+    }
+    private static final String msg = "Server " + 
+        "[http: host={}, port={}, timeout={}] " + 
+        "[thread: min={}, max={}, timeout={}] " +
+        "[static: dir={}, path={}]";
   }
 }
