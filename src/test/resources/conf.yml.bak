@@ -1,3 +1,2 @@
-server:
-  httpPort: 8888
-  minThread: 10
+http.port: 8888
+thread.min: 10

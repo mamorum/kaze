@@ -1,0 +1,9 @@
+# Server
+http.host: null
+http.port: 8080
+http.timeout: 30000
+thread.min: 8
+thread.max: 200
+thread.timeout: 60000
+static.dir: null
+static.path: /public

@@ -5,56 +5,69 @@ import java.io.InputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.fw.lib.Snake;
+import kaze.fw.conf.Arg;
+import kaze.fw.conf.Yml;
 
 public class Conf {
 
   private static final Logger log = LoggerFactory.getLogger(Conf.class);
   
-  public Server server;  
-
-  private static Conf original() {
-    Conf c = new Conf();
-    c.server = new Server();
-    return c;
+  public Yml yml;
+  public Server server;
+  
+  private Conf(Yml yml) {
+    this.yml = yml;
+    this.server = new Server(yml);
   }
 
-  public static Conf build() {
-    Conf conf = null;
+  private static InputStream stream(String path) {
+    return Conf.class.getResourceAsStream(path);
+  }
+  
+  public static Conf build() {    
+    InputStream defaults = stream("/_conf.yml");
+    Yml yml = new Yml(defaults);
     
-    InputStream is = Conf.class.getResourceAsStream("/conf.yml");
-    if (is == null) conf = original();
-    else conf = Snake.load(is);
+    InputStream user = stream("/conf.yml");
+    if (user != null) yml.pull(user);
     
-    String env = Arg.d("kaze.env");
-    if (env == null) return Arg.push(conf);
+    String e = Arg.d("kaze.env");
+    if (e != null) {
+      InputStream envYml = stream(
+        "/conf-" + e + ".yml"
+      );
+      if (envYml != null) yml.pull(envYml);
+    }
     
-    String eyml = "/conf-" + env + ".yml";
-    InputStream eis = Conf.class.getResourceAsStream(eyml);
-    if (eis == null) return Arg.push(conf);
-    
-    // TODO overwrite conf, using env specific yaml.
-    // Conf econf = Snake.load(eis);
-    // ... 
-    return Arg.push(conf);
+    Arg.push(yml);
+    return new Conf(yml);
   }
 
-  public static class Server {
-    public int 
-      maxThread=200, minThread=8, threadTimeout=60000,
-      httpPort=8080, httpTimeout=30000;
+  public class Server {
+    public int
+      threadMin, threadMax,
+      threadTimeout, httpPort, httpTimeout;
     public String
-      httpHost, staticDir, staticPath="/public";
+      httpHost, staticDir, staticPath;
+    public Server(Yml y) {
+      httpHost = y.val("http.host");
+      httpPort = y.intVal("http.port");
+      httpTimeout = y.intVal("http.timeout");
+      threadMin = y.intVal("thread.min");
+      threadMax = y.intVal("thread.max");
+      threadTimeout = y.intVal("thread.timeout");
+      staticDir = y.val("static.dir");
+      staticPath = y.val("static.path");
+    }
     public void log() {
       log.info(msg,
-          httpHost, httpPort, httpTimeout,
-          minThread, maxThread, threadTimeout,
-          staticDir, staticPath
-      );
+        httpHost, httpPort, httpTimeout,
+        threadMin, threadMax, threadTimeout,
+        staticDir, staticPath);
     }
     private static final String msg = "Server " + 
-        "[http: host={}, port={}, timeout={}] " + 
-        "[thread: min={}, max={}, timeout={}] " +
-        "[static: dir={}, path={}]";
+      "[http: host={}, port={}, timeout={}] " + 
+      "[thread: min={}, max={}, timeout={}] " +
+      "[static: dir={}, path={}]";
   }
 }

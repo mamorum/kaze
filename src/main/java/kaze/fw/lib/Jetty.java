@@ -54,7 +54,7 @@ public class Jetty {
 
 	private static Server server() {
 		QueuedThreadPool tp = new QueuedThreadPool(
-		    svconf.maxThread, svconf.minThread, svconf.threadTimeout
+		    svconf.threadMax, svconf.threadMin, svconf.threadTimeout
 		);
     Server sv = new Server(tp);
     sv.setConnectors(Connectors.build(sv));
@@ -140,6 +140,7 @@ public class Jetty {
         LogHandler.class.getResource(xml) == null
       ) return null;
       RequestLogImpl log = new RequestLogImpl();
+      log.setQuiet(true);
       log.setResource(xml);
       RequestLogHandler h = new RequestLogHandler();
       h.setRequestLog(log);

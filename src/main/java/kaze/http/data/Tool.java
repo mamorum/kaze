@@ -30,7 +30,7 @@ public class Tool {
 
   public static <T> T convert(Object val, Class<T> type) {
     try {
-      return Jackson.om.convertValue(val, type);
+      return Jackson.convert(val, type);
     } catch (IllegalArgumentException e) {
       throw new ConvertException(e);
     }

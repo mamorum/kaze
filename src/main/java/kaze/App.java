@@ -8,9 +8,9 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.fw.Arg;
 import kaze.fw.Conf;
 import kaze.fw.Routes;
+import kaze.fw.conf.Arg;
 import kaze.fw.lib.Jetty;
 
 public class App {
@@ -33,7 +33,7 @@ public class App {
 	}
 
   private static void browserSync() {
-    String url = Arg.dev.syncUrl();
+    String url = Arg.d("syncUrl");
     if (url == null || !url.startsWith("http")) return;
     HttpURLConnection con = null;
     try {
@@ -41,15 +41,15 @@ public class App {
           new URL(url)
       ).openConnection();
       int status = con.getResponseCode();
-      log.debug(bsMsg, status, url);
+      log.debug(syncMsg, status, url);
     } catch (IOException e) {
-      log.debug(bsMsg, "fail", url, e);
+      log.debug(syncMsg, "fail", url, e);
     } finally {
       if (con != null) con.disconnect();
     }
   }
   
-  private static final String bsMsg
+  private static final String syncMsg
         = "Requested to BrowserSync [status={}] [url={}]";
 
   private static final Logger log
