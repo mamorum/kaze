@@ -20,23 +20,23 @@ public class Conf {
     this.server = new Server(yml);
   }
 
-  private static InputStream stream(String path) {
+  private static InputStream inst(String path) {
     return Conf.class.getResourceAsStream(path);
   }
   
   public static Conf build() {    
-    InputStream defaults = stream("/_conf.yml");
-    Yml yml = new Yml(defaults);
+    InputStream fw = inst("/_conf.yml");
+    Yml yml = new Yml(fw);
     
-    InputStream user = stream("/conf.yml");
-    if (user != null) yml.pull(user);
+    InputStream app = inst("/conf.yml");
+    if (app != null) yml.pull(app);
     
     String e = Arg.d("kaze.env");
     if (e != null) {
-      InputStream envYml = stream(
+      InputStream env = inst(
         "/conf-" + e + ".yml"
       );
-      if (envYml != null) yml.pull(envYml);
+      if (env != null) yml.pull(env);
     }
     
     Arg.push(yml);
