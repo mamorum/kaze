@@ -11,6 +11,20 @@ import kaze.it.http.tool.ItCase;
 
 public class ResJsonTest extends ItCase {
 
+  // TODO test Res.json(String)
+  @Http({Method.GET, "/res/json/str"})
+  public void jsonStr(Req req, Res res) {
+    res.json("{\"msg\":\"str\"}");
+  }
+  @Test
+  public void jsonStr() {
+    HttpReq.get(
+        "http://localhost:8080/res/json/str"
+    ).statusIs(200).typeIsJsonUtf8().bodyIs(
+        "{\"msg\":\"str\"}"
+    ).close();
+  }
+  
   @Http({Method.GET, "/res/json/hi"})
   public void hi(Req req, Res res) {
     res.json("msg", "Hi!");
