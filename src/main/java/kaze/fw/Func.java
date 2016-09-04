@@ -13,6 +13,8 @@ public class Func {
     this.m = m; this.o = o;
   }
 
+  // TODO インスタンス化を減らす方法を検討する。
+  // メソッドとインスタンスが１：１になっている。
   public static Func of(Method m) {
      try {
        return new Func(
