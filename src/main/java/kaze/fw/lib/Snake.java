@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 
 import org.yaml.snakeyaml.Yaml;
 
-import kaze.fw.Conf;
+import kaze.Conf;
 
 // for single thread, initializing application conf.
 public class Snake {

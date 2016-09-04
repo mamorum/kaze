@@ -1,4 +1,4 @@
-package kaze.fw.conf;
+package kaze.conf;
 
 public class Arg {
   

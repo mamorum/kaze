@@ -26,13 +26,13 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
 import kaze.App;
-import kaze.fw.Conf;
+import kaze.Conf;
 import kaze.fw.Route;
 import kaze.fw.Routes;
 
 public class Jetty {
 
-  private static Conf.Server svconf = App.conf.server;
+  private static Conf.Server svconf = Conf.server;
   private static Routes routes = App.routes;
   private static Server server;
   

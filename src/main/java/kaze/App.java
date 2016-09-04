@@ -8,30 +8,27 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.fw.Conf;
+import kaze.conf.Arg;
 import kaze.fw.Routes;
-import kaze.fw.conf.Arg;
 import kaze.fw.lib.Jetty;
 
 public class App {
   
-  public static Conf conf; 
   public static Routes routes;
 
-	public static void start(String... pkgs) {
-	  Log.starts();
-	  build(pkgs);
-	  Jetty.start();
-	  Log.started();
-	  browserSync();
-	  Jetty.listen();
-	}
-	
-  public static void build(String... pkgs) {
-	  conf = Conf.build();
-	  routes = Routes.build(pkgs);
-	}
+  public static void start(String... pkgs) {
+    Sw.start();
+    build(pkgs);
+    Jetty.start();
+    Sw.stop();
+    browserSync();
+    Jetty.listen();
+  }
 
+  public static void build(String... pkgs) {
+    routes = Routes.build(pkgs);
+  }
+  
   private static void browserSync() {
     String url = Arg.d("syncUrl");
     if (url == null || !url.startsWith("http")) return;
@@ -50,18 +47,18 @@ public class App {
   }
   
   private static final String syncMsg
-        = "Requested to BrowserSync [status={}] [url={}]";
+    = "Requested to BrowserSync [status={}] [url={}]";
 
   private static final Logger log
-        = LoggerFactory.getLogger(App.class);
+    = LoggerFactory.getLogger(App.class);
   
-  private static class Log {
+  // Stopwatch
+  private static class Sw {
     private static long start;
-    static void starts() {
+    static void start() {
       start = System.currentTimeMillis();
-      log.info("Starts");
     }
-    static void started() {
+    static void stop() {
       long started = System.currentTimeMillis();
       log.info(
           "Started in {}ms ( jvm uptime {}ms )",
