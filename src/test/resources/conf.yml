@@ -1,3 +1,0 @@
-http.timeout: 62000
-thread.min: 9
-thread.max: 205

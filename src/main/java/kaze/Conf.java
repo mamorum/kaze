@@ -1,31 +1,34 @@
 package kaze;
 
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kaze.conf.Yml;
+import kaze.conf.Arg;
+import kaze.conf.Property;
 
 public class Conf {
 
   private static final Logger log = LoggerFactory.getLogger(Conf.class);
   
-  private static Yml yml;
+  private static Properties kv;
   public static Server server;
   
   static {
-    yml = Yml.build();
-    server = new Server(yml);
+    kv = Property.load();
+    Arg.push(kv);
+    server = new Server();
   }
   
   public static String get(String key) {
-    return (String) yml.map.get(key);
+    String v = kv.getProperty(key);
+    if (v == null) return null;
+    if (v.length() == 0) return null;
+    return v;
   }
   
   public static int getInt(String key) {
-    Object val = yml.map.get(key);
-    if (val instanceof Integer) {
-      return (Integer) val;
-    }
     return Integer.valueOf(
       get(key)
     );
@@ -37,7 +40,7 @@ public class Conf {
       threadTimeout, httpPort, httpTimeout;
     public String
       httpHost, staticDir, staticPath;
-    public Server(Yml y) {
+    public Server() {
       httpHost = get("http.host");
       httpPort = getInt("http.port");
       httpTimeout = getInt("http.timeout");
