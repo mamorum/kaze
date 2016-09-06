@@ -6,19 +6,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kaze.conf.Arg;
-import kaze.conf.Property;
+import kaze.conf.Pfile;
 
 public class Conf {
 
   private static final Logger log = LoggerFactory.getLogger(Conf.class);
   
   private static Properties kv;
-  public static Server server;
+  public static Svr svr;
   
   static {
-    kv = Property.load();
+    kv = Pfile.load();
     Arg.push(kv);
-    server = new Server();
+    svr = new Svr();
   }
   
   public static String get(String key) {
@@ -28,19 +28,20 @@ public class Conf {
     return v;
   }
   
+  // return 0, if value is null or empty 
   public static int getInt(String key) {
-    return Integer.valueOf(
-      get(key)
-    );
+    String v = get(key);
+    if (v == null) return 0;
+    return Integer.valueOf(v);
   }
   
-  public static class Server {
+  public static class Svr {
     public int
       threadMin, threadMax,
       threadTimeout, httpPort, httpTimeout;
     public String
       httpHost, staticDir, staticPath;
-    public Server() {
+    public Svr() {
       httpHost = get("http.host");
       httpPort = getInt("http.port");
       httpTimeout = getInt("http.timeout");

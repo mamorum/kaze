@@ -9,7 +9,7 @@ public class Arg {
     return System.getProperty(key);
   }
 
-  // overwrite yml with system properties.
+  // overwrite properties with system properties.
   public static void push(Properties p) {
     for (String key: p.stringPropertyNames()) {
       String arg = d(key);

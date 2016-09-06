@@ -32,12 +32,12 @@ import kaze.fw.Routes;
 
 public class Jetty {
 
-  private static Conf.Server svconf = Conf.server;
+  private static Conf.Svr svrconf = Conf.svr;
   private static Routes routes = App.routes;
   private static Server server;
   
   public static void start() {
-    svconf.log();
+    svrconf.log();
     server = server();
     try { server.start(); }
     catch (Exception e) {
@@ -54,7 +54,7 @@ public class Jetty {
 
 	private static Server server() {
 		QueuedThreadPool tp = new QueuedThreadPool(
-		    svconf.threadMax, svconf.threadMin, svconf.threadTimeout
+		    svrconf.threadMax, svrconf.threadMin, svrconf.threadTimeout
 		);
     Server sv = new Server(tp);
     sv.setConnectors(Connectors.build(sv));
@@ -71,9 +71,9 @@ public class Jetty {
       c.setSendServerVersion(false);  // always.
       HttpConnectionFactory fac = new HttpConnectionFactory(c);
       ServerConnector con = new ServerConnector(sv, fac);
-      con.setHost(svconf.httpHost);
-      con.setPort(svconf.httpPort);
-      con.setIdleTimeout(svconf.httpTimeout);
+      con.setHost(svrconf.httpHost);
+      con.setPort(svrconf.httpPort);
+      con.setIdleTimeout(svrconf.httpTimeout);
       return new Connector[] { con };
     }
 	}
@@ -99,13 +99,13 @@ public class Jetty {
       return h;
     }
     static Resource base() {
-      if (svconf.staticDir != null) {
+      if (svrconf.staticDir != null) {
         return Resource.newResource(
-            new File(svconf.staticDir)
+            new File(svrconf.staticDir)
         );
       }
       return Resource.newClassPathResource(
-            svconf.staticPath
+            svrconf.staticPath
       );
     } 
     static ServletHolder servlet() {

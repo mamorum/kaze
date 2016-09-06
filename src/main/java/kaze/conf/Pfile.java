@@ -6,24 +6,24 @@ import java.util.Properties;
 
 import kaze.Conf;
 
-public class Property {
+public class Pfile {
   
   public static Properties load() {    
-    Properties fw =  load(
+    Properties prop =  load(
       is("/_conf.properties")
     );
     
     InputStream app = is("/conf.properties");
-    push(app, fw);
+    push(app, prop);
 
     String e = Arg.d("kaze.env");
-    if (e == null) return fw;
+    if (e == null) return prop;
     InputStream env = is(
       "/conf-" + e + ".properties"
     );
-    push(env, fw);
+    push(env, prop);
 
-    return fw;
+    return prop;
   }
 
   private static InputStream is(String path) {
