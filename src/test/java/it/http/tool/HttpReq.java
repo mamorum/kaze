@@ -1,4 +1,4 @@
-package kaze.it.http.tool;
+package it.http.tool;
 
 import java.io.IOException;
 

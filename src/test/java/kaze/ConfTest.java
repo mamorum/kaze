@@ -2,15 +2,11 @@ package kaze;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ConfTest {
+import all.Case;
 
-  @BeforeClass public static void once() {
-    System.setProperty("kaze.env", "dev");
-    System.setProperty("thread.max", "215");
-  }
+public class ConfTest extends Case {
   
   @Test public void load() {    
     

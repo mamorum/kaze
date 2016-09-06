@@ -1,16 +1,16 @@
-package kaze.it.http.req;
+package it.http.req;
 
 import org.junit.Test;
 
+import it.http.model.Address;
+import it.http.model.Person;
+import it.http.tool.HttpReq;
+import it.http.tool.HttpRes;
+import it.http.tool.ItCase;
 import kaze.Http;
 import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.it.http.model.Address;
-import kaze.it.http.model.Person;
-import kaze.it.http.tool.HttpReq;
-import kaze.it.http.tool.HttpRes;
-import kaze.it.http.tool.ItCase;
 
 public class ReqParamsTest extends ItCase {
 

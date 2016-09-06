@@ -1,4 +1,4 @@
-package kaze.it.http.model;
+package it.http.model;
 
 import java.util.List;
 

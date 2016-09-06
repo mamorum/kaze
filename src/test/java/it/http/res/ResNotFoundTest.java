@@ -1,9 +1,9 @@
-package kaze.it.http.res;
+package it.http.res;
 
 import org.junit.Test;
 
-import kaze.it.http.tool.HttpReq;
-import kaze.it.http.tool.ItCase;
+import it.http.tool.HttpReq;
+import it.http.tool.ItCase;
 
 public class ResNotFoundTest extends ItCase {
   

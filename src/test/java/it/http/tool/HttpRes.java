@@ -1,4 +1,4 @@
-package kaze.it.http.tool;
+package it.http.tool;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

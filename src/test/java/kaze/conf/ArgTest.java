@@ -7,7 +7,9 @@ import java.util.Properties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ArgTest {
+import all.Case;
+
+public class ArgTest extends Case {
 
   @BeforeClass public static void once() {
     System.setProperty("test.arg.d", "d");

@@ -1,13 +1,13 @@
-package kaze.it.http.res;
+package it.http.res;
 
 import org.junit.Test;
 
+import it.http.tool.HttpReq;
+import it.http.tool.ItCase;
 import kaze.Http;
 import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.it.http.tool.HttpReq;
-import kaze.it.http.tool.ItCase;
 
 public class ResStatusTest extends ItCase {
   

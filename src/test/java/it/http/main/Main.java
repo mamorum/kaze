@@ -1,4 +1,4 @@
-package kaze.it.http.main;
+package it.http.main;
 
 import static kaze.Http.Method.*;
 
@@ -15,6 +15,6 @@ public class Main {
   }
 
   public static void main(String[] args) {
-    App.start("kaze.it.http");
+    App.start("it.http");
   }
 }

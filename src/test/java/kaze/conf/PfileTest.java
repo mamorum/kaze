@@ -4,14 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Properties;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class PfileTest {
+import all.Case;
 
-  @BeforeClass public static void once() {
-    System.setProperty("kaze.env", "dev");
-  }
+public class PfileTest extends Case {
   
   @Test public void load() {    
     Properties kv = Pfile.load();
