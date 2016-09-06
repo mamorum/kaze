@@ -2,16 +2,16 @@
 
 <!-- TODO : Table of Contents
 
-- Installing
+- Install
 - Routing
 - Serving Static Contents
+- Configuration ?
 - Start Application
 
  -->
 
 
-## Installing
-### kaze
+## Install
 Maven
 
 ```xml
@@ -28,18 +28,6 @@ Gradle
 compile 'com.github.mamorum:kaze:0.0.2'
 ```
 
-### logback-classic
-Maven (latest version is in [Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22ch.qos.logback%22%20AND%20a%3A%22logback-classic%22) or [Logback Web Site](http://logback.qos.ch/))
-
-```xml
-<dependency>
-  <groupId>ch.qos.logback</groupId>
-  <artifactId>logback-classic</artifactId>
-</dependency>
-```
-
-Kaze depends on [SLF4J](http://www.slf4j.org/index.html). To output logging, please add logback-classic or other logging implementation to your app. The way to switch logging frameworks is written in the [SLF4J user manual](http://www.slf4j.org/manual.html).
-
 
 ## Routing
 Routing means selecting application method to handle a request. Kaze determines the app method, using http request method and URI.
@@ -50,16 +38,15 @@ In Kaze, `@Http` method annotation represents a route.
 @Http({METHOD, URI})
 ```
 
-- __METHOD__ is a http method (GET, POST, etc), defined also in [kaze.Http](https://github.com/mamorum/kaze/blob/master/src/main/java/kaze/Http.java)
-- __URI__ is a path (`/`, `/user`, etc)
-- __URI variable__ is supported (`/:id`, `/user/:name`, etc)
+- __METHOD__ : Http method (GET, POST, etc). Static import `import static kaze.Http.Method.*;` is useful to define.
+- __URI__ : Path (`/`, `/user`, etc). Path variable (such as `/:id`, `/user/:id`, etc) is supported.
 
-Following codes are example of routing.
+Following code are example of routing.
 
 ```java
 @Http({POST, "/user"})
 public void create(Req req, Res res) {
-  // create user.
+  // handle request.
 } 
 ```
 
@@ -67,15 +54,19 @@ public void create(Req req, Res res) {
 @Http({DELETE, "/user/:id"})
 public void delete(Req req, Res res) {
   Long id = req.uri(":id", Long.class);
-  // delete user, using id.
+  // if request URI is '/user/8',
+  // the value of id is 8.
 } 
 ```
 
-Static import `import static kaze.Http.Method.*` is convenient to define http method (GET, POST, etc) in `@Http`.
 
 
 ## Serving Static Contents
 If there are no route for a request, Kaze will find content from `public` directory in the classpath. Please put the static contents on `src/main/resources/public`, if you are using Maven or Gradle.
+
+
+## Configuration
+Comming soon ...
 
 
 ## Start Application
