@@ -41,7 +41,7 @@ In Kaze, `@Http` method annotation represents a route.
 - __METHOD__ : Http method (GET, POST, etc). Static import `import static kaze.Http.Method.*;` is useful to define.
 - __URI__ : Path (`/`, `/user`, etc). Path variable (such as `/:id`, `/user/:id`, etc) is supported.
 
-Following code are example of routing.
+Following codes are example of routing.
 
 ```java
 @Http({POST, "/user"})

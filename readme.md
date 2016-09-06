@@ -6,10 +6,8 @@ Kaze makes it easy to create Web API, RESTful API, etc.
 
 
 ## Hello World example
-Following code is [Main.java](https://github.com/mamorum/kaze/blob/master/src/test/java/kaze/it/http/Main.java) in `kaze/src/test/java/kaze/it/http`.
-
 ```java
-package kaze.it.http;
+package it.http;
 
 import static kaze.Http.Method.*;
 
@@ -26,12 +24,12 @@ public class Main {
   }
 
   public static void main(String[] args) {
-    App.start("kaze.it.http");
+    App.start("it.http");
   }
 }
 ```
 
-Run as java application, and it serves on port `8080`.
+After program started, responds like bellow.
 
 ```txt
 $ curl -X GET http://localhost:8080/hello -s

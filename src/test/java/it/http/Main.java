@@ -1,4 +1,4 @@
-package it.http.main;
+package it.http;
 
 import static kaze.Http.Method.*;
 
