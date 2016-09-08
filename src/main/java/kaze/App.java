@@ -31,7 +31,8 @@ public class App {
   
   private static void browserSync() {
     String url = Arg.d("syncUrl");
-    if (url == null || !url.startsWith("http")) return;
+    if (url == null) return;
+    if (!url.startsWith("http")) return;
     HttpURLConnection con = null;
     try {
       con = (HttpURLConnection) (

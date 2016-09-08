@@ -23,6 +23,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
 import kaze.App;
@@ -32,19 +34,40 @@ import kaze.fw.Routes;
 
 public class Jetty {
 
-  private static Conf.Svr svrconf = Conf.svr;
-  private static Routes routes = App.routes;
+  private static final Logger log = LoggerFactory.getLogger(Jetty.class);
+
   private static Server server;
   
+  private static class Config {
+    public static int
+      httpPort = Conf.getInt("http.port"),
+      httpTimeout = Conf.getInt("http.timeout"),
+      threadMin = Conf.getInt("thread.min"),
+      threadMax = Conf.getInt("thread.max"),
+      threadTimeout = Conf.getInt("thread.timeout");
+    public static String
+      httpHost = Conf.get("http.host"),
+      staticDir = Conf.get("static.dir"),
+      staticPath = Conf.get("static.path");
+    public static void log() { log.info("Server " + 
+      "[http: host={}, port={}, timeout={}] " + 
+      "[thread: min={}, max={}, timeout={}] " +
+      "[static: dir={}, path={}]",
+      httpHost, httpPort, httpTimeout,
+      threadMin, threadMax, threadTimeout,
+      staticDir, staticPath);
+    }
+  }
+  
   public static void start() {
-    svrconf.log();
+    Config.log();
     server = server();
     try { server.start(); }
     catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
-  
+
   public static void listen() {
     try { server.join(); }
     catch (InterruptedException e) {
@@ -52,28 +75,28 @@ public class Jetty {
     }
   }
 
-	private static Server server() {
-		QueuedThreadPool tp = new QueuedThreadPool(
-		    svrconf.threadMax, svrconf.threadMin, svrconf.threadTimeout
-		);
+  private static Server server() {
+    QueuedThreadPool tp = new QueuedThreadPool(
+        Config.threadMax, Config.threadMin, Config.threadTimeout
+    );
     Server sv = new Server(tp);
     sv.setConnectors(Connectors.build(sv));
     HandlerCollection hc = new HandlerCollection();
     hc.setHandlers(Handlers.build());
     sv.setHandler(hc);
     return sv;
-	}
+  }
 	
-	// Parts of Server ->
+	// Server Components ->
 	private static class Connectors {
     static Connector[] build(Server sv) {
       HttpConfiguration c = new HttpConfiguration();
       c.setSendServerVersion(false);  // always.
       HttpConnectionFactory fac = new HttpConnectionFactory(c);
       ServerConnector con = new ServerConnector(sv, fac);
-      con.setHost(svrconf.httpHost);
-      con.setPort(svrconf.httpPort);
-      con.setIdleTimeout(svrconf.httpTimeout);
+      con.setHost(Config.httpHost);
+      con.setPort(Config.httpPort);
+      con.setIdleTimeout(Config.httpTimeout);
       return new Connector[] { con };
     }
 	}
@@ -99,13 +122,13 @@ public class Jetty {
       return h;
     }
     static Resource base() {
-      if (svrconf.staticDir != null) {
+      if (Config.staticDir != null) {
         return Resource.newResource(
-            new File(svrconf.staticDir)
+            new File(Config.staticDir)
         );
       }
       return Resource.newClassPathResource(
-            svrconf.staticPath
+          Config.staticPath
       );
     } 
     static ServletHolder servlet() {
@@ -120,6 +143,7 @@ public class Jetty {
 	
 	@SuppressWarnings("serial")
 	private static class Servlet extends DefaultServlet {
+	  private static Routes routes = App.routes;
 	  protected void service(
 	    HttpServletRequest sreq, HttpServletResponse sres)
 	    throws ServletException, IOException
