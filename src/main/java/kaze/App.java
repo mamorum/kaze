@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import kaze.conf.Arg;
 import kaze.fw.Routes;
-import kaze.fw.lib.Jetty;
+import kaze.lib.Jetty;
 
 public class App {
   
@@ -20,8 +20,8 @@ public class App {
     Sw.start();
     build(pkgs);
     Jetty.start();
-    Sw.stop();
     browserSync();
+    Sw.stop();
     Jetty.listen();
   }
 

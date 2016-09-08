@@ -1,4 +1,4 @@
-package kaze.fw.lib;
+package kaze.lib;
 
 import java.io.File;
 import java.io.IOException;

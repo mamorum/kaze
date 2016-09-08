@@ -6,9 +6,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import kaze.fw.lib.Jackson;
 import kaze.http.ex.ConvertException;
 import kaze.http.ex.ValidateException;
+import kaze.lib.Jackson;
 
 public class Tool {
 
