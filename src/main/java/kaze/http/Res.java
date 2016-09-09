@@ -7,35 +7,31 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.http.data.Tool;
-import kaze.http.res.Type;
+import kaze.http.data.Json;
 
 public class Res {
 	
 	public HttpServletResponse sr;
 	public Res(HttpServletResponse sr) { this.sr = sr; }
 
-	private Res write(String body, String defaultType) {
-		if (sr.getContentType() == null) {
-			sr.setContentType(defaultType);
-		}
-		try { sr.getWriter().print(body); }
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
-	
 	public Res write(String body) {
 	  return write(body, Type.PLAIN);
 	}
-	
+
+  private Res write(String body, String defaultType) {
+    if (sr.getContentType() == null) {
+      sr.setContentType(defaultType);
+    }
+    try { sr.getWriter().print(body); }
+    catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return this;
+  }
+  
 	public Res json(Object src) {
-	  if (src instanceof String) return write(
-	    (String) src, Type.JSON
-	  );
 	  return write(
-	      Tool.toJson(src), Type.JSON
+	      Json.str(src), Type.JSON
 		);
 	}
 	
@@ -65,5 +61,11 @@ public class Res {
 	public Res redirect(String url) {
 	  sr.setHeader("Location", sr.encodeRedirectURL(url));
 	  return this;
+	}
+	
+	public static class Type {
+	  public final static String PLAIN = "text/plain";
+	  public final static String HTML = "text/html";
+	  public final static String JSON = "application/json";  
 	}
 }

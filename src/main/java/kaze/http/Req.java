@@ -6,9 +6,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.data.Tool;
-import kaze.http.req.Data;
-import kaze.http.req.Uri;
+import kaze.http.data.Converter;
+import kaze.http.data.Json;
+import kaze.http.data.Params;
 
 public class Req {
 
@@ -21,11 +21,15 @@ public class Req {
 	}
 
   public <T> Data<T> json(Class<T> to) {
-    return Data.jsonToObj(sr, to);
+    return new Data<>(
+      Json.bind(sr, to)
+    );
   }
 
   public <T> Data<T> params(Class<T> to) {
-    return Data.paramsToObj(sr, to);
+    return new Data<>(
+      Params.bind(sr, to)
+    );
   }
 
   public String uri(String path) {
@@ -33,7 +37,7 @@ public class Req {
   }
 
   public <T> T uri(String path, Class<T> to) {    
-    return Tool.convert(uri.path(path), to);
+    return Converter.convert(uri.path(path), to);
   }  
 
   public String param(String name) {
@@ -41,7 +45,7 @@ public class Req {
   }
 
   public <T> T param(String name, Class<T> to) {
-    return Tool.convert(param(name), to);
+    return Converter.convert(param(name), to);
   }
   
   public List<String> listParam(String name) {
@@ -51,7 +55,7 @@ public class Req {
   public <T> List<T> listParam(String name, Class<T> to) {
     List<String> ls = listParam(name);
     List<T> lt = new ArrayList<>(ls.size());
-    for (String s : ls) lt.add( Tool.convert(s, to) );
+    for (String s : ls) lt.add( Converter.convert(s, to) );
     return lt;
   }
 }

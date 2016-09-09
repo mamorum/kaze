@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import kaze.http.Req;
 import kaze.http.Res;
+import kaze.http.Uri;
 import kaze.http.ex.Recoverable;
-import kaze.http.req.Uri;
 
 public class Route {
   

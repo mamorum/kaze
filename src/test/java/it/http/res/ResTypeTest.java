@@ -8,7 +8,7 @@ import kaze.Http;
 import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
-import kaze.http.res.Type;
+import kaze.http.Res.Type;
 
 public class ResTypeTest extends ItCase {
 
