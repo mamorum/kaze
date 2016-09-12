@@ -1,6 +1,6 @@
 package kaze.http.data;
 
-import kaze.http.ex.ConvertException;
+import kaze.ex.ConvertException;
 import kaze.lib.Jackson;
 
 public class Converter {

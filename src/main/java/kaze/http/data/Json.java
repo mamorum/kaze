@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.ex.ConvertException;
+import kaze.ex.ConvertException;
 import kaze.lib.Jackson;
 
 public class Json {

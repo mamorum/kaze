@@ -8,17 +8,12 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import kaze.ex.Recoverable;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.Uri;
-import kaze.http.ex.Recoverable;
 
 public class Route {
-  
-  private static final Logger log = LoggerFactory.getLogger(Route.class);
   
   String uri;
   Pattern uriPattern;
@@ -86,7 +81,6 @@ public class Route {
     try { func.call(req, res); }
     catch (Throwable e) {
       if (e instanceof Recoverable) {
-        log.debug(e.getMessage(), e);
         ((Recoverable) e).reply(res);
         return;
       }

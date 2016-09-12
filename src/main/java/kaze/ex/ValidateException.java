@@ -1,4 +1,4 @@
-package kaze.http.ex;
+package kaze.ex;
 
 import java.util.ArrayList;
 import java.util.Set;

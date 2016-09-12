@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 
-import kaze.http.ex.ValidateException;
+import kaze.ex.ValidateException;
 
 public class Validator {
 
