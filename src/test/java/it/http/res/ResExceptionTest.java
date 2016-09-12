@@ -14,7 +14,7 @@ public class ResExceptionTest extends ItCase {
   // checked
   @Http({Method.GET, "/res/ex"})
   public void ex(Req req, Res res) throws Exception{
-    throw new Exception();
+    throw new Exception("Threw Exception for test.");
   }
   @Test  // Jetty ErrorHandler sets type and body. 
   public void ex() {
@@ -28,7 +28,9 @@ public class ResExceptionTest extends ItCase {
   // unchecked
   @Http({Method.GET, "/res/rex"})
   public void rex(Req req, Res res) {
-    throw new RuntimeException();
+    throw new RuntimeException(
+      "Threw RuntimeException for test."
+    );
   }
   @Test  // Jetty ErrorHandler sets type and body. 
   public void rex() {

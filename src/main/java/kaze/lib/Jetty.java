@@ -27,10 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
-import kaze.App;
 import kaze.Conf;
-import kaze.fw.Route;
-import kaze.fw.Routes;
+import kaze.Route;
 
 public class Jetty {
 
@@ -143,15 +141,12 @@ public class Jetty {
 	
 	@SuppressWarnings("serial")
 	private static class Servlet extends DefaultServlet {
-	  private static Routes routes = App.routes;
 	  protected void service(
 	    HttpServletRequest sreq, HttpServletResponse sres)
 	    throws ServletException, IOException
 	  {
-	    String m = sreq.getMethod();
-	    String uri = sreq.getRequestURI();
-	    Route route = routes.route(m, uri);    
-	    if (route != null) route.run(uri, sreq, sres);
+	    kaze.route.Handler f = Route.handler(sreq);    
+	    if (f != null) f.run(sreq, sres);
 	    else super.service(sreq, sres);  // static contens
 	  }
 	}

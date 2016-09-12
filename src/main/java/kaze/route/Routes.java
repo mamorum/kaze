@@ -1,4 +1,4 @@
-package kaze.fw;
+package kaze.route;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -16,36 +16,51 @@ public class Routes {
 
   private static final Logger logger = LoggerFactory.getLogger(Routes.class);
   
-  private HashMap<String, HashMap<String, Route>>
+  private HashMap<String, HashMap<String, Handler>>
     method2uri = new HashMap<>();
   
-  private HashMap<String, ArrayList<Route>>
+  private HashMap<String, ArrayList<Handler>>
     method2regex = new HashMap<>();
   
   // for fw init.
-  private void add(String method, String uri, Func func) {
+  public void scan(String... pkgs) {
+    Reflections ref = new Reflections(
+        pkgs, new MethodAnnotationsScanner()
+    );
+    for (
+      Method m : ref.getMethodsAnnotatedWith(Http.class)
+    ) {
+      Http http = m.getAnnotation(Http.class);
+      String httpMethod = http.value()[0].toUpperCase();
+      String httpUri = http.value()[1];
+      Func func = Func.of(m);
+      add(httpMethod, httpUri, func);
+    }
+  }
+  
+  public void add(String method, String uri, Func func) {
     if (uri.contains(":")) addRegex(method, uri, func);
     else addUri(method, uri, func);
   }
   
   private void addRegex(String method, String uri, Func func) {
-    ArrayList<Route> regexRoutes = method2regex.get(method);
+    ArrayList<Handler> regexRoutes = method2regex.get(method);
     if (regexRoutes == null) {
       regexRoutes = new ArrayList<>();
       method2regex.put(method, regexRoutes);
     }
-    Route route = Route.fromRegexUri(uri, func);
+    Handler route = Handler.fromRegexUri(uri, func);
     regexRoutes.add(route);
     log(method, uri, func);
   }
 
   private void addUri(String method, String uri, Func func) {
-    HashMap<String, Route> uriRoutes = method2uri.get(method);
+    HashMap<String, Handler> uriRoutes = method2uri.get(method);
     if (uriRoutes == null) {
       uriRoutes = new HashMap<>();
       method2uri.put(method, uriRoutes);
     }
-    Route route = Route.fromUri(uri, func);
+    Handler route = Handler.fromUri(uri, func);
     uriRoutes.put(uri, route);
     log(method, uri, func);
   }
@@ -58,45 +73,22 @@ public class Routes {
   }
 
   // for app running.
-  public Route route(String method, String uri) {    
+  public Handler handler(String method, String uri) {    
     // resolve from method2uri
-    Route route = null;
-    HashMap<String, Route> uriRoutes = method2uri.get(method);
+    Handler route = null;
+    HashMap<String, Handler> uriRoutes = method2uri.get(method);
     if (uriRoutes != null) route = uriRoutes.get(uri);
     if (route != null) return route;
     
     // resolve from method2regex
-    ArrayList<Route> regexRoutes = method2regex.get(method); 
+    ArrayList<Handler> regexRoutes = method2regex.get(method); 
     if (regexRoutes != null) {
-      for(Route r : regexRoutes) {
+      for(Handler r : regexRoutes) {
         if (r.uriPattern.matcher(uri).matches()) return r;
       }
     }
     
     // not found
     return null;
-  }
-
-  public static Routes build(String... pkgs) {
-    if (pkgs == null) return new Routes();
-    if (pkgs.length == 0) return new Routes();
-    return scan(pkgs);
-  }
-  
-  private static Routes scan(String... pkgs) {
-    Reflections ref = new Reflections(
-        pkgs, new MethodAnnotationsScanner()
-    );
-    Routes routes = new Routes();
-    for (
-      Method m : ref.getMethodsAnnotatedWith(Http.class)
-    ) {
-      Http http = m.getAnnotation(Http.class);
-      String httpMethod = http.value()[0].toUpperCase();
-      String httpUri = http.value()[1];
-      Func func = Func.of(m);
-      routes.add(httpMethod, httpUri, func);
-    }
-    return routes;
   }
 }

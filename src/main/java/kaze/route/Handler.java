@@ -1,4 +1,4 @@
-package kaze.fw;
+package kaze.route;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -13,31 +13,31 @@ import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.Uri;
 
-public class Route {
+public class Handler {
   
   String uri;
   Pattern uriPattern;
   Map<String, Integer> uriIndex;
   Func func;
   
-  private Route(String uri, Func func) {
+  private Handler(String uri, Func func) {
     this.uri = uri; this.func = func;
   }
   
-  private Route(String uri, Map<String, Integer> index, Func func) {
+  private Handler(String uri, Map<String, Integer> index, Func func) {
     this.uri = uri;
     this.uriPattern = Pattern.compile(uri);
     this.uriIndex = index;
     this.func = func;
   }
 
-  static Route fromUri(String uri, Func func) {
-    return new Route(uri, func);
+  static Handler fromUri(String uri, Func func) {
+    return new Handler(uri, func);
   }
 	
   // Create URI index and, 
   // Change URI to Pattern (ex. "/:id/:name/" to "/[^/]+/[^/]+")
-  static Route fromRegexUri(String uri, Func func) {
+  static Handler fromRegexUri(String uri, Func func) {
     Map<String, Integer> uriIndex = new HashMap<>();
     StringBuilder sb = new StringBuilder();
     String[] path = uri.substring(1).split("/");
@@ -53,7 +53,7 @@ public class Route {
     if (uri.endsWith("/")) sb.append("/");
     
     String regexUri = sb.toString();
-    return new Route(regexUri, uriIndex, func);
+    return new Handler(regexUri, uriIndex, func);
 	}
 	
   private Uri uri(String uri) {
@@ -71,11 +71,11 @@ public class Route {
   }
 
   public void run(
-      String uri,
       HttpServletRequest sreq,
       HttpServletResponse sres
   ) {
     utf8(sreq, sres);
+    String uri = sreq.getRequestURI();
     Req req = new Req(sreq, uri(uri));
     Res res = new Res(sres);
     try { func.call(req, res); }

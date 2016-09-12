@@ -9,27 +9,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kaze.conf.Arg;
-import kaze.fw.Routes;
 import kaze.lib.Jetty;
 
 public class App {
-  
-  public static Routes routes;
 
   public static void start(String... pkgs) {
     Sw.start();
-    build(pkgs);
+    Route.build(pkgs);
     Jetty.start();
     browserSync();
     Sw.stop();
     Jetty.listen();
   }
 
-  public static void build(String... pkgs) {
-    routes = Routes.build(pkgs);
-  }
-  
-  private static void browserSync() {
+  public static void browserSync() {
     String url = Arg.d("syncUrl");
     if (url == null) return;
     if (!url.startsWith("http")) return;
