@@ -145,8 +145,8 @@ public class Jetty {
 	    HttpServletRequest sreq, HttpServletResponse sres)
 	    throws ServletException, IOException
 	  {
-	    kaze.route.Handler f = Route.handler(sreq);    
-	    if (f != null) f.run(sreq, sres);
+	    Route r = Route.get(sreq);    
+	    if (r != null) r.run(sreq, sres);
 	    else super.service(sreq, sres);  // static contens
 	  }
 	}

@@ -3,6 +3,7 @@ package kaze.route;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -10,20 +11,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kaze.Http;
+import kaze.Route;
 
-// not thread safe. 
 public class Routes {
 
   private static final Logger logger = LoggerFactory.getLogger(Routes.class);
   
-  private HashMap<String, HashMap<String, Handler>>
+  private static HashMap<String, HashMap<String, Route>>
     method2uri = new HashMap<>();
   
-  private HashMap<String, ArrayList<Handler>>
+  private static HashMap<String, ArrayList<Route>>
     method2regex = new HashMap<>();
   
-  // for fw init.
-  public void scan(String... pkgs) {
+  // for init.
+  public static void build(String... pkgs) {
+    if (pkgs == null) return;
+    if (pkgs.length == 0) return;
     Reflections ref = new Reflections(
         pkgs, new MethodAnnotationsScanner()
     );
@@ -38,53 +41,80 @@ public class Routes {
     }
   }
   
-  public void add(String method, String uri, Func func) {
+  public static void add(String method, String uri, Func func) {
     if (uri.contains(":")) addRegex(method, uri, func);
     else addUri(method, uri, func);
   }
   
-  private void addRegex(String method, String uri, Func func) {
-    ArrayList<Handler> regexRoutes = method2regex.get(method);
+  private static void addRegex(String method, String uri, Func func) {
+    ArrayList<Route> regexRoutes = method2regex.get(method);
     if (regexRoutes == null) {
       regexRoutes = new ArrayList<>();
       method2regex.put(method, regexRoutes);
     }
-    Handler route = Handler.fromRegexUri(uri, func);
+    Route route = regexUriRoute(method, uri, func);
     regexRoutes.add(route);
     log(method, uri, func);
   }
+  
+  // Create URI index and, 
+  // Change URI to Pattern (ex. "/:id/:name/" to "/[^/]+/[^/]+")
+  public static Route regexUriRoute(String method, String uri, Func func) {
+    Map<String, Integer> uriIndex = new HashMap<>();
+    StringBuilder sb = new StringBuilder();
+    String[] path = uri.substring(1).split("/");
+    for (int i = 0; i < path.length; i++) {
+      sb.append("/");
+      if (path[i].contains(":")) {
+        sb.append("[^/]+");
+        uriIndex.put(path[i], i);
+      } else {
+        sb.append(path[i]);
+      }
+    }
+    if (uri.endsWith("/")) sb.append("/");
+    
+    String regexUri = sb.toString();
+    Path p = new Path(regexUri, uriIndex);
+    return new Route(method, p, func);
+  }
 
-  private void addUri(String method, String uri, Func func) {
-    HashMap<String, Handler> uriRoutes = method2uri.get(method);
+  private static void addUri(String method, String uri, Func func) {
+    HashMap<String, Route> uriRoutes = method2uri.get(method);
     if (uriRoutes == null) {
       uriRoutes = new HashMap<>();
       method2uri.put(method, uriRoutes);
     }
-    Handler route = Handler.fromUri(uri, func);
+    Route route = uriRoute(method, uri, func);
     uriRoutes.put(uri, route);
     log(method, uri, func);
   }
 
-  private void log(String method, String uri, Func f) {
+  private static Route uriRoute(String method, String uri, Func func) {
+    Path path = new Path(uri);
+    return new Route(method, path, func);
+  }
+
+  private static void log(String method, String uri, Func f) {
     logger.info(
         "[{} {}] -> [{}#{}]", method, uri, 
         f.m.getDeclaringClass().getName(), 
         f.m.getName());
   }
 
-  // for app running.
-  public Handler handler(String method, String uri) {    
+  // for runtime.
+  public static Route get(String method, String uri) {    
     // resolve from method2uri
-    Handler route = null;
-    HashMap<String, Handler> uriRoutes = method2uri.get(method);
+    Route route = null;
+    HashMap<String, Route> uriRoutes = method2uri.get(method);
     if (uriRoutes != null) route = uriRoutes.get(uri);
     if (route != null) return route;
     
     // resolve from method2regex
-    ArrayList<Handler> regexRoutes = method2regex.get(method); 
+    ArrayList<Route> regexRoutes = method2regex.get(method); 
     if (regexRoutes != null) {
-      for(Handler r : regexRoutes) {
-        if (r.uriPattern.matcher(uri).matches()) return r;
+      for(Route r : regexRoutes) {
+        if (r.path.uriPattern.matcher(uri).matches()) return r;
       }
     }
     
