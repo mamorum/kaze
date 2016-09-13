@@ -1,5 +1,17 @@
 # Draft of Kaze User Guide
 
+<!-- TODO : Table of Contents
+
+- Configuration
+- Logging
+
+ -->
+
+
+## Configuration
+Comming soon ...
+
+
 ## Logging
 ### Install logback-classic
 Kaze depends on [SLF4J](http://www.slf4j.org/index.html). To output logging, please add logback-classic to your app.

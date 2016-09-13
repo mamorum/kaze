@@ -39,7 +39,7 @@ $ curl -X GET http://localhost:8080/hello -s
 
 ## Guides
 - [Getting Started](doc/getting-started.md)
-- User Guide - Creating ...
+- [User Guide](doc/user-guide.md)
 
 
 ## Samples
