@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.http.data.Json;
+import kaze.http.io.Json;
 
 public class Res {
 	

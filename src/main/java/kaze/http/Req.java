@@ -6,9 +6,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.http.data.Converter;
-import kaze.http.data.Json;
-import kaze.http.data.Params;
+import kaze.http.io.Converter;
+import kaze.http.io.Json;
+import kaze.http.io.Params;
 
 public class Req {
 
@@ -20,14 +20,14 @@ public class Req {
     this.uri = uri;
 	}
 
-  public <T> Data<T> json(Class<T> to) {
-    return new Data<>(
+  public <T> Input<T> json(Class<T> to) {
+    return new Input<>(
       Json.bind(sr, to)
     );
   }
 
-  public <T> Data<T> params(Class<T> to) {
-    return new Data<>(
+  public <T> Input<T> params(Class<T> to) {
+    return new Input<>(
       Params.bind(sr, to)
     );
   }

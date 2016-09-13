@@ -1,11 +1,11 @@
 package kaze.http;
 
-import kaze.http.data.Validator;
+import kaze.http.io.Validator;
 
-public class Data<T> {
+public class Input<T> {
 
   private T obj;
-  public Data(T obj) { this.obj = obj; }
+  public Input(T obj) { this.obj = obj; }
 
   public T get() { return obj; }
   public T valid() { Validator.validate(obj); return obj; }

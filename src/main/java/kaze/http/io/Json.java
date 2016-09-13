@@ -1,4 +1,4 @@
-package kaze.http.data;
+package kaze.http.io;
 
 import java.io.BufferedReader;
 

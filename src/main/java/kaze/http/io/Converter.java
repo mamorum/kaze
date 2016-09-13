@@ -1,4 +1,4 @@
-package kaze.http.data;
+package kaze.http.io;
 
 import kaze.ex.ConvertException;
 import kaze.lib.Jackson;
