@@ -1,36 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+  <!--
+    Release to the Central:
+      mvn -Dgpg.skip=false deploy
+  -->
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.1.0</version>
-
-  <name>Kaze</name>
-  <description>Java Web Application Framework</description>
-  <url>https://github.com/mamorum/kaze/</url>
-  <licenses>
-      <license>
-          <name>The Apache Software License, Version 2.0</name>
-          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-          <distribution>repo</distribution>
-      </license>
-  </licenses>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-      <repository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-      </repository>
-  </distributionManagement>
-
-  <properties>
-      <gpg.skip>true</gpg.skip>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+  <version>0.1.1-SNAPSHOT</version>
 
   <dependencies>
       <dependency>
@@ -73,7 +49,6 @@
           <artifactId>javax.el-api</artifactId>
           <version>2.2.4</version>
       </dependency>
-      
       <dependency>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
@@ -100,9 +75,13 @@
       </dependency>
   </dependencies>
 
+  <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <gpg.skip>true</gpg.skip>
+  </properties>
+
   <build>
     <plugins>
-      <!-- To sign and release: mvn -Dgpg.skip=false deploy -->
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-gpg-plugin</artifactId>
@@ -115,7 +94,6 @@
            </execution>
          </executions>
       </plugin>
-      
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-compiler-plugin</artifactId>
@@ -125,7 +103,6 @@
              <target>1.8</target>
          </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -148,12 +125,28 @@
           </execution>
         </executions>
       </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
-      </plugin>
     </plugins>
   </build>
+  
+  <name>Kaze</name>
+  <description>Java Web Application Framework</description>
+  <url>https://github.com/mamorum/kaze/</url>
+  <licenses>
+      <license>
+          <name>The Apache Software License, Version 2.0</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          <distribution>repo</distribution>
+      </license>
+  </licenses>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 </project>
