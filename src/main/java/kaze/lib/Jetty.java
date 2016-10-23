@@ -34,6 +34,7 @@ public class Jetty {
 
   private static final Logger log = LoggerFactory.getLogger(Jetty.class);
 
+  public static volatile boolean started = false;
   private static Server server;
   
   private static class Config {
@@ -64,6 +65,7 @@ public class Jetty {
     catch (Exception e) {
       throw new RuntimeException(e);
     }
+    started = true;
   }
 
   public static void listen() {

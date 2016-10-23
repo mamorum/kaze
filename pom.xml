@@ -8,7 +8,6 @@
   <name>Kaze</name>
   <description>Java Web Application Framework</description>
   <url>https://github.com/mamorum/kaze/</url>
-
   <licenses>
       <license>
           <name>The Apache Software License, Version 2.0</name>
@@ -16,23 +15,6 @@
           <distribution>repo</distribution>
       </license>
   </licenses>
-
-  <scm>
-      <connection>scm:git:git@github.com:mamorum/kaze.git</connection>
-      <developerConnection>scm:git:git@github.com:mamorum/kaze.git</developerConnection>
-      <url>https://github.com/mamorum/kaze</url>
-  </scm>
-
-  <issueManagement>
-    <system>GitHub Issues</system>
-    <url>https://github.com/mamorum/kaze/issues</url>
-  </issueManagement>
-
-  <developers>
-      <developer>
-          <id>mamorum</id>
-      </developer>
-  </developers>
 
   <distributionManagement>
     <snapshotRepository>
@@ -46,41 +28,9 @@
   </distributionManagement>
 
   <properties>
+      <gpg.skip>true</gpg.skip>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-
-  <profiles>
-    <profile>
-      <!-- To sign and release. -->  
-      <!-- mvn -DperformRelease=true deploy -->
-      <id>release-sign-artifacts</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <!-- mvn verify -Dgpg.passphrase=thephrase -->
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <dependencies>
       <dependency>
@@ -151,17 +101,29 @@
   </dependencies>
 
   <build>
-    <defaultGoal>package</defaultGoal>
-    
     <plugins>
+      <!-- To sign and release: mvn -Dgpg.skip=false deploy -->
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.5.1</version>
-          <configuration>
-              <source>1.8</source>
-              <target>1.8</target>
-          </configuration>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-gpg-plugin</artifactId>
+         <version>1.6</version>
+         <executions>
+           <execution>
+             <id>sign-artifacts</id>
+             <phase>verify</phase>
+             <goals><goal>sign</goal></goals>
+           </execution>
+         </executions>
+      </plugin>
+      
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-compiler-plugin</artifactId>
+         <version>3.5.1</version>
+         <configuration>
+             <source>1.8</source>
+             <target>1.8</target>
+         </configuration>
       </plugin>
 
       <plugin>
@@ -170,39 +132,21 @@
         <version>3.0.1</version>
         <executions>
           <execution>
-            <goals>
-              <goal>jar</goal>
-            </goals>
+            <id>attach-sources</id>
+            <goals><goal>jar-no-fork</goal></goals>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.10.4</version>
-        <configuration>
-          <show>public</show>
-          <charset>UTF-8</charset>
-        </configuration>
         <executions>
           <execution>
-            <goals>
-              <goal>jar</goal>
-            </goals>
+            <id>attach-javadocs</id>
+            <goals><goal>jar</goal></goals>
           </execution>
         </executions>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
-        <configuration>
-          <systemPropertyVariables>
-            <testWait>5000</testWait><!-- for travis-ci  -->
-          </systemPropertyVariables>
-        </configuration>
       </plugin>
       
       <plugin>
@@ -212,5 +156,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

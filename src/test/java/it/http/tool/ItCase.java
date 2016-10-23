@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import all.Case;
 import kaze.App;
+import kaze.lib.Jetty;
 
 public class ItCase extends Case {
   
@@ -34,12 +35,12 @@ public class ItCase extends Case {
     }
   }
 
-  // for trabvis ci.
+  // for travis ci.
   private static void pause() throws InterruptedException {
-    int time = 0;  
-    String v = System.getProperty("testWait");
-    if (v != null) time = Integer.parseInt(v);
-    log.info("Wait time is {}ms for server starting", time);   
-    if (time != 0) lock.wait(time);
+    for (int i = 1; i < 6; i++) {
+      if (Jetty.started) break;
+      lock.wait(1000);
+      log.info("Waiting server for {}sec", i);
+    }
   }
 }
