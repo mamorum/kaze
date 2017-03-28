@@ -1,28 +1,40 @@
 package kaze;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Http {
-  String[] value();
+import kaze.lib.Jetty;
+import kaze.route.Func;
+import kaze.route.Routes;
+
+public class Http {
+  private static Http srv = new Http();
+  public static Http server() { return srv; }
+
+  public Http get(String uri, Func f) { return add("GET", uri, f); }
+  public Http post(String uri, Func f) { return add("POST", uri, f); }
+
+  private Http add(String method, String uri, Func f) {
+    Routes.add(method, uri, f);
+    return this; 
+  }
   
-  // See "org.eclipse.jetty.http.HttpMethod"
-  public class Method {
-    public static final String
-      GET = "GET",
-      POST = "POST",
-      HEAD = "HEAD",
-      PUT = "PUT",
-      OPTIONS = "OPTIONS",
-      DELETE = "DELETE",
-      TRACE = "TRACE",
-      CONNECT = "CONNECT",
-      MOVE = "MOVE",
-      PROXY = "PROXY",
-      PRI = "PRI";
+  public void listen() {
+    Watch.start();
+    Jetty.start();
+    Watch.stop();
+    Jetty.listen();
+  }
+  
+  private static final Logger log = LoggerFactory.getLogger(Http.class);
+  private static class Watch {
+    private static long stime;
+    static void start() {
+      stime = System.currentTimeMillis();
+    }
+    static void stop() {
+      long started = System.currentTimeMillis();
+      log.info("Started in {}ms", started - stime);
+    }
   }
 }
