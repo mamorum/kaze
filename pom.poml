@@ -1,36 +1,24 @@
+# Release to the Central -> mvn -Dgpg.skip=false deploy
 pkg=com.github.mamorum:kaze:0.1.1-SNAPSHOT:jar
 depends=
   org.slf4j:slf4j-api:1.7.21,
   ch.qos.logback:logback-access:1.1.7,
   org.eclipse.jetty:jetty-server:9.2.17.v20160517,
-  org.reflections:reflections:0.9.10,
+  org.eclipse.jetty:jetty-servlet:9.2.17.v20160517,
   com.fasterxml.jackson.core:jackson-databind:2.7.5,
+  org.reflections:reflections:0.9.10,
   org.hibernate:hibernate-validator:5.2.4.Final,
   javax.el:javax.el-api:2.2.4,
   ch.qos.logback:logback-classic:1.1.7:test,
   junit:junit:4.12:test,
   org.assertj:assertj-core:3.2.0:test,
   com.google.http-client:google-http-client:1.22.0:test
-property=
-  project.build.sourceEncoding:UTF-8,
-  gpg.skip=true
+property=$encoding:UTF-8, gpg.skip:true
 compiler=source:1.8, target:1.8
+gpg=_default
+source=_default
+javadoc=_default
 info=name:Kaze, license:MIT,
   description:Java Web Application Framework,
   url:https://github.com/mamorum/kaze
----
-{{#model4 }}
-  {{pkg}}
-  {{depends}}
-  {{property}}
-  <build>
-    <plugins>
-      {{gpg}}
-      {{compiler}}
-      {{source}}
-      {{javadoc}}
-    </plugins>
-  </build>
-  {{info}}
-  {{dist}}
-{{/model4}}
+dist=snap:ossrh, repo:ossrh
