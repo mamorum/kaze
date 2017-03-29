@@ -1,18 +1,20 @@
 package it.http.res;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class ResStatusTest extends ItCase {
-  
-  @Http({Method.GET, "/res/status/:code"})
-  public void status(Req req, Res res) {
+
+  @Before public void regist() {
+    http.get("/res/status/:code", ResStatusTest::status);
+  }
+
+  public static void status(Req req, Res res) {
     res.status(
       req.uri(":code", Integer.class)
     );

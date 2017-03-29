@@ -10,7 +10,7 @@ import kaze.http.Req;
 import kaze.http.Res;
 
 public class ReqParamTest extends ItCase {
-  
+
   @Before public void regist() {
     http.get("/candy", ReqParamTest::name);
     http.post("/candy", ReqParamTest::id);

@@ -1,19 +1,23 @@
 package it.http.res;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class ResJsonTest extends ItCase {
 
+  @Before public void regist() {
+    http.get("/res/json/str", ResJsonTest::jsonStr);
+    http.get("/res/json/hi", ResJsonTest::hi);
+    http.get("/res/json/error", ResJsonTest::error);
+  }
+
   // TODO test Res.json(String)
-  @Http({Method.GET, "/res/json/str"})
-  public void jsonStr(Req req, Res res) {
+  public static void jsonStr(Req req, Res res) {
     res.json("{\"msg\":\"str\"}");
   }
   @Test
@@ -24,9 +28,8 @@ public class ResJsonTest extends ItCase {
         "{\"msg\":\"str\"}"
     ).close();
   }
-  
-  @Http({Method.GET, "/res/json/hi"})
-  public void hi(Req req, Res res) {
+
+  public static void hi(Req req, Res res) {
     res.json("msg", "Hi!");
   }
   @Test
@@ -37,9 +40,9 @@ public class ResJsonTest extends ItCase {
         "{\"msg\":\"Hi!\"}"
     ).close();
   }
+
   
-  @Http({Method.GET, "/res/json/error"})
-  public void error(Req req, Res res) {
+  public static void error(Req req, Res res) {
     res.status(400).json(
         "msg", "name is required.",
         "cause", "validation"

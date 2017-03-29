@@ -1,25 +1,28 @@
 package it.http.res;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 import kaze.http.Res.Type;
 
 public class ResTypeTest extends ItCase {
 
+  @Before public void regist() {
+    http.get("/res/type/ok", ResTypeTest::ok);
+    http.get("/res/type/ng", ResTypeTest::ng);
+  }
+
   private static final String HTML_OK = 
       "<html><body>OK</body></html>";
   
   private static final String HTML_NG = 
       "<html><body>NG</body></html>";
-  
-  @Http({Method.GET, "/res/type/ok"})
-  public void ok(Req req, Res res) {
+
+  public static void ok(Req req, Res res) {
     res.type(Type.HTML).write(
       HTML_OK
     );
@@ -32,9 +35,9 @@ public class ResTypeTest extends ItCase {
         "text/html; charset=UTF-8"
     ).bodyIs(HTML_OK).close();
   }
-  
-  @Http({Method.GET, "/res/type/ng"})
-  public void ng(Req req, Res res) {
+
+
+  public static void ng(Req req, Res res) {
     res.status(400).type(Type.HTML).write(
       HTML_NG
     );
