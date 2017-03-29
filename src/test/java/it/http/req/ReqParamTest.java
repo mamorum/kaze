@@ -1,25 +1,26 @@
 package it.http.req;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.HttpRes;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class ReqParamTest extends ItCase {
   
-  final String uri = "/candy";
-  
-  @Http({Method.GET, uri})
-  public void name(Req req, Res res) {
+  @Before public void regist() {
+    http.get("/candy", ReqParamTest::name);
+    http.post("/candy", ReqParamTest::id);
+  }
+
+  // Test target
+  public static void name(Req req, Res res) {
     res.json("name", req.param("name"));
   }
-  @Test
-  public void name() {
+  @Test public void name() {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/candy?name=apple"
     );
@@ -28,12 +29,11 @@ public class ReqParamTest extends ItCase {
     ).close();
   }
   
-  @Http({Method.POST, uri})
-  public void id(Req req, Res res) {
+  // Test target
+  public static void id(Req req, Res res) {
     res.json("id", req.param("id", Long.class));
   }
-  @Test
-  public void id() {
+  @Test public void id() {
     HttpRes res = HttpReq.postParams(
         "http://localhost:8080/candy",
         "id=8"
