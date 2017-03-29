@@ -1,5 +1,6 @@
 package it.http.req;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.model.Address;
@@ -7,20 +8,22 @@ import it.http.model.Person;
 import it.http.tool.HttpReq;
 import it.http.tool.HttpRes;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class ReqParamsTest extends ItCase {
 
-  @Http({Method.POST, "/person/params"})
-  public void pp(Req req, Res res) {
+  @Before public void regist() {
+    http.post("/person/params", ReqParamsTest::pp);
+    http.post("/address/params", ReqParamsTest::ap);
+  }
+  
+  // Test target
+  public static void pp(Req req, Res res) {
     Person p = req.params(Person.class).get();
     res.json(p);
   }
-  @Test
-  public void pp() {
+  @Test public void pp() {
     HttpRes res = HttpReq.postParams(
         "http://localhost:8080/person/params",
         "id=1234&name=Tom&langs=Perl&langs=PHP"
@@ -28,16 +31,14 @@ public class ReqParamsTest extends ItCase {
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
         "{\"id\":1234,\"name\":\"Tom\",\"langs\":[\"Perl\",\"PHP\"]}"
     ).close();
-  }
-  
-  
-  @Http({Method.POST, "/address/params"})
-  public void ap(Req req, Res res) {
+  }  
+
+  // Test target
+  public static void ap(Req req, Res res) {
     Address p = req.params(Address.class).valid();
     res.json(p);
   }
-  @Test  //OK
-  public void ap() {
+  @Test public void ap() {  // -> OK
     HttpReq.postParams(
         "http://localhost:8080/address/params",
         "zip=1234567&pref=東京"
@@ -45,8 +46,7 @@ public class ReqParamsTest extends ItCase {
         "{\"zip\":\"1234567\",\"pref\":\"東京\"}"
     ).close();
   }
-  @Test  //ValidateError
-  public void badAp() {
+  @Test public void badAp() {  // -> ValidateError
     HttpReq.postParams(
         "http://localhost:8080/address/params",
         "zip=12345&pref="

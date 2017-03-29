@@ -1,25 +1,27 @@
 package it.http.req;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.HttpRes;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class ReqListParamTest extends ItCase {
-  
+
+  @Before public void regist() {
+    http.get("/ice", ReqListParamTest::names);
+    http.post("/ice", ReqListParamTest::ids);
+  }
+
   final String uri = "/ice";
-  
-  @Http({Method.GET, uri})
-  public void names(Req req, Res res) {
+
+  public static void names(Req req, Res res) {
     res.json("names", req.listParam("names"));
   }
-  @Test
-  public void names() {
+  @Test public void names() {
     HttpRes res = HttpReq.get(
         "http://localhost:8080/ice?names=vanilla&names=chocolate"
     );
@@ -27,13 +29,11 @@ public class ReqListParamTest extends ItCase {
         "{\"names\":[\"vanilla\",\"chocolate\"]}"
     ).close();
   }
-  
-  @Http({Method.POST, uri})
-  public void ids(Req req, Res res) {
+
+  public static void ids(Req req, Res res) {
     res.json("id", req.listParam("id", Long.class));
   }
-  @Test
-  public void ids() {
+  @Test public void ids() {
     HttpRes res = HttpReq.postParams(
         "http://localhost:8080/ice",
         "id=1&id=2&id=3"

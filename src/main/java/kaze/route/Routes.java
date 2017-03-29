@@ -1,45 +1,20 @@
 package kaze.route;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import kaze.Http;
 import kaze.Route;
 
 public class Routes {
 
-  private static final Logger logger = LoggerFactory.getLogger(Routes.class);
+//  private static final Logger logger = LoggerFactory.getLogger(Routes.class);
   
   private static HashMap<String, HashMap<String, Route>>
     method2uri = new HashMap<>();
   
   private static HashMap<String, ArrayList<Route>>
     method2regex = new HashMap<>();
-  
-  // for init.
-  public static void build(String... pkgs) {
-    if (pkgs == null) return;
-    if (pkgs.length == 0) return;
-    Reflections ref = new Reflections(
-        pkgs, new MethodAnnotationsScanner()
-    );
-    for (
-      Method m : ref.getMethodsAnnotatedWith(Http.class)
-    ) {
-      Http http = m.getAnnotation(Http.class);
-      String httpMethod = http.value()[0].toUpperCase();
-      String httpUri = http.value()[1];
-      Func func = Func.of(m);
-      add(httpMethod, httpUri, func);
-    }
-  }
   
   public static void add(String method, String uri, Func func) {
     if (uri.contains(":")) addRegex(method, uri, func);
@@ -54,12 +29,12 @@ public class Routes {
     }
     Route route = regexUriRoute(method, uri, func);
     regexRoutes.add(route);
-    log(method, uri, func);
+//    log(method, uri, func);
   }
   
   // Create URI index and, 
   // Change URI to Pattern (ex. "/:id/:name/" to "/[^/]+/[^/]+")
-  public static Route regexUriRoute(String method, String uri, Func func) {
+  private static Route regexUriRoute(String method, String uri, Func func) {
     Map<String, Integer> uriIndex = new HashMap<>();
     StringBuilder sb = new StringBuilder();
     String[] path = uri.substring(1).split("/");
@@ -87,19 +62,12 @@ public class Routes {
     }
     Route route = uriRoute(method, uri, func);
     uriRoutes.put(uri, route);
-    log(method, uri, func);
+//    log(method, uri, func);
   }
 
   private static Route uriRoute(String method, String uri, Func func) {
     Path path = new Path(uri);
     return new Route(method, path, func);
-  }
-
-  private static void log(String method, String uri, Func f) {
-    logger.info(
-        "[{} {}] -> [{}#{}]", method, uri, 
-        f.m.getDeclaringClass().getName(), 
-        f.m.getName());
   }
 
   // for runtime.

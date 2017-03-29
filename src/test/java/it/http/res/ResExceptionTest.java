@@ -1,19 +1,22 @@
 package it.http.res;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class ResExceptionTest extends ItCase {
 
+  @Before public void regist() {
+    http.get("/res/ex", ResExceptionTest::ex);
+    http.get("/res/rex", ResExceptionTest::rex);
+  }
+
   // checked
-  @Http({Method.GET, "/res/ex"})
-  public void ex(Req req, Res res) throws Exception{
+  public static void ex(Req req, Res res) throws Exception{
     throw new Exception("Threw Exception for test.");
   }
   @Test  // Jetty ErrorHandler sets type and body. 
@@ -26,8 +29,7 @@ public class ResExceptionTest extends ItCase {
   }
   
   // unchecked
-  @Http({Method.GET, "/res/rex"})
-  public void rex(Req req, Res res) {
+  public static void rex(Req req, Res res) {
     throw new RuntimeException(
       "Threw RuntimeException for test."
     );

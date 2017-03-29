@@ -17,9 +17,9 @@ import kaze.route.Routes;
 
 public class Route {
 
-  public static void build(String... pkgs) {
-    Routes.build(pkgs);
-  }
+//  public static void build(String... pkgs) {
+//    Routes.build(pkgs);
+//  }
   
   public static Route get(HttpServletRequest sreq) {
     return Routes.get(
@@ -45,7 +45,7 @@ public class Route {
     String uri = sreq.getRequestURI();
     Req req = new Req(sreq, uri(uri));
     Res res = new Res(sres);
-    try { func.call(req, res); }
+    try { func.accept(req, res); }
     catch (Throwable e) {
       if (e instanceof Recoverable) {
         ((Recoverable) e).reply(res);

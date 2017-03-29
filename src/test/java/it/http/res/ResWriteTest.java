@@ -1,18 +1,21 @@
 package it.http.res;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.ItCase;
-import kaze.Http;
-import kaze.Http.Method;
 import kaze.http.Req;
 import kaze.http.Res;
 
 public class ResWriteTest extends ItCase {
 
-  @Http({Method.GET, "/res/write/hi"})
-  public void hi(Req req, Res res) {
+  @Before public void regist() {
+    http.get("/res/write/hi", ResWriteTest::hi);
+    http.get("/res/write/error", ResWriteTest::error);
+  }
+
+  public static void hi(Req req, Res res) {
     res.write("Hi!");
   }
   @Test
@@ -24,8 +27,7 @@ public class ResWriteTest extends ItCase {
     ).bodyIs("Hi!").close();
   }
   
-  @Http({Method.GET, "/res/write/error"})
-  public void error(Req req, Res res) {
+  public static void error(Req req, Res res) {
     res.status(400).write("Error.");
   }
   @Test
