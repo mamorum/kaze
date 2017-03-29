@@ -3,6 +3,7 @@ package kaze.http;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,11 +14,10 @@ import kaze.http.io.Params;
 public class Req {
 
 	public HttpServletRequest sr;
-	public Uri uri;
-	
-	public Req(HttpServletRequest sr, Uri uri) {
-    this.sr = sr;
-    this.uri = uri;
+	public Map<String, Integer> uriIndex;
+	public Req(HttpServletRequest sr, Map<String, Integer> uriIndex) {
+	  this.sr = sr;
+	  this.uriIndex = uriIndex;
 	}
 
   public <T> Input<T> json(Class<T> to) {
@@ -31,14 +31,6 @@ public class Req {
       Params.bind(sr, to)
     );
   }
-
-  public String uri(String path) {
-    return uri.path(path);
-  }
-
-  public <T> T uri(String path, Class<T> to) {    
-    return Converter.convert(uri.path(path), to);
-  }  
 
   public String param(String name) {
     return sr.getParameter(name);
@@ -57,5 +49,22 @@ public class Req {
     List<T> lt = new ArrayList<>(ls.size());
     for (String s : ls) lt.add( Converter.convert(s, to) );
     return lt;
+  }
+
+  public String path(String var) {
+    // TODO if (uriIndex == null) throw ... ?
+    return Uri.var(var, sr.getRequestURI(), uriIndex);
+  }
+
+  public <T> T path(String var, Class<T> to) {    
+    return Converter.convert(path(var), to);
+  }  
+  
+  private static class Uri {
+    static String var(String var, String uri, Map<String, Integer> uriIndex) {    
+      String[] paths = uri.substring(1).split("/");
+      int index = uriIndex.get(var);
+      return paths[index];
+    }
   }
 }

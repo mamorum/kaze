@@ -16,7 +16,7 @@ public class ResStatusTest extends ItCase {
 
   public static void status(Req req, Res res) {
     res.status(
-      req.uri(":code", Integer.class)
+      req.path(":code", Integer.class)
     );
   }
   @Test

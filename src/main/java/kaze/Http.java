@@ -8,13 +8,14 @@ import kaze.route.Func;
 import kaze.route.Routes;
 
 public class Http {
-  private static Http srv = new Http();
-  public static Http server() { return srv; }
+  private static final Logger log = LoggerFactory.getLogger(Http.class);
+  
+  private static final Http h = new Http();
+  public static Http server() { return h; }
 
   public void listen() {
-    Watch.start();
     Jetty.start();
-    Watch.stop();
+    log.info("Started");
     Jetty.listen();
   }
 
@@ -34,17 +35,5 @@ public class Http {
   private Http add(String method, String uri, Func f) {
     Routes.add(method, uri, f);
     return this; 
-  }
-  
-  private static final Logger log = LoggerFactory.getLogger(Http.class);
-  private static class Watch {
-    private static long stime;
-    static void start() {
-      stime = System.currentTimeMillis();
-    }
-    static void stop() {
-      long started = System.currentTimeMillis();
-      log.info("Started in {}ms", started - stime);
-    }
-  }
+  }  
 }

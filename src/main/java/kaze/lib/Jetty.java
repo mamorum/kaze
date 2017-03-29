@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.access.jetty.RequestLogImpl;
 import kaze.Conf;
-import kaze.Route;
+import kaze.route.Route;
+import kaze.route.Routes;
 
 public class Jetty {
 
@@ -147,9 +148,12 @@ public class Jetty {
 	    HttpServletRequest sreq, HttpServletResponse sres)
 	    throws ServletException, IOException
 	  {
-	    Route r = Route.get(sreq);    
-	    if (r != null) r.run(sreq, sres);
-	    else super.service(sreq, sres);  // static contens
+	    String method = sreq.getMethod();
+	    String uri = sreq.getRequestURI();
+	    Route r = Routes.plainUriRoute(method, uri);
+	    if (r == null) r = Routes.regexUriRoute(method, uri);
+      if (r == null) super.service(sreq, sres);  // static contents
+      else r.run(sreq, sres);
 	  }
 	}
 

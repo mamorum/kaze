@@ -20,7 +20,7 @@ public class ReqUriTest extends ItCase {
 
   // Test target
   public static void name(Req req, Res res) {
-    res.json("name", req.uri(":name"));
+    res.json("name", req.path(":name"));
   }
   @Test public void name() {
     HttpRes res = HttpReq.get(
@@ -33,7 +33,7 @@ public class ReqUriTest extends ItCase {
   
   // Test target
   public static void id(Req req, Res res) {
-    res.json("id", req.uri(":id", Long.class));
+    res.json("id", req.path(":id", Long.class));
   }
   @Test public void id() {  // OK
     HttpReq.get(
@@ -53,8 +53,8 @@ public class ReqUriTest extends ItCase {
   // Test target.
   public static void idName(Req req, Res res) {
     res.json(
-        "id", req.uri(":id", Long.class),
-        "name", req.uri(":name")
+        "id", req.path(":id", Long.class),
+        "name", req.path(":name")
     );
   }
 	@Test public void idName() {
