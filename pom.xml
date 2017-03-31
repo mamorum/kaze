@@ -3,7 +3,7 @@
 
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.2.0</version>
   <packaging>jar</packaging>
 
   <dependencies>
@@ -131,6 +131,17 @@
       <url>http://www.opensource.org/licenses/mit-license.php</url>
     </license>
   </licenses>
+
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/mamorum/kaze/issues</url>
+  </issueManagement>
+
+  <scm>
+    <url>https://github.com/mamorum/kaze</url>
+    <connection>scm:git:https://github.com/mamorum/kaze.git</connection>
+    <developerConnection>scm:git:git@github.com:mamorum/kaze.git</developerConnection>
+  </scm>
 
   <distributionManagement>
     <snapshotRepository>

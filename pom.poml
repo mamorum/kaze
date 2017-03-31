@@ -1,5 +1,5 @@
 # Release to the Central -> mvn -Dgpg.skip=false deploy
-pkg=com.github.mamorum:kaze:0.1.1-SNAPSHOT:jar
+pkg=com.github.mamorum:kaze:0.2.0:jar
 depends=
   org.slf4j:slf4j-api:1.7.21,
   ch.qos.logback:logback-access:1.1.7,
@@ -17,7 +17,14 @@ compiler=source:1.8, target:1.8
 gpg=_default
 source=_default
 javadoc=_default
-info=name:Kaze, license:MIT,
-  description:Java Web Application Framework,
-  url:https://github.com/mamorum/kaze
+info=name: Kaze, license: MIT,
+  description: Java Web Application Framework,
+  url: https://github.com/mamorum/kaze
+issue=
+  system: GitHub Issues,
+  url: https://github.com/mamorum/kaze/issues
+scm=
+  url: https://github.com/mamorum/kaze,
+  connect: scm:git:https://github.com/mamorum/kaze.git,
+  devConnect: scm:git:git@github.com:mamorum/kaze.git
 dist=snap:ossrh, repo:ossrh
