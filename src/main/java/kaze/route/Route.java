@@ -1,11 +1,11 @@
 package kaze.route;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import kaze.Func;
 import kaze.ex.Recoverable;
 import kaze.http.Req;
 import kaze.http.Res;
@@ -13,7 +13,12 @@ import kaze.http.Res;
 public class Route {
 
   Func func;
-  Map<String, Integer> uriIndex;
+  Map<String, Integer> uriIndex;  // for regex uri pattern
+  
+  public Route(Func f, Map<String, Integer> index) {
+    this.func = f;
+    this.uriIndex = index;
+  }
   
   public void run(
       HttpServletRequest sreq, HttpServletResponse sres
@@ -32,18 +37,5 @@ public class Route {
         }
         throw new RuntimeException(e);
       }
-    }
-  
-  public static class Plain extends Route {
-    Plain(Func f) { this.func = f;}
-  }
-    
-  public static class Regex extends Route {
-    public Pattern uriPattern;
-    public Regex(String uri, Map<String, Integer> index, Func f) {
-      this.uriPattern = Pattern.compile(uri);
-      this.uriIndex = index;
-      this.func = f;
-    }
-  }
+    }  
 }

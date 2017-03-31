@@ -1,4 +1,4 @@
-package kaze.route;
+package kaze;
 
 import kaze.http.Req;
 import kaze.http.Res;

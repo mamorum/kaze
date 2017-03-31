@@ -1,17 +1,17 @@
 package kaze.route;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import kaze.Func;
 
 public class Routes {
-
-//  private static final Logger logger = LoggerFactory.getLogger(Routes.class);
   
-  private static HashMap<String, HashMap<String, Route.Plain>>
+  private static HashMap<String, HashMap<String, Route>>
     method2uri = new HashMap<>();
   
-  private static HashMap<String, ArrayList<Route.Regex>>
+  private static HashMap<String, HashMap<Pattern, Route>>
     method2regex = new HashMap<>();
   
   public static void add(String method, String uri, Func func) {
@@ -20,18 +20,13 @@ public class Routes {
   }
   
   private static void addRegex(String method, String uri, Func func) {
-    ArrayList<Route.Regex> regexRoutes = method2regex.get(method);
+    HashMap<Pattern, Route> regexRoutes = method2regex.get(method);
     if (regexRoutes == null) {
-      regexRoutes = new ArrayList<>();
+      regexRoutes = new HashMap<>();
       method2regex.put(method, regexRoutes);
     }
-    Route.Regex route = regexRoute(method, uri, func);
-    regexRoutes.add(route);
-  }
-  
-  // Create URI index and, 
-  // Change URI to Pattern (ex. "/:id/:name/" to "/[^/]+/[^/]+")
-  private static Route.Regex regexRoute(String method, String uri, Func func) {
+    // Create URI index and, 
+    // Change URI to Pattern (ex. "/:id/:name/" to "/[^/]+/[^/]+")
     Map<String, Integer> uriIndex = new HashMap<>();
     StringBuilder sb = new StringBuilder();
     String[] path = uri.substring(1).split("/");
@@ -45,36 +40,32 @@ public class Routes {
       }
     }
     if (uri.endsWith("/")) sb.append("/");
-    
-    String regexUri = sb.toString();
-    return new Route.Regex(regexUri, uriIndex, func);
+    Route route = new Route(func, uriIndex);
+    Pattern regex = Pattern.compile(sb.toString());
+    regexRoutes.put(regex, route);
   }
 
   private static void addUri(String method, String uri, Func func) {
-    HashMap<String, Route.Plain> uriRoutes = method2uri.get(method);
+    HashMap<String, Route> uriRoutes = method2uri.get(method);
     if (uriRoutes == null) {
       uriRoutes = new HashMap<>();
       method2uri.put(method, uriRoutes);
     }
-    Route.Plain route = uriRoute(method, uri, func);
+    Route route = new Route(func, null);
     uriRoutes.put(uri, route);
-  }
-
-  private static Route.Plain uriRoute(String method, String uri, Func func) {
-    return new Route.Plain(func);
   }
 
   // for runtime.
   public static Route plainUriRoute(String method, String uri) {    
-    HashMap<String, Route.Plain> uriRoutes = method2uri.get(method);
+    HashMap<String, Route> uriRoutes = method2uri.get(method);
     if (uriRoutes == null) return null;
     return uriRoutes.get(uri);
   }  
   public static Route regexUriRoute(String method, String uri) {  
-    ArrayList<Route.Regex> regexRoutes = method2regex.get(method);
+    HashMap<Pattern, Route> regexRoutes = method2regex.get(method);
     if (regexRoutes == null) return null;
-    for(Route.Regex r : regexRoutes) {
-      if (r.uriPattern.matcher(uri).matches()) return r;
+    for(Pattern r : regexRoutes.keySet()) {
+      if (r.matcher(uri).matches()) return regexRoutes.get(r);
     }
     return null;  // not found
   }

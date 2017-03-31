@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kaze.lib.Jetty;
-import kaze.route.Func;
 import kaze.route.Routes;
 
 public class Http {
