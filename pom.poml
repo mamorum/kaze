@@ -28,3 +28,26 @@ scm=
   connect: scm:git:https://github.com/mamorum/kaze.git,
   devConnect: scm:git:git@github.com:mamorum/kaze.git
 dist=snap:ossrh, repo:ossrh
+---
+{{#model4}}
+  {{ pkg }}
+  {{depends }}
+  {{property }}
+  <build>
+    <plugins>
+      {{gpg}}
+      {{compiler}}
+      {{source}}
+      {{javadoc}}
+    </plugins>
+  </build>
+  {{ info }}
+  <developers>
+    <developer>
+      <id>mamorum</id>
+    </developer>
+  </developers>
+  {{ issue}}
+  {{ scm}}
+  {{ dist}}
+{{/model4}}

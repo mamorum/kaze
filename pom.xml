@@ -132,6 +132,12 @@
     </license>
   </licenses>
 
+  <developers>
+    <developer>
+      <id>mamorum</id>
+    </developer>
+  </developers>
+
   <issueManagement>
     <system>GitHub Issues</system>
     <url>https://github.com/mamorum/kaze/issues</url>
