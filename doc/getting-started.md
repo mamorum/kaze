@@ -2,29 +2,10 @@
 
 <!-- TODO : Table of Contents
 
-- Install
 - Routing
 - Serving Static Contents
 
  -->
-
-
-## Install
-Maven
-
-```xml
-<dependency>
-  <groupId>com.github.mamorum</groupId>
-  <artifactId>kaze</artifactId>
-  <version>0.1.0</version>
-</dependency>
-```
-
-Gradle
-
-```gradle
-compile 'com.github.mamorum:kaze:0.1.0'
-```
 
 
 ## Routing
@@ -53,7 +34,7 @@ http.listen();  // http server starts.
 ## Serving Static Contents
 If there are no route for a request, Kaze finds the static contents from `public` directory in the classpath. Please put the files (such as image, js, css, etc) on `src/main/resources/public` like bellow, if you are using Maven or Gradle.
 
-```txt
+```
 project-root/
   - src/main/resources/
     - public/

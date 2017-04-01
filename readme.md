@@ -5,9 +5,19 @@
 Kaze makes it easy to create Web API, RESTful API, etc. 
 
 
-## Hello World example
+## Hello World Example
+### 1. Add dependency
+```xml
+<dependency>
+  <groupId>com.github.mamorum</groupId>
+  <artifactId>kaze</artifactId>
+  <version>0.2.0</version>
+</dependency>
+```
+
+### 2. Create code
 ```java
-package it.http;
+package demo;
 
 import kaze.Http;
 
@@ -20,9 +30,13 @@ public class Main {
 }
 ```
 
-After program started, responds like bellow.
+### 3. Run
+```
+mvn exec:java -Dexec.mainClass=demo.Main
+```
 
-```txt
+### 4. Check
+```
 $ curl -X GET http://localhost:8080/hello -s
 {"msg":"Hello World!"}
 ```

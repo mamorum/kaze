@@ -1,4 +1,4 @@
-package it.http;
+package demo;
 
 import kaze.Http;
 
