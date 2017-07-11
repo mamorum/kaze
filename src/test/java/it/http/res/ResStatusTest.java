@@ -5,8 +5,8 @@ import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.ItCase;
-import kaze.http.Req;
-import kaze.http.Res;
+import kaze.Req;
+import kaze.Res;
 
 public class ResStatusTest extends ItCase {
 

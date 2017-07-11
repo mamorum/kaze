@@ -1,11 +1,16 @@
 package demo;
 
-import kaze.Http;
+import kaze.App;
 
 public class Main {
   public static void main(String[] args) {
-    Http.server().get("/hello", (req, res) -> {
-      res.json("msg", "Hello World!");
-    }).listen();
+    App app = new App();
+    app.get("/hello", (req, res) -> {
+      res.json("msg", "Hello.");
+    });
+    app.get("/hi", (req, res) -> {
+      res.json("msg", "Hi!");
+    });
+    app.listen(8080);
   }
 }

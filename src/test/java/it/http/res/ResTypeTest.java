@@ -5,9 +5,9 @@ import org.junit.Test;
 
 import it.http.tool.HttpReq;
 import it.http.tool.ItCase;
-import kaze.http.Req;
-import kaze.http.Res;
-import kaze.http.Res.Type;
+import kaze.Req;
+import kaze.Res;
+import kaze.Res.Type;
 
 public class ResTypeTest extends ItCase {
 

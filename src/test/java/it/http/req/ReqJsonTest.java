@@ -8,11 +8,11 @@ import it.http.model.Person;
 import it.http.tool.HttpReq;
 import it.http.tool.HttpRes;
 import it.http.tool.ItCase;
-import kaze.http.Req;
-import kaze.http.Res;
+import kaze.Req;
+import kaze.Res;
 
 public class ReqJsonTest extends ItCase {
-  
+
   @Before public void regist() {
     http.post("/person/json", ReqJsonTest::pj);
     http.post("/address/json", ReqJsonTest::aj);
@@ -20,11 +20,11 @@ public class ReqJsonTest extends ItCase {
 
   // Test target:
   public static void pj(Req req, Res res) {
-    Person p = req.json(Person.class).get();
+    Person p = req.json(Person.class);
     res.json(p);
   }
   @Test public void pj() {
-    String json = 
+    String json =
       "{\"id\":12345,\"name\":\"Bob\",\"langs\":[\"C\",\"Java\",\"JS\"]}";
     HttpRes res = HttpReq.postJson(
         "http://localhost:8080/person/json",
@@ -37,11 +37,11 @@ public class ReqJsonTest extends ItCase {
 
   // Test target:
   public static void aj(Req req, Res res) {
-    Address p = req.json(Address.class).valid();
+    Address p = req.json(Address.class);
     res.json(p);
   }
   @Test public void aj() { // -> OK
-    String adrs = 
+    String adrs =
       "{\"zip\":\"1234567\",\"pref\":\"東京\"}";
     HttpReq.postJson(
         "http://localhost:8080/address/json",
@@ -51,7 +51,7 @@ public class ReqJsonTest extends ItCase {
     ).close();
   }
   @Test public void badAj() {  // -> ValidateError
-    String adrs = 
+    String adrs =
       "{\"zip\":\"12345\",\"pref\":\"\"}";
     HttpReq.postJson(
         "http://localhost:8080/address/json",
