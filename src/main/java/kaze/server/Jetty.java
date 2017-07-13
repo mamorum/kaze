@@ -2,6 +2,7 @@ package kaze.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,34 +26,29 @@ import kaze.Route;
 import kaze.Routes;
 
 public class Jetty {
-  App app;
-  public Jetty() { super(); }
-  public Jetty(App a) { app=a; }
-  //-> http
+  //-> thread
+  public int threadMax=200, threadMin=8, threadTime=60000;
+  //-> connector (http)
   public String host=null;
   public int httpTime=30000;
-  //-> thread
-  public int max=200, min=8, threadTime=60000;
-  //-> static files
-  private String path=null;
-  private File dir=null;
-
-  //-> server settings
-  public void http(String host, int timeout) {
-    this.host = host;
-    this.httpTime = timeout;
+  //-> location (doc root of static files)
+  public Resource location;
+  public void location(String classpath) {
+    this.location = Resource.newClassPathResource(classpath);
   }
-  public void thread(int max, int min, int timeout) {
-    this.max = max;
-    this.min = min;
-    this.threadTime = timeout;
+  public void location(File dir) {
+    this.location = Resource.newResource(dir);
   }
-  public void location(String classpath) { this.path = classpath; }
-  public void location(File dir) { this.dir = dir;}
+  //-> app
+  private App app;
+  public Jetty() { super(); }
+  public Jetty(App a) { this.app=a; }
 
+  //-> start jetty
   public void listen(int port) {
+    //-> thread
     Server sv = new Server(
-      new QueuedThreadPool(max, min, threadTime)
+      new QueuedThreadPool(threadMax, threadMin, threadTime)
     );
     //-> connector
     HttpConfiguration conf = new HttpConfiguration();
@@ -60,18 +56,13 @@ public class Jetty {
     ServerConnector http = new ServerConnector(
       sv, new HttpConnectionFactory(conf)
     );
-    if (host != null) http.setHost(host);
+    http.setHost(host);
     http.setPort(port);
     http.setIdleTimeout(httpTime);
     sv.addConnector(http);
-    //-> handler
-    ResourceHandler rhand = new ResourceHandler();
-    rhand.setDirectoriesListed(false);  // security
-    rhand.setBaseResource(location(path, dir));
+    //-> handler (location, app)
     HandlerList hands = new HandlerList();
-    hands.setHandlers(new Handler[] {
-      new SessionHandler(), rhand, new AppHandler()
-    });
+    hands.setHandlers(handlers());
     sv.setHandler(hands);
     try {
       sv.start();
@@ -80,10 +71,23 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
-  private static Resource location(String path, File dir) {
-    if (path != null) return Resource.newClassPathResource(path);
-    else if (dir != null) return Resource.newResource(dir);
-    else return null;
+
+  private Handler[] handlers() {
+    ArrayList<Handler> list = new ArrayList<>(3);
+    if (location != null) {
+      ResourceHandler rhand = new ResourceHandler();
+      rhand.setDirectoriesListed(false);  // security
+      rhand.setBaseResource(location);
+      list.add(rhand);
+    }
+    if (app != null) {
+      list.add(new SessionHandler());
+      list.add(new AppHandler());
+    }
+    if (list.isEmpty()) throw new IllegalStateException(
+      // TODO message -> no contents to serve.
+    );
+    return list.toArray(new Handler[list.size()]);
   }
 
   private static class AppHandler extends AbstractHandler {
