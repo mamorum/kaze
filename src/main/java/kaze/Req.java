@@ -6,21 +6,28 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.Gson;
+
 public class Req {
+  private static final Gson gson = App.gson;
 	public HttpServletRequest srv;
 	public Path path;
 	public Req(HttpServletRequest r, Path p) {
 	  srv = r; path = p;
 	}
 
-  public <T> T json(Class<T> to) throws IOException {
-    BufferedReader body = srv.getReader();
-    StringBuilder json = new StringBuilder();
-    String line = null;
-    while ((line = body.readLine()) != null) {
-      json.append(line);
+  public String body() throws IOException {
+    BufferedReader r = srv.getReader();
+    StringBuilder body = new StringBuilder();
+    String line;
+    while ((line = r.readLine()) != null) {
+      body.append(line);
     }
-    return Lib.gsn.fromJson(json.toString(), to);
+    return body.toString();
+  }
+
+  public <T> T json(Class<T> to) throws IOException {
+    return gson.fromJson(body(), to);
   }
 
   public String param(String name) {
@@ -28,6 +35,7 @@ public class Req {
   }
 
   public String path(String name) {
+    // TODO ":" で始まるかチェック
     return path.val(name);
   }
   static class Path {

@@ -1,33 +1,9 @@
 package kaze;
 
-import java.io.File;
+import com.google.gson.Gson;
 
 public class App {
-  //-> http
-  private String host=null;
-  private int httpTime=30000;
-  //-> thread
-  private int max=200, min=8, threadTime=60000;
-  //-> static files
-  private String path=null;
-  private File dir=null;
-
-  //-> server settings
-  public void http(String host, int timeout) {
-    this.host = host;
-    this.httpTime = timeout;
-  }
-  public void thread(int max, int min, int timeout) {
-    this.max = max;
-    this.min = min;
-    this.threadTime = timeout;
-  }
-  public void location(String classpath) {
-    this.path = classpath;
-  }
-  public void location(File dir) {
-    this.dir = dir;
-  }
+  public static final Gson gson = new Gson();
 
   //-> routing (Methods in "org.eclipse.jetty.http.HttpMethod")
   public void get(String path, Func f) { Routes.add("GET", path, f); }
@@ -42,10 +18,8 @@ public class App {
   public void proxy(String path, Func f) { Routes.add("PROXY", path, f); }
   public void pri(String path, Func f) { Routes.add("PRI", path, f); }
 
-  //-> start
-  public void listen(int port) {
-    Lib.startJetty(
-      host, port, httpTime, max, min, threadTime, path, dir
-    );
+  @FunctionalInterface
+  public interface Func {
+    void accept(Req req, Res res) throws Throwable;
   }
 }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import kaze.App.Func;
+
 public class Routes {
   private static final HashMap<String, HashMap<String, Route>>
     method2uri = new HashMap<>();
