@@ -6,10 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.gson.Gson;
-
 public class Req {
-  private static final Gson gson = App.gson;
 	public HttpServletRequest srv;
 	public Path path;
 	public Req(HttpServletRequest r, Path p) {
@@ -27,7 +24,7 @@ public class Req {
   }
 
   public <T> T json(Class<T> to) throws IOException {
-    return gson.fromJson(body(), to);
+    return App.gson.fromJson(body(), to);
   }
 
   public String param(String name) {

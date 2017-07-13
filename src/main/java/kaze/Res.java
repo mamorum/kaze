@@ -7,10 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-
 public class Res {
-  private static final Gson gson = App.gson;
 	public HttpServletResponse srv;
 	public Res(HttpServletResponse r) { this.srv = r; }
 
@@ -18,16 +15,19 @@ public class Res {
     srv.setStatus(status);
     return this;
   }
-  public Res type(String type) {
-    srv.setContentType(type);
-    return this;
-  }
 
-  public void send(String body) throws IOException{
+  public void send(String contentType, String body) throws IOException {
+    srv.setContentType(contentType);
     srv.getWriter().print(body);
   }
+  public void send(String body) throws IOException{
+    send("text/plain", body);
+  }
+  public void html(String html) throws IOException{
+    send("text/html", html);
+  }
   public void json(Object obj) throws IOException {
-    type("application/json").send(gson.toJson(obj));
+    send("application/json", App.gson.toJson(obj));
   }
   public void json(Object... kv) throws IOException {
     if (kv.length == 2) {
