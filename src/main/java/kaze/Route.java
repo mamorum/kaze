@@ -32,7 +32,7 @@ public class Route {
         throw new RuntimeException(e);
       }
     }
-  private static final String utf8 = "UTF-8";
+  private static final String utf8 = "utf-8";
   private void utf8(
     HttpServletRequest req, HttpServletResponse res)
     throws UnsupportedEncodingException
