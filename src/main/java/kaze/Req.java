@@ -6,12 +6,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.Gson;
+
 public class Req {
-	public HttpServletRequest srv;
-	public Path path;
-	public Req(HttpServletRequest r, Path p) {
-	  srv = r; path = p;
-	}
+  static final Gson gson = new Gson();
+  public HttpServletRequest srv;
+  public Path path;
+  public Req(HttpServletRequest r, Path p) {
+    srv = r; path = p;
+  }
 
   public String body() throws IOException {
     BufferedReader r = srv.getReader();
@@ -24,7 +27,7 @@ public class Req {
   }
 
   public <T> T json(Class<T> to) throws IOException {
-    return App.gson.fromJson(body(), to);
+    return gson.fromJson(body(), to);
   }
 
   public String param(String name) {

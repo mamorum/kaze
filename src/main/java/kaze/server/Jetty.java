@@ -25,6 +25,10 @@ import kaze.App;
 import kaze.Route;
 import kaze.Routes;
 
+// TODO
+// session関連
+//  - session の設定（有効・無効)
+//  - timeout
 public class Jetty {
   //-> thread
   public int threadMax=200, threadMin=8, threadTime=60000;

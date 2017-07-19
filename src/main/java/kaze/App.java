@@ -1,10 +1,6 @@
 package kaze;
 
-import com.google.gson.Gson;
-
 public class App {
-  public static final Gson gson = new Gson();
-
   //-> routing (Methods in "org.eclipse.jetty.http.HttpMethod")
   public void get(String path, Func f) { Routes.add("GET", path, f); }
   public void post(String path, Func f) { Routes.add("POST", path, f); }
@@ -18,8 +14,7 @@ public class App {
   public void proxy(String path, Func f) { Routes.add("PROXY", path, f); }
   public void pri(String path, Func f) { Routes.add("PRI", path, f); }
 
-  @FunctionalInterface
-  public interface Func {
+  @FunctionalInterface public interface Func {
     void accept(Req req, Res res) throws Throwable;
   }
 }

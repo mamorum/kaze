@@ -7,9 +7,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
 public class Res {
-	public HttpServletResponse srv;
-	public Res(HttpServletResponse r) { this.srv = r; }
+  static final Gson gson = Req.gson;
+  public HttpServletResponse srv;
+  public Res(HttpServletResponse r) { this.srv = r; }
 
   public Res status(int status) {
     srv.setStatus(status);
@@ -19,6 +22,9 @@ public class Res {
   public void send(String contentType, String body) throws IOException {
     srv.setContentType(contentType);
     srv.getWriter().print(body);
+// Transfer-Encoding: Chunked ->
+//    srv.getOutputStream().print(body);
+//    srv.flushBuffer();
   }
   public void send(String body) throws IOException{
     send("text/plain", body);
@@ -27,7 +33,7 @@ public class Res {
     send("text/html", html);
   }
   public void json(Object obj) throws IOException {
-    send("application/json", App.gson.toJson(obj));
+    send("application/json", gson.toJson(obj));
   }
   public void json(Object... kv) throws IOException {
     if (kv.length == 2) {
