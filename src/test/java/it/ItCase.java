@@ -8,9 +8,9 @@ import kaze.server.Jetty;
 public class ItCase {
   protected static App app = new App();
   protected static Jetty jetty = new Jetty(app);
-  static volatile boolean serving = false;
-  static final Object lock = new Object();
-  static final Thread t = new Thread(
+  private static volatile boolean serving = false;
+  private static final Object lock = new Object();
+  private static final Thread t = new Thread(
     new Runnable() {
       @Override public void run() {
         jetty.listen(8080);
@@ -29,10 +29,14 @@ public class ItCase {
 
   // for travis ci.
   private static void pause() throws InterruptedException {
-    lock.wait(5000);
-//    for (int i = 1; i < 6; i++) {
-//      if (Jetty.started) break;
-//      lock.wait(1000);
-//    }
+    for (int i = 0; i < 5; i++) {
+      Thread.State state = t.getState();
+      System.out.println((new StringBuilder()
+        ).append("Server state is "
+        ).append(state.toString().toLowerCase()
+      ));
+      if (state == Thread.State.WAITING) break;
+      else lock.wait(1000);  // server has not joined yet.
+    }
   }
 }

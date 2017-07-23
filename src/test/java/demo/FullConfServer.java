@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 import kaze.App;
 import kaze.server.Jetty;
 
-public class ServeAppFile {
+public class FullConfServer {
   public static void main(String[] args) {
     App app = new App();
     app.get("/hello", (req, res) -> {
@@ -24,7 +24,10 @@ public class ServeAppFile {
       res.json("msg", ss.getAttribute("session"));
     });
     Jetty jetty = new Jetty(app);
+    jetty.thread(10, 10, 50000);
+    jetty.http(60000);
+    jetty.session(30);
     jetty.location("/public");
-    jetty.listen(8080);
+    jetty.listen("localhost", 8080);
   }
 }

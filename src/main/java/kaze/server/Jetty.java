@@ -23,38 +23,47 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import kaze.App;
 import kaze.Route;
-import kaze.Routes;
 
-// TODO
-// session関連
-//  - session の設定（有効・無効)
-//  - timeout
 public class Jetty {
-  //-> thread
-  public int threadMax=200, threadMin=8, threadTime=60000;
-  //-> connector (http)
-  public String host=null;
-  public int httpTime=30000;
-  //-> location (doc root of static files)
-  public Resource location;
-  public void location(String classpath) {
-    this.location = Resource.newClassPathResource(classpath);
-  }
-  public void location(File dir) {
-    this.location = Resource.newResource(dir);
-  }
-  //-> app
+  //-> settings
+  ////-> app
   private App app;
   public Jetty() { super(); }
   public Jetty(App a) { this.app=a; }
+  ////-> thread
+  private int thMax=200, thMin=8, thTime=60000;
+  public void thread(int max, int min, int timeout) {
+    thMax=max; thMin=min; thTime=timeout;
+  }
+  ////-> http
+  private int httpTime=30000;
+  public void http(int timeout) { httpTime=timeout; }
+  ////-> session
+  private SessionHandler shand;
+  public void session(int timeoutSec) {  // -1: no timeout
+    shand = new SessionHandler();
+    shand.setMaxInactiveInterval(timeoutSec);
+  }
+  ////-> static files
+  private ResourceHandler rhand;
+  private void location(Resource root) {
+    rhand = new ResourceHandler();
+    rhand.setDirectoriesListed(false);  // security
+    rhand.setBaseResource(root);
+  }
+  public void location(String classpath) {
+    location(Resource.newClassPathResource(classpath));
+  }
+  public void location(File dir) {
+    location(Resource.newResource(dir));
+  }
 
-  //-> start jetty
-  public void listen(int port) {
-    //-> thread
+  //-> start
+  public void listen(int port) { listen(null, port); }
+  public void listen(String host, int port) {
     Server sv = new Server(
-      new QueuedThreadPool(threadMax, threadMin, threadTime)
+      new QueuedThreadPool(thMax, thMin, thTime)
     );
-    //-> connector
     HttpConfiguration conf = new HttpConfiguration();
     conf.setSendServerVersion(false);  // security
     ServerConnector http = new ServerConnector(
@@ -64,46 +73,37 @@ public class Jetty {
     http.setPort(port);
     http.setIdleTimeout(httpTime);
     sv.addConnector(http);
-    //-> handler (location, app)
-    HandlerList hands = new HandlerList();
-    hands.setHandlers(handlers());
-    sv.setHandler(hands);
-    try {
-      sv.start();
-      sv.join();
-    } catch (Exception e) {
+    sv.setHandler(handlers());
+    try { sv.start(); sv.join(); }
+    catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
-
-  private Handler[] handlers() {
+  private HandlerList handlers() {
     ArrayList<Handler> list = new ArrayList<>(3);
-    if (location != null) {
-      ResourceHandler rhand = new ResourceHandler();
-      rhand.setDirectoriesListed(false);  // security
-      rhand.setBaseResource(location);
-      list.add(rhand);
-    }
-    if (app != null) {
-      list.add(new SessionHandler());
-      list.add(new AppHandler());
-    }
-    if (list.isEmpty()) throw new IllegalStateException(
-      // TODO message -> no contents to serve.
+    if (rhand != null) list.add(rhand);
+    if (shand != null) list.add(shand);
+    if (app != null) list.add(new WebApp(app));
+    HandlerList hands = new HandlerList();
+    hands.setHandlers(
+      list.toArray(new Handler[list.size()])
     );
-    return list.toArray(new Handler[list.size()]);
+    return hands;
   }
-
-  private static class AppHandler extends AbstractHandler {
+  private static class WebApp extends AbstractHandler {
+    private App app;
+    public WebApp(App app) { this.app=app; }
     @Override public void handle(
         String target, Request baseReq,
         HttpServletRequest req, HttpServletResponse res)
         throws IOException, ServletException
     {
       String method = req.getMethod();
-      Route r = Routes.plainUriRoute(method, target);
-      if (r == null) r = Routes.regexUriRoute(method, target);
-      if (r == null) return;  // not found
+      Route r = app.routes.plainUriRoute(method, target);
+      if (r == null) {
+        r = app.routes.regexUriRoute(method, target);
+        if (r == null) return;  // not found
+      }
       r.run(req, res);
       baseReq.setHandled(true);
     }

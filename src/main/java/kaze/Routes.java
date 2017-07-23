@@ -7,17 +7,17 @@ import java.util.regex.Pattern;
 import kaze.App.Func;
 
 public class Routes {
-  private static final HashMap<String, HashMap<String, Route>>
+  private final HashMap<String, HashMap<String, Route>>
     method2uri = new HashMap<>();
-  private static final HashMap<String, HashMap<Pattern, Route>>
+  private final HashMap<String, HashMap<Pattern, Route>>
     method2regex = new HashMap<>();
 
   //-> add
-  public static void add(String method, String path, Func f) {
+  public void add(String method, String path, Func f) {
     if (path.contains(":")) addRegex(method, path, f);
     else addUri(method, path, f);
   }
-  private static void addRegex(String method, String path, Func func) {
+  private void addRegex(String method, String path, Func func) {
     HashMap<Pattern, Route> regexRoutes = method2regex.get(method);
     if (regexRoutes == null) {
       regexRoutes = new HashMap<>();
@@ -42,7 +42,7 @@ public class Routes {
     Pattern regex = Pattern.compile(sb.toString());
     regexRoutes.put(regex, route);
   }
-  private static void addUri(String method, String path, Func func) {
+  private void addUri(String method, String path, Func func) {
     HashMap<String, Route> uriRoutes = method2uri.get(method);
     if (uriRoutes == null) {
       uriRoutes = new HashMap<>();
@@ -53,12 +53,12 @@ public class Routes {
   }
 
   //-> get
-  public static Route plainUriRoute(String method, String path) {
+  public Route plainUriRoute(String method, String path) {
     HashMap<String, Route> uriRoutes = method2uri.get(method);
     if (uriRoutes == null) return null;
     return uriRoutes.get(path);
   }
-  public static Route regexUriRoute(String method, String path) {
+  public Route regexUriRoute(String method, String path) {
     HashMap<Pattern, Route> regexRoutes = method2regex.get(method);
     if (regexRoutes == null) return null;
     for(Pattern r : regexRoutes.keySet()) {
