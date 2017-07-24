@@ -23,7 +23,6 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import kaze.App;
-import kaze.App.Route;
 import kaze.Req;
 import kaze.Res;
 
@@ -102,12 +101,13 @@ public class Jetty {
         throws IOException, ServletException
     {
       Req req = new Req(sreq, path);
-      Route r = app.find(req);
-      if (r == null) return;  // not found
+      req.paths = path.substring(1).split("/");
+      req.route = app.find(sreq.getMethod(), req);
+      if (req.route == null) return;  // not found
       Res res = new Res(sres);
       utf8(sreq, sres);
       try {
-        r.func.accept(req, res);
+        req.route.func.accept(req, res);
       } catch (Throwable e) {
         throw new RuntimeException(e);
       } finally {

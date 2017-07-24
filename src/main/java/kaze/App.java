@@ -25,43 +25,41 @@ public class App {
       routes = new ArrayList<>();
       method2routes.put(method, routes);
     }
-    Route route = new Route();
-    route.func = f;
-    route.path = path;
-    route.paths = path.substring(1).split("/");
-    route.param = path.contains(":");
-    routes.add(route);
+    String[] paths = path.substring(1).split("/");
+    Map<String, Integer> params = null;
+    if (path.contains(":")) {
+      params = new HashMap<>();
+      for (int i=0; i<paths.length; i++) {
+        if (paths[i].startsWith(":")) {
+          params.put(paths[i], i);
+        }
+      }
+    }
+    routes.add(
+      new Route(f, path, paths, params)
+    );
   }
 
   public final Map<String, List<Route>>
     method2routes = new HashMap<>();
 
-  public Route find(Req req) {
-    List<Route> routes = method2routes.get(req.method);
+  public Route find(String method, Req req) {
+    List<Route> routes = method2routes.get(method);
     if (routes == null) return null;
     for (Route route: routes) {
       if (match(route, req)) return route;
     }
     return null;
   }
-  private boolean match(Route route, Req req) {
-    if (route.param) {
-      req.paths = req.path.substring(1).split("/");
-      req.pathParam = new HashMap<>();
-      String[] added = route.paths;
-      String[] actual = req.paths;
-      if (added.length != actual.length) return false;
-      for (int i=0; i<added.length; i++) {
-        if (added[i].startsWith(":")) {
-          req.pathParam.put(added[i], actual[i]);
-          continue;
-        }
-        if (added[i].equals(actual[i])) continue;
-        else return false;
-      }
-      return true;
+  private boolean match(Route rt, Req rq) {
+    if (rt.params == null) return rt.path.equals(rq.path);
+    if (rt.paths.length != rq.paths.length) return false;
+    for (int i=0; i<rt.paths.length; i++) {
+      if (rt.paths[i].startsWith(":")) continue;
+      if (rt.paths[i].equals(rq.paths[i])) continue;
+      else return false;
     }
-    return route.path.equals(req.path);
+    return true;
   }
 
   @FunctionalInterface public interface Func {
@@ -71,6 +69,13 @@ public class App {
     public Func func;
     public String path;
     public String[] paths;
-    public boolean param;
+    public Map<String, Integer> params;
+    public Route(
+      Func func, String path,String[] paths,
+      Map<String, Integer> params
+    ) {
+      this.func=func; this.path=path;
+      this.paths=paths; this.params=params;
+    }
   }
 }

@@ -2,22 +2,22 @@ package kaze;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.Gson;
 
+import kaze.App.Route;
+
 public class Req {
   static final Gson gson = new Gson();
   public HttpServletRequest srv;
-  public String method;
   public String path;
   public String[] paths;
-  public Map<String, String> pathParam;
+  public Route route;
 
   public Req(HttpServletRequest r, String p) {
-    srv = r; method=r.getMethod(); path = p;
+    srv = r; path = p;
   }
 
   public String body() throws IOException {
@@ -40,6 +40,7 @@ public class Req {
 
   public String path(String name) {
     // TODO ":" で始まるかチェック
-    return pathParam.get(name);
+    int i = route.params.get(name);
+    return paths[i];
   }
 }
