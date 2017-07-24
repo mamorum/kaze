@@ -11,9 +11,13 @@ import com.google.gson.Gson;
 public class Req {
   static final Gson gson = new Gson();
   public HttpServletRequest srv;
-  public Path path;
-  public Req(HttpServletRequest r, Path p) {
-    srv = r; path = p;
+  public String method;
+  public String path;
+  public String[] paths;
+  public Map<String, String> pathParam;
+
+  public Req(HttpServletRequest r, String p) {
+    srv = r; method=r.getMethod(); path = p;
   }
 
   public String body() throws IOException {
@@ -36,17 +40,6 @@ public class Req {
 
   public String path(String name) {
     // TODO ":" で始まるかチェック
-    return path.val(name);
-  }
-  static class Path {
-    private String path;
-    private Map<String, Integer> index;
-    Path(String p, Map<String, Integer> i) {
-      path = p; index = i;
-    }
-    String val(String name) {
-      String[] paths = path.substring(1).split("/");
-      return paths[index.get(name)];
-    }
+    return pathParam.get(name);
   }
 }

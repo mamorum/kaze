@@ -2,6 +2,7 @@ package kaze.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletException;
@@ -22,7 +23,9 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import kaze.App;
-import kaze.Route;
+import kaze.App.Route;
+import kaze.Req;
+import kaze.Res;
 
 public class Jetty {
   //-> settings
@@ -94,18 +97,32 @@ public class Jetty {
     private App app;
     public WebApp(App app) { this.app=app; }
     @Override public void handle(
-        String target, Request baseReq,
-        HttpServletRequest req, HttpServletResponse res)
+        String path, Request baseReq,
+        HttpServletRequest sreq, HttpServletResponse sres)
         throws IOException, ServletException
     {
-      String method = req.getMethod();
-      Route r = app.routes.plainUriRoute(method, target);
-      if (r == null) {
-        r = app.routes.regexUriRoute(method, target);
-        if (r == null) return;  // not found
+      Req req = new Req(sreq, path);
+      Route r = app.find(req);
+      if (r == null) return;  // not found
+      Res res = new Res(sres);
+      utf8(sreq, sres);
+      try {
+        r.func.accept(req, res);
+      } catch (Throwable e) {
+        throw new RuntimeException(e);
+      } finally {
+        baseReq.setHandled(true);
       }
-      r.run(req, res);
-      baseReq.setHandled(true);
+    }
+    private static final String utf8 = "utf-8";
+    private void utf8(
+      HttpServletRequest req, HttpServletResponse res)
+      throws UnsupportedEncodingException
+    {
+      if (req.getCharacterEncoding() == null) {
+        req.setCharacterEncoding(utf8);
+      }
+      res.setCharacterEncoding(utf8);
     }
   }
 }

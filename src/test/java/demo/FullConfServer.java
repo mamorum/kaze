@@ -8,8 +8,8 @@ import kaze.server.Jetty;
 public class FullConfServer {
   public static void main(String[] args) {
     App app = new App();
-    app.get("/hello", (req, res) -> {
-      res.json("msg", "Hello.");
+    app.get("/json", (req, res) -> {
+      res.json("msg", "Hello");
     });
     app.get("/id/:id", (req, res) -> {
       res.json("id", req.path(":id"));
