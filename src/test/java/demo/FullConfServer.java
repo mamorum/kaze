@@ -11,6 +11,12 @@ public class FullConfServer {
     app.get("/json", (req, res) -> {
       res.json("msg", "Hello");
     });
+    app.get("/err", (req, res) -> {
+      throw new Exception("Exception");
+    });
+    app.get("/err/run", (req, res) -> {
+      throw new RuntimeException("Runtime Exception");
+    });
     app.get("/id/:id", (req, res) -> {
       res.json("id", req.path(":id"));
     });
@@ -28,6 +34,6 @@ public class FullConfServer {
     jetty.http(60000);
     jetty.session(30);
     jetty.location("/public");
-    jetty.listen("localhost", 8080);
+    jetty.listen(8080);
   }
 }

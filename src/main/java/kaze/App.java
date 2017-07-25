@@ -1,11 +1,19 @@
 package kaze;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import kaze.Route.Func;
+
 public class App {
+  final Map<String, List<Route>> method2routes = new HashMap<>();
+
   //-> routing (Methods are in "org.eclipse.jetty.http.HttpMethod")
   public void get(String path, Func f) { add("GET", path, f); }
   public void post(String path, Func f) { add("POST", path, f); }
@@ -40,42 +48,46 @@ public class App {
     );
   }
 
-  public final Map<String, List<Route>>
-    method2routes = new HashMap<>();
-
-  public Route find(String method, Req req) {
+  public boolean run(
+    HttpServletRequest sreq, HttpServletResponse sres
+  ) throws Exception {
+    String path = sreq.getRequestURI();
+    String[] paths = path.substring(1).split("/");
+    Route route = find(sreq.getMethod(), path, paths);
+    if (route == null) return false;  // not found
+    Req req = new Req(sreq, paths, route);
+    Res res = new Res(sres);
+    utf8(sreq, sres);
+    route.func.accept(req, res);
+    return true;
+  }
+  public Route find(String method, String path, String[] paths) {
     List<Route> routes = method2routes.get(method);
     if (routes == null) return null;
     for (Route route: routes) {
-      if (match(route, req)) return route;
+      if (match(route, path, paths)) return route;
     }
     return null;
   }
-  private boolean match(Route rt, Req rq) {
-    if (rt.params == null) return rt.path.equals(rq.path);
-    if (rt.paths.length != rq.paths.length) return false;
+  private boolean match(Route rt, String path, String[] paths) {
+    if (rt.params == null) return rt.path.equals(path);
+    if (rt.paths.length != paths.length) return false;
     for (int i=0; i<rt.paths.length; i++) {
       if (rt.paths[i].startsWith(":")) continue;
-      if (rt.paths[i].equals(rq.paths[i])) continue;
+      if (rt.paths[i].equals(paths[i])) continue;
       else return false;
     }
     return true;
   }
 
-  @FunctionalInterface public interface Func {
-    void accept(Req req, Res res) throws Throwable;
-  }
-  public class Route {
-    public Func func;
-    public String path;
-    public String[] paths;
-    public Map<String, Integer> params;
-    public Route(
-      Func func, String path,String[] paths,
-      Map<String, Integer> params
-    ) {
-      this.func=func; this.path=path;
-      this.paths=paths; this.params=params;
+  private static final String utf8 = "utf-8";
+  private void utf8(
+    HttpServletRequest req, HttpServletResponse res)
+    throws UnsupportedEncodingException
+  {
+    if (req.getCharacterEncoding() == null) {
+      req.setCharacterEncoding(utf8);
     }
+    res.setCharacterEncoding(utf8);
   }
 }

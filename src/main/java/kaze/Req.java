@@ -7,17 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.Gson;
 
-import kaze.App.Route;
-
 public class Req {
   static final Gson gson = new Gson();
   public HttpServletRequest srv;
-  public String path;
-  public String[] paths;
-  public Route route;
+  private String[] paths;
+  private Route route;
 
-  public Req(HttpServletRequest r, String p) {
-    srv = r; path = p;
+  public Req(HttpServletRequest r, String[] paths, Route route) {
+    this.srv = r; this.paths=paths; this.route=route;
   }
 
   public String body() throws IOException {
@@ -40,7 +37,8 @@ public class Req {
 
   public String path(String name) {
     // TODO ":" で始まるかチェック
-    int i = route.params.get(name);
+    Integer i = route.params.get(name);
+    if (i == null) throw new RuntimeException("...");
     return paths[i];
   }
 }
