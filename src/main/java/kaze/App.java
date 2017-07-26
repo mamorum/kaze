@@ -9,85 +9,76 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.Route.Func;
-
 public class App {
   final Map<String, List<Route>> method2routes = new HashMap<>();
 
-  //-> routing (Methods are in "org.eclipse.jetty.http.HttpMethod")
-  public void get(String path, Func f) { add("GET", path, f); }
-  public void post(String path, Func f) { add("POST", path, f); }
-  public void head(String path, Func f) { add("HEAD", path, f); }
-  public void put(String path, Func f) { add("PUT", path, f); }
-  public void options(String path, Func f) { add("OPTIONS", path, f); }
-  public void delete(String path, Func f) { add("DELETE", path, f); }
-  public void trace(String path, Func f) { add("TRACE", path, f); }
-  public void connect(String path, Func f) { add("CONNECT", path, f); }
-  public void move(String path, Func f) { add("MOVE", path, f); }
-  public void proxy(String path, Func f) { add("PROXY", path, f); }
-  public void pri(String path, Func f) { add("PRI", path, f); }
-
-  public void add(String method, String path, Func f) {
+  //-> for app init
+  private void add(String method, String uri, Func f) {
     List<Route> routes = method2routes.get(method);
     if (routes == null) {
       routes = new ArrayList<>();
       method2routes.put(method, routes);
     }
-    String[] paths = path.substring(1).split("/");
-    Map<String, Integer> params = null;
-    if (path.contains(":")) {
-      params = new HashMap<>();
-      for (int i=0; i<paths.length; i++) {
-        if (paths[i].startsWith(":")) {
-          params.put(paths[i], i);
-        }
-      }
-    }
-    routes.add(
-      new Route(f, path, paths, params)
-    );
+    Path path = Path.of(uri);
+    routes.add(new Route(f, path));
   }
+  public void get(String uri, Func f) { add("GET", uri, f); }
+  public void post(String uri, Func f) { add("POST", uri, f); }
+  public void head(String uri, Func f) { add("HEAD", uri, f); }
+  public void put(String uri, Func f) { add("PUT", uri, f); }
+  public void options(String uri, Func f) { add("OPTIONS", uri, f); }
+  public void delete(String uri, Func f) { add("DELETE", uri, f); }
+  public void trace(String uri, Func f) { add("TRACE", uri, f); }
+  public void connect(String uri, Func f) { add("CONNECT", uri, f); }
+  public void move(String uri, Func f) { add("MOVE", uri, f); }
+  public void proxy(String uri, Func f) { add("PROXY", uri, f); }
+  public void pri(String uri, Func f) { add("PRI", uri, f); }
+  //<- methods are in "org.eclipse.jetty.http.HttpMethod"
 
+  //-> for app runtime
   public boolean run(
     HttpServletRequest sreq, HttpServletResponse sres
   ) throws Exception {
-    String path = sreq.getRequestURI();
-    String[] paths = path.substring(1).split("/");
-    Route route = find(sreq.getMethod(), path, paths);
+    Path path = Path.of(sreq.getRequestURI());
+    Route route = find(sreq.getMethod(), path);
     if (route == null) return false;  // not found
-    Req req = new Req(sreq, paths, route);
+    Req req = new Req(sreq, path, route);
     Res res = new Res(sres);
-    utf8(sreq, sres);
+    encoding(sreq, sres);
+    // TODO before func
     route.func.accept(req, res);
+    // TODO after func
     return true;
   }
-  public Route find(String method, String path, String[] paths) {
+  public Route find(String method, Path path) {
     List<Route> routes = method2routes.get(method);
     if (routes == null) return null;
-    for (Route route: routes) {
-      if (match(route, path, paths)) return route;
+    for (Route r: routes) {
+      if (match(r.path, path)) return r;
     }
     return null;
   }
-  private boolean match(Route rt, String path, String[] paths) {
-    if (rt.params == null) return rt.path.equals(path);
-    if (rt.paths.length != paths.length) return false;
-    for (int i=0; i<rt.paths.length; i++) {
-      if (rt.paths[i].startsWith(":")) continue;
-      if (rt.paths[i].equals(paths[i])) continue;
-      else return false;
+  private boolean match(Path a, Path r) { // a: added, r: request
+    if (a.tree.length != r.tree.length) return false;
+    for (int i=0; i<a.tree.length; i++) {
+      if (a.tree[i].startsWith(":")) continue;
+      if (a.tree[i].equals(r.tree[i])) continue;
+      return false;
     }
     return true;
   }
-
+  ////-> encoding
   private static final String utf8 = "utf-8";
-  private void utf8(
+  private String enc = utf8;
+  private void encoding(
     HttpServletRequest req, HttpServletResponse res)
-    throws UnsupportedEncodingException
+  throws UnsupportedEncodingException
   {
+    if (enc == null) return;
     if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(utf8);
+      req.setCharacterEncoding(enc);
     }
-    res.setCharacterEncoding(utf8);
+    res.setCharacterEncoding(enc);
   }
+  public void encoding(String enc) { this.enc=enc; }
 }

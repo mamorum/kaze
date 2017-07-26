@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 
 public class Res {
-  static final Gson gson = Req.gson;
+  public static final Gson gson = Req.gson;
   public HttpServletResponse srv;
   public Res(HttpServletResponse r) { this.srv = r; }
 
