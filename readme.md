@@ -11,7 +11,7 @@ Kaze makes it easy to create Web API, RESTful API, etc.
 <dependency>
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
 </dependency>
 ```
 
@@ -19,13 +19,17 @@ Kaze makes it easy to create Web API, RESTful API, etc.
 ```java
 package demo;
 
-import kaze.Http;
+import kaze.App;
+import kaze.server.Jetty;
 
 public class Main {
   public static void main(String[] args) {
-    Http.server().get("/hello", (req, res) -> {
-      res.json("msg", "Hello World!");
-    }).listen();
+    App app = new App();
+    app.get("/", (req, res) -> {
+      res.json("msg", "Hello!");
+    });
+    Jetty jetty = new Jetty(app);
+    jetty.listen(8080);
   }
 }
 ```
@@ -37,27 +41,13 @@ mvn exec:java -Dexec.mainClass=demo.Main
 
 ### 4. Check
 ```
-$ curl -X GET http://localhost:8080/hello -s
-{"msg":"Hello World!"}
+curl -s -X GET http://localhost:8080/
+{"msg":"Hello!"}
 ```
-
-
-## Guides
-- [Getting Started](doc/getting-started.md)
-- [User Guide](doc/user-guide.md)
 
 
 ## Samples
 - [kaze-sample-rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb) : web app accessing relational database.
-
-
-## Features
-- Routing
-- Serving Static Contents
-- Conversion (JSON, Java types)
-- Validation
-- Simple and Fluent APIs
-- Light Weight
 
 
 ## Meaning

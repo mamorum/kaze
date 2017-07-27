@@ -33,7 +33,7 @@ public class App {
   public void move(String uri, Func f) { add("MOVE", uri, f); }
   public void proxy(String uri, Func f) { add("PROXY", uri, f); }
   public void pri(String uri, Func f) { add("PRI", uri, f); }
-  //<- methods are in "org.eclipse.jetty.http.HttpMethod"
+  //<- http methods are in "org.eclipse.jetty.http.HttpMethod"
 
   //-> for app runtime
   public boolean run(
