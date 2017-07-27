@@ -13,15 +13,7 @@ public class App {
   final Map<String, List<Route>> method2routes = new HashMap<>();
 
   //-> for app init
-  private void add(String method, String uri, Func f) {
-    List<Route> routes = method2routes.get(method);
-    if (routes == null) {
-      routes = new ArrayList<>();
-      method2routes.put(method, routes);
-    }
-    Path path = Path.of(uri);
-    routes.add(new Route(f, path));
-  }
+  ////-> routing (http methods are in "org.eclipse.jetty.http.HttpMethod")
   public void get(String uri, Func f) { add("GET", uri, f); }
   public void post(String uri, Func f) { add("POST", uri, f); }
   public void head(String uri, Func f) { add("HEAD", uri, f); }
@@ -33,7 +25,28 @@ public class App {
   public void move(String uri, Func f) { add("MOVE", uri, f); }
   public void proxy(String uri, Func f) { add("PROXY", uri, f); }
   public void pri(String uri, Func f) { add("PRI", uri, f); }
-  //<- http methods are in "org.eclipse.jetty.http.HttpMethod"
+  private void add(String method, String uri, Func f) {
+    List<Route> routes = method2routes.get(method);
+    if (routes == null) {
+      routes = new ArrayList<>();
+      method2routes.put(method, routes);
+    }
+    Path path = Path.of(uri);
+    routes.add(new Route(f, path));
+  }
+  ////-> functions
+  @FunctionalInterface public interface Func {
+    void exec(Req req, Res res) throws Exception;
+  }
+  @FunctionalInterface public static interface FromJson {
+    <T> T exec(String json, Class<T> to);
+  }
+  @FunctionalInterface public static interface ToJson {
+    String exec(Object from);
+  }
+  ////-> json functions
+  public static FromJson fromJson;
+  public static ToJson toJson;
 
   //-> for app runtime
   public boolean run(
@@ -46,7 +59,7 @@ public class App {
     Res res = new Res(sres);
     encoding(sreq, sres);
     // TODO before func
-    route.func.accept(req, res);
+    route.func.exec(req, res);
     // TODO after func
     return true;
   }

@@ -3,6 +3,10 @@ package it;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import it.tool.HttpReq;
+import it.tool.HttpRes;
+import it.tool.ItCase;
+
 public class ReqResJsonTest extends ItCase {
 
   static class Person {

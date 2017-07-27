@@ -7,10 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
-
 public class Res {
-  public static final Gson gson = Req.gson;
   public HttpServletResponse srv;
   public Res(HttpServletResponse r) { this.srv = r; }
 
@@ -33,7 +30,7 @@ public class Res {
     send("text/html", html);
   }
   public void json(Object obj) throws IOException {
-    send("application/json", gson.toJson(obj));
+    send("application/json", App.toJson.exec(obj));
   }
   public void json(Object... kv) throws IOException {
     if (kv.length == 2) {

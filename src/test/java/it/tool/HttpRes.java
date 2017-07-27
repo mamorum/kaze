@@ -1,4 +1,4 @@
-package it;
+package it.tool;
 
 import static org.junit.Assert.*;
 

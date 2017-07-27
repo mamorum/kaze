@@ -5,10 +5,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.gson.Gson;
-
 public class Req {
-  public static final Gson gson = new Gson();
   public HttpServletRequest srv;
   private Path path;
 
@@ -28,7 +25,7 @@ public class Req {
   }
 
   public <T> T json(Class<T> to) throws IOException {
-    return gson.fromJson(body(), to);
+    return App.fromJson.exec(body(), to);
   }
 
   public String param(String name) {

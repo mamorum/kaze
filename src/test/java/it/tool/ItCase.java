@@ -1,13 +1,21 @@
-package it;
+package it.tool;
 
 import org.junit.BeforeClass;
+
+import com.google.gson.Gson;
 
 import kaze.App;
 import kaze.server.Jetty;
 
 public class ItCase {
-  protected static App app = new App();
-  protected static Jetty jetty = new Jetty(app);
+  protected static final App app = new App();
+  protected static final Jetty jetty = new Jetty(app);
+  private static Gson gson = new Gson();
+  static {
+    App.fromJson = gson::fromJson;
+    App.toJson = gson::toJson;
+  }
+
   private static volatile boolean serving = false;
   private static final Object lock = new Object();
   private static final Thread t = new Thread(
