@@ -14,7 +14,6 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -76,12 +75,11 @@ public class Jetty {
     }
   }
   private static HandlerList handlers() {
-    ArrayList<Handler> list = new ArrayList<>(3);
+    ArrayList<Handler> list = new ArrayList<>(2);
     if (App.exist()) {
-      SessionHandler ssnHand = new SessionHandler();
-      ssnHand.setMaxInactiveInterval(ssnTimeSec);
-      list.add(ssnHand);
-      list.add(new Ap());
+      Ap ap = new Ap();
+      ap.setMaxInactiveInterval(ssnTimeSec);
+      list.add(ap);
     }
     if (rscHand != null) list.add(rscHand);
     HandlerList hands = new HandlerList();
@@ -91,19 +89,20 @@ public class Jetty {
     return hands;
   }
 
-  private static class Ap extends AbstractHandler {
-    @Override public void handle(
-        String target, Request baseReq,
-        HttpServletRequest sreq, HttpServletResponse sres)
+  private static class Ap extends SessionHandler {
+    @Override public void doHandle(
+        String target, Request base,
+        HttpServletRequest req, HttpServletResponse res)
     throws IOException, ServletException
     {
-      try {
-        boolean run = App.run(sreq, sres);
-        baseReq.setHandled(run);
-      } catch (Exception e) {
-        sres.sendError(500);
+      boolean run = false;
+      try { run = App.run(req, res); }
+      catch (Exception e) {
+        res.sendError(500);
         throw new ServletException(e);
       }
+      base.setHandled(run);
+      super.doHandle(target, base, req, res);
     }
   }
 }
