@@ -7,14 +7,11 @@ import kaze.server.Jetty;
 
 public class AppServer {
   public static void main(String[] args) {
-    App app = new App();
     Gson gson = new Gson();
-    App.fromJson = gson::fromJson;
-    App.toJson = gson::toJson;
-    app.get("/json", (req, res) -> {
+    App.parser(gson::fromJson, gson::toJson);
+    App.get("/json", (req, res) -> {
       res.json("msg", "Hello");
     });
-    Jetty jetty = new Jetty(app);
-    jetty.listen(8080);
+    Jetty.listen(8080);
   }
 }

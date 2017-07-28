@@ -5,11 +5,9 @@ import kaze.server.Jetty;
 
 public class Main {
   public static void main(String[] args) {
-    App app = new App();
-    app.get("/", (req, res) -> {
-      res.json("msg", "Hello!");
+    App.get("/", (req, res) -> {
+      res.send("Hello, World.");
     });
-    Jetty jetty = new Jetty(app);
-    jetty.listen(8080);
+    Jetty.listen(8080);
   }
 }

@@ -5,9 +5,10 @@ import org.junit.Test;
 
 import it.tool.HttpReq;
 import it.tool.HttpRes;
-import it.tool.ItCase;
+import it.tool.Env;
+import kaze.App;
 
-public class ReqResJsonTest extends ItCase {
+public class ReqResJsonTest {
 
   static class Person {
     public long id;
@@ -19,11 +20,12 @@ public class ReqResJsonTest extends ItCase {
     reg_it_json_person();
     reg_it_json_msg();
     reg_it_json_msgs();
+    Env.init();
   }
 
   //-> Test for Req#json(Class<T>), Res#json(Object)
   public static void reg_it_json_person() {
-    app.post("/it/json/person", (req, res) -> {
+    App.post("/it/json/person", (req, res) -> {
       Person p = req.json(Person.class);
       p.ver = 1;
       res.json(p);
@@ -41,7 +43,7 @@ public class ReqResJsonTest extends ItCase {
 
   //-> Test for Res#json(Object...), size=2
   public static void reg_it_json_msg() {
-    app.get("/it/json/msg", (req, res) -> {
+    App.get("/it/json/msg", (req, res) -> {
       res.json("msg", "Hello");
     });
   }
@@ -56,7 +58,7 @@ public class ReqResJsonTest extends ItCase {
 
   //-> Test for Res#json(Object...), size=4
   public static void reg_it_json_msgs() {
-    app.get("/it/json/msgs", (req, res) -> {
+    App.get("/it/json/msgs", (req, res) -> {
       res.json(
         "status", 1,
         "history", new String[] {"stop", "start"}

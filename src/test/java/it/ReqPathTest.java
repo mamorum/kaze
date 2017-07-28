@@ -5,18 +5,19 @@ import org.junit.Test;
 
 import it.tool.HttpReq;
 import it.tool.HttpRes;
-import it.tool.ItCase;
+import it.tool.Env;
+import kaze.App;
 
-public class ReqPathTest extends ItCase {
-
+public class ReqPathTest {
   @BeforeClass public static void init() {
     reg_it_path_name();
     reg_it_path_index();
+    Env.init();
   }
 
   //-> Test for Req#path(String)
   public static void reg_it_path_name() {
-    app.get("/it/req/path/:name", (req, res) -> {
+    App.get("/it/req/path/:name", (req, res) -> {
       String name = req.path(":name");
       res.send(name);
     });
@@ -32,7 +33,7 @@ public class ReqPathTest extends ItCase {
 
   //-> Test for Req#path(int)
   public static void reg_it_path_index() {
-    app.post("/it/req/path/:name/", (req, res) -> {
+    App.post("/it/req/path/:name/", (req, res) -> {
       String name = req.path(3);
       res.send(name);
     });

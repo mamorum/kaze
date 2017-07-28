@@ -5,17 +5,18 @@ import org.junit.Test;
 
 import it.tool.HttpReq;
 import it.tool.HttpRes;
-import it.tool.ItCase;
+import it.tool.Env;
+import kaze.App;
 
-public class ReqParamTest extends ItCase {
-
+public class ReqParamTest {
   @BeforeClass public static void init() {
     reg_it_param();
+    Env.init();
   }
 
   //-> Test for Req#param(String)
   public static void reg_it_param() {
-    app.get("/it/req/param", (req, res) -> {
+    App.get("/it/req/param", (req, res) -> {
       String name = req.param("name");
       res.send(name);
     });

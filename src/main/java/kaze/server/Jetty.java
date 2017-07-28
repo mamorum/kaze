@@ -25,41 +25,36 @@ import kaze.App;
 
 public class Jetty {
   //-> settings
-  ////-> app
-  private App app;
-  public Jetty() { super(); }
-  public Jetty(App app) { this.app=app; }
   ////-> thread
-  private int thMax=200, thMin=8, thTime=60000;
-  public void thread(int max, int min, int timeout) {
+  private static int thMax=200, thMin=8, thTime=60000;
+  public static void thread(int max, int min, int timeout) {
     thMax=max; thMin=min; thTime=timeout;
   }
   ////-> http
-  private int httpTime=30000;
-  public void http(int timeout) { httpTime=timeout; }
-  ////-> session
-  private SessionHandler ssnHand;
-  public void session(int timeoutSec) {  // -1: no timeout
-    ssnHand = new SessionHandler();
-    ssnHand.setMaxInactiveInterval(timeoutSec);
+  private static int httpTime=30000;
+  public static void http(int timeout) { httpTime=timeout; }
+  ////-> http session
+  private static int ssnTimeSec=-1;  // -1: no timeout
+  public static void session(int timeoutSec) {
+    ssnTimeSec=timeoutSec;
   }
   ////-> static files
-  private ResourceHandler rscHand;
-  private void location(Resource root) {
+  private static ResourceHandler rscHand;
+  private static void doc(Resource root) {
     rscHand = new ResourceHandler();
     rscHand.setDirectoriesListed(false);  // security
     rscHand.setBaseResource(root);
   }
-  public void location(String classpath) {
-    location(Resource.newClassPathResource(classpath));
+  public static void location(String classpath) {
+    doc(Resource.newClassPathResource(classpath));
   }
-  public void location(File dir) {
-    location(Resource.newResource(dir));
+  public static void location(File dir) {
+    doc(Resource.newResource(dir));
   }
 
   //-> start
-  public void listen(int port) { listen(null, port); }
-  public void listen(String host, int port) {
+  public static void listen(int port) { listen(null, port); }
+  public static void listen(String host, int port) {
     Server svr = new Server(
       new QueuedThreadPool(thMax, thMin, thTime)
     );
@@ -80,10 +75,14 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
-  private HandlerList handlers() {
+  private static HandlerList handlers() {
     ArrayList<Handler> list = new ArrayList<>(3);
-    if (ssnHand != null) list.add(ssnHand);
-    if (app != null) list.add(new Ap(app));
+    if (App.exist()) {
+      SessionHandler ssnHand = new SessionHandler();
+      ssnHand.setMaxInactiveInterval(ssnTimeSec);
+      list.add(ssnHand);
+      list.add(new Ap());
+    }
     if (rscHand != null) list.add(rscHand);
     HandlerList hands = new HandlerList();
     hands.setHandlers(
@@ -93,15 +92,13 @@ public class Jetty {
   }
 
   private static class Ap extends AbstractHandler {
-    private App app;
-    public Ap(App app) { this.app=app; }
     @Override public void handle(
         String target, Request baseReq,
         HttpServletRequest sreq, HttpServletResponse sres)
     throws IOException, ServletException
     {
       try {
-        boolean run = app.run(sreq, sres);
+        boolean run = App.run(sreq, sres);
         baseReq.setHandled(run);
       } catch (Exception e) {
         sres.sendError(500);
