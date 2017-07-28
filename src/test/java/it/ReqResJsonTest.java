@@ -15,7 +15,7 @@ public class ReqResJsonTest extends ItCase {
     public long ver;
   }
 
-  @BeforeClass public static void app() {
+  @BeforeClass public static void init() {
     reg_it_json_person();
     reg_it_json_msg();
     reg_it_json_msgs();
