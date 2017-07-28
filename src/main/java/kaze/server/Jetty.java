@@ -77,9 +77,9 @@ public class Jetty {
   private static HandlerList handlers() {
     ArrayList<Handler> list = new ArrayList<>(2);
     if (App.exist()) {
-      Ap ap = new Ap();
-      ap.setMaxInactiveInterval(ssnTimeSec);
-      list.add(ap);
+      AppHandler appHand = new AppHandler();
+      appHand.setMaxInactiveInterval(ssnTimeSec);
+      list.add(appHand);
     }
     if (rscHand != null) list.add(rscHand);
     HandlerList hands = new HandlerList();
@@ -89,7 +89,7 @@ public class Jetty {
     return hands;
   }
 
-  private static class Ap extends SessionHandler {
+  private static class AppHandler extends SessionHandler {
     @Override public void doHandle(
         String target, Request base,
         HttpServletRequest req, HttpServletResponse res)
