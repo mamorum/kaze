@@ -14,17 +14,21 @@ public class Req {
     this.path.index = route.path.index;
   }
 
-  public String body() throws IOException {
-    BufferedReader r = srv.getReader();
+  public String body() {
     StringBuilder body = new StringBuilder();
     String line;
-    while ((line = r.readLine()) != null) {
-      body.append(line);
+    try {
+      BufferedReader r = srv.getReader();
+      while ((line = r.readLine()) != null) {
+        body.append(line);
+      }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
     return body.toString();
   }
 
-  public <T> T json(Class<T> to) throws IOException {
+  public <T> T json(Class<T> to) {
     return App.fromJson.exec(body(), to);
   }
 

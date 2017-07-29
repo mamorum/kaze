@@ -16,23 +16,26 @@ public class Res {
     return this;
   }
 
-  public void send(String contentType, String body) throws IOException {
+  public void send(String contentType, String body) {
     srv.setContentType(contentType);
-    srv.getWriter().print(body);
+    try { srv.getWriter().print(body); }
+    catch (IOException e) {
+      throw new RuntimeException(e);
+    }
 // Transfer-Encoding: Chunked ->
 //    srv.getOutputStream().print(body);
 //    srv.flushBuffer();
   }
-  public void send(String body) throws IOException{
+  public void send(String body) {
     send("text/plain", body);
   }
-  public void html(String html) throws IOException{
+  public void html(String html) {
     send("text/html", html);
   }
-  public void json(Object obj) throws IOException {
+  public void json(Object obj) {
     send("application/json", App.toJson.exec(obj));
   }
-  public void json(Object... kv) throws IOException {
+  public void json(Object... kv) {
     if (kv.length == 2) {
       json(Collections.singletonMap(kv[0], kv[1]));
       return;
