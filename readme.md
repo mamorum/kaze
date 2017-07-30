@@ -1,12 +1,11 @@
-# Kaze: Java web application framework
+# Kaze: Java simple web app framework
 [![Build Status](https://travis-ci.org/mamorum/kaze.svg?branch=master)](https://travis-ci.org/mamorum/kaze)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze)
 
-- Minimal framework classes and APIs
 - Minimal dependencies (only Servlet API)
 - Supports embedded server (Jetty)
 - Also runs in a servlet container
-- Easy to create Web API, RESTful API, etc
+- Easy to create RESTful API, Web API, etc
 
 
 ## Hello World Example (Using embedded Jetty)
