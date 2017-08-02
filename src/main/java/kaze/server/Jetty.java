@@ -2,7 +2,6 @@ package kaze.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,25 +30,29 @@ public class Jetty {
   }
   ////-> http
   private static int httpTime=30000;
-  public static void http(int timeout) { httpTime=timeout; }
-  ////-> http session
-  private static int ssnTimeSec=-1;  // -1: no timeout
+  public static void http(int timeout) {
+    httpTime=timeout;
+  }
+  ////-> http session (default: no timeout)
   public static void session(int timeoutSec) {
-    ssnTimeSec=timeoutSec;
+    appHand.setMaxInactiveInterval(timeoutSec);
   }
   ////-> static files
-  private static ResourceHandler rscHand;
-  private static void doc(Resource root) {
-    rscHand = new ResourceHandler();
-    rscHand.setDirectoriesListed(false);  // security
-    rscHand.setBaseResource(root);
-  }
   public static void location(String classpath) {
     doc(Resource.newClassPathResource(classpath));
   }
   public static void location(File dir) {
     doc(Resource.newResource(dir));
   }
+  private static void doc(Resource root) {
+    rscHand = new ResourceHandler();
+    rscHand.setDirectoriesListed(false);  // security
+    rscHand.setBaseResource(root);
+  }
+
+  //-> handlers
+  private static final AppHandler appHand = new AppHandler();
+  private static ResourceHandler rscHand;
 
   //-> start
   public static void listen(int port) { listen(null, port); }
@@ -75,17 +78,12 @@ public class Jetty {
     }
   }
   private static HandlerList handlers() {
-    ArrayList<Handler> list = new ArrayList<>(2);
-    if (App.exist()) {
-      AppHandler appHand = new AppHandler();
-      appHand.setMaxInactiveInterval(ssnTimeSec);
-      list.add(appHand);
-    }
-    if (rscHand != null) list.add(rscHand);
     HandlerList hands = new HandlerList();
-    hands.setHandlers(
-      list.toArray(new Handler[list.size()])
-    );
+    if (rscHand == null) {
+      hands.setHandlers(new Handler[] {appHand});
+    } else {
+      hands.setHandlers(new Handler[] {appHand, rscHand});
+    }
     return hands;
   }
 
