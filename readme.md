@@ -25,7 +25,7 @@
 
 ### 2. Create code
 ```java
-package kaze.sample.server;
+package demo.jetty;
 
 import kaze.App;
 import kaze.server.Jetty;
