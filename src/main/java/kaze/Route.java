@@ -1,12 +1,10 @@
 package kaze;
 
-import kaze.App.Func;
-
 public class Route {
-  public Func func;
   public Path path;
+  public Func func;
 
-  public Route(Func func, Path path) {
-    this.func=func; this.path=path;
+  public Route(Path path, Func func) {
+    this.path=path; this.func=func;
   }
 }

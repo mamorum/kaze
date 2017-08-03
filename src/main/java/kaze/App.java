@@ -10,57 +10,54 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class App {
-  static final Map<String, List<Route>> method2routes = new HashMap<>();
+  // method to routes
+  private static final Map<String, List<Route>> mth2rts = new HashMap<>();
 
-  //-> for app init
+  //-> for init
   ////-> routing (http methods are in "org.eclipse.jetty.http.HttpMethod")
-  public static void get(String uri, Func f) { add("GET", uri, f); }
-  public static void post(String uri, Func f) { add("POST", uri, f); }
-  public static void head(String uri, Func f) { add("HEAD", uri, f); }
-  public static void put(String uri, Func f) { add("PUT", uri, f); }
-  public static void options(String uri, Func f) { add("OPTIONS", uri, f); }
-  public static void delete(String uri, Func f) { add("DELETE", uri, f); }
-  public static void trace(String uri, Func f) { add("TRACE", uri, f); }
-  public static void connect(String uri, Func f) { add("CONNECT", uri, f); }
-  public static void move(String uri, Func f) { add("MOVE", uri, f); }
-  public static void proxy(String uri, Func f) { add("PROXY", uri, f); }
-  public static void pri(String uri, Func f) { add("PRI", uri, f); }
-  private static void add(String method, String uri, Func f) {
-    List<Route> routes = method2routes.get(method);
+  public static void get(String path, Func f) { add("GET", path, f); }
+  public static void post(String path, Func f) { add("POST", path, f); }
+  public static void head(String path, Func f) { add("HEAD", path, f); }
+  public static void put(String path, Func f) { add("PUT", path, f); }
+  public static void options(String path, Func f) { add("OPTIONS", path, f); }
+  public static void delete(String path, Func f) { add("DELETE", path, f); }
+  public static void trace(String path, Func f) { add("TRACE", path, f); }
+  public static void connect(String path, Func f) { add("CONNECT", path, f); }
+  public static void move(String path, Func f) { add("MOVE", path, f); }
+  public static void proxy(String path, Func f) { add("PROXY", path, f); }
+  public static void pri(String path, Func f) { add("PRI", path, f); }
+  private static void add(String method, String path, Func f) {
+    List<Route> routes = mth2rts.get(method);
     if (routes == null) {
       routes = new ArrayList<>();
-      method2routes.put(method, routes);
+      mth2rts.put(method, routes);
     }
-    Path path = Path.of(uri);
-    routes.add(new Route(f, path));
+    routes.add(
+      new Route(Path.of(path), f)
+    );
   }
-  ////-> functions
-  @FunctionalInterface public static interface Func {
-    void exec(Req req, Res res) throws Exception;
-  }
+  ////-> json parser (functions)
   @FunctionalInterface public static interface FromJson {
     <T> T exec(String json, Class<T> to);
   }
   @FunctionalInterface public static interface ToJson {
     String exec(Object from);
   }
-  ////-> json parser (functions)
   public static FromJson fromJson;
   public static ToJson toJson;
   public static void parser(FromJson json2obj, ToJson obj2json) {
     fromJson=json2obj;  toJson=obj2json;
   }
 
-  //-> for app runtime
-  public static boolean exist() {
-    return (method2routes.size() > 0);
-  }
+  //-> for runtime
   public static boolean run(
     HttpServletRequest sreq, HttpServletResponse sres
   ) throws Exception {
-    Path path = Path.of(sreq.getRequestURI());
-    Route route = find(sreq.getMethod(), path);
-    if (route == null) return false;  // not found
+    List<Route> rts = mth2rts.get(sreq.getMethod());
+    if (rts == null) return false;
+    Path path = Path.of(sreq);
+    Route route = find(path, rts);
+    if (route == null) return false;
     Req req = new Req(sreq, path, route);
     Res res = new Res(sres);
     encoding(sreq, sres);
@@ -69,11 +66,9 @@ public class App {
     // TODO after func
     return true;
   }
-  public static Route find(String method, Path path) {
-    List<Route> routes = method2routes.get(method);
-    if (routes == null) return null;
-    for (Route r: routes) {
-      if (match(r.path, path)) return r;
+  private static Route find(Path reqPath, List<Route> from) {
+    for (Route r: from) {
+      if (match(r.path, reqPath)) return r;
     }
     return null;
   }
@@ -87,17 +82,16 @@ public class App {
     return true;
   }
   ////-> encoding
-  private static final String utf8 = "utf-8";
-  private static String encoding = utf8;
   private static void encoding(
-    HttpServletRequest req, HttpServletResponse res)
-  throws UnsupportedEncodingException
-  {
-    if (encoding == null) return;
-    if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(encoding);
+      HttpServletRequest req, HttpServletResponse res)
+    throws UnsupportedEncodingException
+    {
+      if (encoding == null) return;
+      if (req.getCharacterEncoding() == null) {
+        req.setCharacterEncoding(encoding);
+      }
+      res.setCharacterEncoding(encoding);
     }
-    res.setCharacterEncoding(encoding);
-  }
-  public static void encoding(String enc) { encoding=enc; }
+  private static final String utf8 = "utf-8";
+  public static String encoding = utf8;
 }

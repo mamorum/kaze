@@ -3,15 +3,20 @@ package kaze;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Path {
-  public String uri;
-  public String[] tree;
-  public Map<String, Integer> index;
+import javax.servlet.http.HttpServletRequest;
 
-  public static Path of(String uri) {
+public class Path {
+  public String[] tree;
+  public Map<String, Integer> index;  // for path param
+
+  private static Path tree(String path, int ltrimLen) {
     Path p = new Path();
-    p.uri = uri;
-    p.tree = uri.substring(1).split("/");
+    p.tree = path.substring(ltrimLen).split("/");
+    return p;
+  }
+  //-> for register (+analyze path param)
+  public static Path of(String path) {
+    Path p = tree(path, 1);
     p.index = new HashMap<>();
     for (int i=0; i<p.tree.length; i++) {
       if (p.tree[i].startsWith(":")) {
@@ -19,5 +24,12 @@ public class Path {
       }
     }
     return p;
+  }
+  //-> for request
+  public static Path of(HttpServletRequest req) {
+    String uri = req.getRequestURI();
+    String ctx = req.getContextPath();
+    if (ctx == null) return tree(uri, 1);
+    return tree(uri, (ctx.length() + 1));
   }
 }
