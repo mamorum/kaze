@@ -12,9 +12,6 @@ public class AppServer {
     Gson gson = new Gson();
     App.parser(gson::fromJson, gson::toJson);
     App.get("/", (req, res) -> {
-      res.send("Hello World");
-    });
-    App.get("/json", (req, res) -> {
       res.json("msg", "Hello");
     });
     App.get("/id/:id", (req, res) -> {

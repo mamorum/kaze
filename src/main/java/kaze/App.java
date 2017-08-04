@@ -10,10 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class App {
-  // method to routes
-  private static final Map<String, List<Route>> mth2rts = new HashMap<>();
-
-  //-> for init
+  //-> for init (settings)
   ////-> routing (http methods are in "org.eclipse.jetty.http.HttpMethod")
   public static void get(String path, Func f) { add("GET", path, f); }
   public static void post(String path, Func f) { add("POST", path, f); }
@@ -28,25 +25,39 @@ public class App {
   public static void pri(String path, Func f) { add("PRI", path, f); }
   private static void add(String method, String path, Func f) {
     List<Route> routes = mth2rts.get(method);
-    if (routes == null) {
-      routes = new ArrayList<>();
-      mth2rts.put(method, routes);
-    }
+    if (routes == null) routes = new ArrayList<>();
+    mth2rts.put(method, routes);
     routes.add(
       new Route(Path.of(path), f)
     );
   }
-  ////-> json parser (functions)
-  @FunctionalInterface public static interface FromJson {
-    <T> T exec(String json, Class<T> to);
+  private static final Map<String, List<Route>>
+      mth2rts = new HashMap<>();  // method to routes
+
+  ////-> json parser
+  public static void parser(Json2obj j2o, Obj2json o2j) {
+    json2obj=j2o;  obj2json=o2j;
   }
-  @FunctionalInterface public static interface ToJson {
-    String exec(Object from);
+  static Json2obj json2obj;
+  static Obj2json obj2json;
+  @FunctionalInterface public static interface Json2obj {
+    <T> T exec(String json, Class<T> obj);
   }
-  public static FromJson fromJson;
-  public static ToJson toJson;
-  public static void parser(FromJson json2obj, ToJson obj2json) {
-    fromJson=json2obj;  toJson=obj2json;
+  @FunctionalInterface public static interface Obj2json {
+    String exec(Object obj);
+  }
+
+  ////-> encoding
+  public static String encoding = "utf-8";
+  private static void encoding(
+    HttpServletRequest req, HttpServletResponse res)
+  throws UnsupportedEncodingException
+  {
+    if (encoding == null) return;
+    if (req.getCharacterEncoding() == null) {
+      req.setCharacterEncoding(encoding);
+    }
+    res.setCharacterEncoding(encoding);
   }
 
   //-> for runtime
@@ -81,17 +92,4 @@ public class App {
     }
     return true;
   }
-  ////-> encoding
-  private static void encoding(
-      HttpServletRequest req, HttpServletResponse res)
-    throws UnsupportedEncodingException
-    {
-      if (encoding == null) return;
-      if (req.getCharacterEncoding() == null) {
-        req.setCharacterEncoding(encoding);
-      }
-      res.setCharacterEncoding(encoding);
-    }
-  private static final String utf8 = "utf-8";
-  public static String encoding = utf8;
 }

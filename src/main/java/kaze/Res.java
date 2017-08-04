@@ -39,7 +39,7 @@ public class Res {
     write("text/html", html);
   }
   public void json(Object obj) {
-    write("application/json", App.toJson.exec(obj));
+    write("application/json", App.obj2json.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {
@@ -53,6 +53,7 @@ public class Res {
     }
     json(src);
   }
+
   public void redirect(int status, String url) {
     srv.setStatus(status);
     srv.setHeader("Location", srv.encodeRedirectURL(url));

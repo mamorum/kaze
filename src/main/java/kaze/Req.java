@@ -29,7 +29,7 @@ public class Req {
   }
 
   public <T> T json(Class<T> to) {
-    return App.fromJson.exec(body(), to);
+    return App.json2obj.exec(body(), to);
   }
 
   public String param(String name) {

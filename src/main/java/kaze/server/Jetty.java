@@ -22,24 +22,14 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import kaze.App;
 
 public class Jetty {
+  //-> handlers
+  private static final AppHandler appHand = new AppHandler();
+  private static ResourceHandler rscHand;
+
   //-> settings
-  ////-> thread
-  private static int thMax=200, thMin=8, thTime=60000;
-  public static void thread(int max, int min, int timeout) {
-    thMax=max; thMin=min; thTime=timeout;
-  }
-  ////-> http
-  private static int httpTime=30000;
-  public static void http(int timeout) {
-    httpTime=timeout;
-  }
-  ////-> http session (default: no timeout)
-  public static void session(int timeoutSec) {
-    appHand.setMaxInactiveInterval(timeoutSec);
-  }
-  ////-> static files
-  public static void location(String classpath) {
-    doc(Resource.newClassPathResource(classpath));
+  ////-> location of static files
+  public static void location(String classpathdir) {
+    doc(Resource.newClassPathResource(classpathdir));
   }
   public static void location(File dir) {
     doc(Resource.newResource(dir));
@@ -49,10 +39,20 @@ public class Jetty {
     rscHand.setDirectoriesListed(false);  // security
     rscHand.setBaseResource(root);
   }
-
-  //-> handlers
-  private static final AppHandler appHand = new AppHandler();
-  private static ResourceHandler rscHand;
+  ////-> http session (default: no timeout)
+  public static void session(int timeoutSec) {
+    appHand.setMaxInactiveInterval(timeoutSec);
+  }
+  ////-> http connector
+  private static int httpConTime=30000;
+  public static void connector(int timeout) {
+    httpConTime=timeout;
+  }
+  ////-> thread pool
+  private static int thMax=200, thMin=8, thTime=60000;
+  public static void thread(int max, int min, int timeout) {
+    thMax=max; thMin=min; thTime=timeout;
+  }
 
   //-> start
   public static void listen(int port) { listen(null, port); }
@@ -65,9 +65,9 @@ public class Jetty {
     ServerConnector http = new ServerConnector(
       svr, new HttpConnectionFactory(conf)
     );
+    http.setIdleTimeout(httpConTime);
     http.setHost(host);
     http.setPort(port);
-    http.setIdleTimeout(httpTime);
     svr.addConnector(http);
     svr.setHandler(handlers());
     try {
