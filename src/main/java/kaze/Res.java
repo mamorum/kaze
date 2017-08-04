@@ -16,24 +16,30 @@ public class Res {
     return this;
   }
 
-  public void send(String contentType, String body) {
+  // Transfer-Encoding: Chunked
+  public void stream(String contentType, String body) {
+    srv.setContentType(contentType);
+    try {
+      srv.getOutputStream().print(body);
+      srv.flushBuffer();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  // content-length
+  public void write(String contentType, String body) {
     srv.setContentType(contentType);
     try { srv.getWriter().print(body); }
     catch (IOException e) {
       throw new RuntimeException(e);
     }
-// Transfer-Encoding: Chunked ->
-//    srv.getOutputStream().print(body);
-//    srv.flushBuffer();
-  }
-  public void send(String body) {
-    send("text/plain", body);
   }
   public void html(String html) {
-    send("text/html", html);
+    write("text/html", html);
   }
   public void json(Object obj) {
-    send("application/json", App.toJson.exec(obj));
+    write("application/json", App.toJson.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {
