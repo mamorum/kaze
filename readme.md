@@ -3,8 +3,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze)
 
 - Minimal dependencies (only Servlet API)
-- No dependency injection (no DI)
-- No annotation and configuration file
 - Supports embedded server (Jetty)
 - Also runs in a servlet container
 - Easy to create RESTful API, Web API, etc
