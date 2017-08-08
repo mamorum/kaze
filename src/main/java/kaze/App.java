@@ -1,11 +1,13 @@
 package kaze;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,7 +65,7 @@ public class App {
   //-> for runtime
   public static boolean run(
     HttpServletRequest sreq, HttpServletResponse sres
-  ) throws Exception {
+  ) throws ServletException, IOException {
     List<Route> rts = mth2rts.get(sreq.getMethod());
     if (rts == null) return false;
     Path path = Path.of(sreq);
@@ -73,7 +75,10 @@ public class App {
     Res res = new Res(sres);
     encoding(sreq, sres);
     // TODO before func
-    route.func.exec(req, res);
+    try { route.func.exec(req, res); }
+    catch (Exception e) {
+      throw new ServletException(e);
+    }
     // TODO after func
     return true;
   }

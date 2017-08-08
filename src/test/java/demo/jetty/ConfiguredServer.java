@@ -8,6 +8,9 @@ public class ConfiguredServer {
     App.get("/", (req, res) -> {
       res.html("<p>Hello World</p>");
     });
+    App.get("/err", (req, res) -> {
+      throw new Exception("/err");
+    });
     Jetty.location("/public");
     Jetty.session(60);
     Jetty.connector(60000);

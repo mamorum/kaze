@@ -4,44 +4,36 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import kaze.App;
 
 public class Jetty {
-  //-> handlers
-  private static final AppHandler appHand = new AppHandler();
-  private static ResourceHandler rscHand;
-
   //-> settings
   ////-> location of static files
+  private static Resource doc;
   public static void location(String classpathdir) {
-    doc(Resource.newClassPathResource(classpathdir));
+    doc = Resource.newClassPathResource(classpathdir);
   }
   public static void location(File dir) {
-    doc(Resource.newResource(dir));
+    doc = Resource.newResource(dir);
   }
-  private static void doc(Resource root) {
-    rscHand = new ResourceHandler();
-    rscHand.setDirectoriesListed(false);  // security
-    rscHand.setBaseResource(root);
-  }
-  ////-> http session (default: no timeout)
+  ////-> http session (-1: default, no timeout)
+  private static int ssnTimeSec = -1;
   public static void session(int timeoutSec) {
-    appHand.setMaxInactiveInterval(timeoutSec);
+    ssnTimeSec=timeoutSec;
   }
   ////-> http connector
   private static int httpConTime=30000;
@@ -69,7 +61,7 @@ public class Jetty {
     http.setHost(host);
     http.setPort(port);
     svr.addConnector(http);
-    svr.setHandler(handlers());
+    svr.setHandler(servletHandler());
     try {
       svr.start();
       svr.join();
@@ -77,30 +69,40 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
-  private static HandlerList handlers() {
-    HandlerList hands = new HandlerList();
-    if (rscHand == null) {
-      hands.setHandlers(new Handler[] {appHand});
+  private static final String sla = "/";
+  private static final ServletContextHandler servletHandler() {
+    ServletContextHandler hnd
+      = new ServletContextHandler(ServletContextHandler.SESSIONS);
+    hnd.getSessionHandler().setMaxInactiveInterval(ssnTimeSec);
+    hnd.setContextPath(sla);
+    if (doc == null) {
+      hnd.addServlet(AppServlet.class, sla);
     } else {
-      hands.setHandlers(new Handler[] {appHand, rscHand});
+      ServletHolder shld = new ServletHolder(new AppDocServlet());
+      shld.setInitParameter("dirAllowed", "false");  // security
+      hnd.addServlet(shld, sla);
+      hnd.setBaseResource(doc);
     }
-    return hands;
+    return hnd;
   }
-
-  private static class AppHandler extends SessionHandler {
-    @Override public void doHandle(
-        String target, Request base,
-        HttpServletRequest req, HttpServletResponse res)
-    throws IOException, ServletException
+  @SuppressWarnings("serial")  // TODO tomcat と共通化
+  public static class AppServlet extends HttpServlet {
+    @Override protected void service(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException
     {
-      boolean run = false;
-      try { run = App.run(req, res); }
-      catch (Exception e) {
-        res.sendError(500);
-        throw new ServletException(e);
-      }
-      base.setHandled(run);
-      super.doHandle(target, base, req, res);
+      boolean run = App.run(req, res);
+      if (!run) res.sendError(404);
+    }
+  }
+  @SuppressWarnings("serial")
+  private static class AppDocServlet extends DefaultServlet {
+    @Override protected void service(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException
+    {
+      boolean run = App.run(req, res);
+      if (!run) super.service(req, res); // static contents
     }
   }
 }
