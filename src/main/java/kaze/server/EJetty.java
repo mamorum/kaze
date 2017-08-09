@@ -19,7 +19,8 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import kaze.App;
 
-public class Jetty {
+// Embedded Jetty
+public class EJetty {
   //-> settings
   ////-> location of static files
   private static Resource doc;
