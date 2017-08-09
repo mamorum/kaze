@@ -3,73 +3,41 @@ package kaze;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class App {
-  //-> for init (settings)
-  ////-> routing (http methods are in "org.eclipse.jetty.http.HttpMethod")
-  public static void get(String path, Func f) { add("GET", path, f); }
-  public static void post(String path, Func f) { add("POST", path, f); }
-  public static void head(String path, Func f) { add("HEAD", path, f); }
-  public static void put(String path, Func f) { add("PUT", path, f); }
-  public static void options(String path, Func f) { add("OPTIONS", path, f); }
-  public static void delete(String path, Func f) { add("DELETE", path, f); }
-  public static void trace(String path, Func f) { add("TRACE", path, f); }
-  public static void connect(String path, Func f) { add("CONNECT", path, f); }
-  public static void move(String path, Func f) { add("MOVE", path, f); }
-  public static void proxy(String path, Func f) { add("PROXY", path, f); }
-  public static void pri(String path, Func f) { add("PRI", path, f); }
-  private static void add(String method, String path, Func f) {
-    List<Route> routes = mth2rts.get(method);
-    if (routes == null) routes = new ArrayList<>();
-    mth2rts.put(method, routes);
-    routes.add(
-      new Route(Path.of(path), f)
-    );
+  //-> routing
+  public static final List<Route>
+    get=new ArrayList<>(), post=new ArrayList<>(),
+    put=new ArrayList<>(), delete=new ArrayList<>();
+  ////-> for init (add route)
+  public static void get(String path, Func f) { add(get, path, f); }
+  public static void post(String path, Func f) { add(post, path, f); }
+  public static void put(String path, Func f) { add(put, path, f); }
+  public static void delete(String path, Func f) { add(delete, path, f); }
+  private static void add(List<Route> routes, String path, Func f) {
+    Path p = Path.of(path);
+    routes.add(new Route(p, f));
   }
-  private static final Map<String, List<Route>>
-      mth2rts = new HashMap<>();  // method to routes
-
-  ////-> json parser
-  public static void parser(Json2obj j2o, Obj2json o2j) {
-    json2obj=j2o;  obj2json=o2j;
+  ////-> for runtime (exec route function)
+  public static void run(
+    int errCode, List<Route> routes,
+    HttpServletRequest req, HttpServletResponse res
+  ) throws ServletException, IOException {
+    boolean run = run(routes, req, res);
+    if (!run) res.sendError(errCode);
   }
-  static Json2obj json2obj;
-  static Obj2json obj2json;
-  @FunctionalInterface public static interface Json2obj {
-    <T> T exec(String json, Class<T> obj);
-  }
-  @FunctionalInterface public static interface Obj2json {
-    String exec(Object obj);
-  }
-
-  ////-> encoding
-  public static String encoding = "utf-8";
-  private static void encoding(
-    HttpServletRequest req, HttpServletResponse res)
-  throws UnsupportedEncodingException
-  {
-    if (encoding == null) return;
-    if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(encoding);
-    }
-    res.setCharacterEncoding(encoding);
-  }
-
-  //-> for runtime
-  public static boolean run(
+  public static boolean run(List<Route> routes,
     HttpServletRequest sreq, HttpServletResponse sres
   ) throws ServletException, IOException {
-    List<Route> rts = mth2rts.get(sreq.getMethod());
-    if (rts == null) return false;
+    if (routes.isEmpty()) return false;
     Path path = Path.of(sreq);
-    Route route = find(path, rts);
+    Route route = find(path, routes);
     if (route == null) return false;
     Req req = new Req(sreq, path, route);
     Res res = new Res(sres);
@@ -96,5 +64,56 @@ public class App {
       return false;
     }
     return true;
+  }
+
+  //-> servlet
+  @SuppressWarnings("serial")
+  public static class Servlet extends HttpServlet {
+    @Override protected void doGet(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      run(404, get, req, res);
+    }
+    @Override protected void doPost(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      run(404, post, req, res);
+    }
+    @Override protected void doPut(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      run(404, put, req, res);
+    }
+    @Override protected void doDelete(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      run(404, delete, req, res);
+    }
+}
+
+  //-> encoding
+  public static String encoding = "utf-8";
+  private static void encoding(
+    HttpServletRequest req, HttpServletResponse res)
+  throws UnsupportedEncodingException
+  {
+    if (encoding == null) return;
+    if (req.getCharacterEncoding() == null) {
+      req.setCharacterEncoding(encoding);
+    }
+    res.setCharacterEncoding(encoding);
+  }
+
+  //-> json parser
+  public static void parser(Json2obj j2o, Obj2json o2j) {
+    json2obj=j2o;  obj2json=o2j;
+  }
+  static Json2obj json2obj;
+  static Obj2json obj2json;
+  @FunctionalInterface public static interface Json2obj {
+    <T> T exec(String json, Class<T> obj);
+  }
+  @FunctionalInterface public static interface Obj2json {
+    String exec(Object obj);
   }
 }

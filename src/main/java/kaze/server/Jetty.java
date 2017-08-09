@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -76,7 +75,7 @@ public class Jetty {
     hnd.getSessionHandler().setMaxInactiveInterval(ssnTimeSec);
     hnd.setContextPath(sla);
     if (doc == null) {
-      hnd.addServlet(AppServlet.class, sla);
+      hnd.addServlet(App.Servlet.class, sla);
     } else {
       ServletHolder shld = new ServletHolder(new AppDocServlet());
       shld.setInitParameter("dirAllowed", "false");  // security
@@ -85,24 +84,29 @@ public class Jetty {
     }
     return hnd;
   }
-  @SuppressWarnings("serial")  // TODO tomcat と共通化
-  public static class AppServlet extends HttpServlet {
-    @Override protected void service(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException
-    {
-      boolean run = App.run(req, res);
-      if (!run) res.sendError(404);
-    }
-  }
   @SuppressWarnings("serial")
   private static class AppDocServlet extends DefaultServlet {
-    @Override protected void service(
+    @Override protected void doGet(
       HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException
-    {
-      boolean run = App.run(req, res);
-      if (!run) super.service(req, res); // static contents
+    throws ServletException, IOException {
+      boolean run = App.run(App.get, req, res);
+      if (!run) super.doGet(req, res); // static contents
+    }
+    @Override protected void doPost(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean run = App.run(App.post, req, res);
+      if (!run) super.doGet(req, res); // static contents
+    }
+    @Override protected void doPut(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      App.run(404, App.put, req, res);
+    }
+    @Override protected void doDelete(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      App.run(404, App.delete, req, res);
     }
   }
 }
