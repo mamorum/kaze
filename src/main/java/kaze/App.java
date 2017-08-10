@@ -24,10 +24,10 @@ public class App {
     Path p = Path.of(path);
     routes.add(new Route(p, f));
   }
-  ////-> for runtime (exec route function)
+  ////-> for runtime (exec function)
   public static void run(
-    int errCode, List<Route> routes,
-    HttpServletRequest req, HttpServletResponse res
+    List<Route> routes, HttpServletRequest req,
+    HttpServletResponse res, int errCode
   ) throws ServletException, IOException {
     boolean run = run(routes, req, res);
     if (!run) res.sendError(errCode);
@@ -72,22 +72,22 @@ public class App {
     @Override protected void doGet(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      run(404, get, req, res);
+      run(get, req, res, 404);
     }
     @Override protected void doPost(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      run(404, post, req, res);
+      run(post, req, res, 404);
     }
     @Override protected void doPut(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      run(404, put, req, res);
+      run(put, req, res, 404);
     }
     @Override protected void doDelete(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      run(404, delete, req, res);
+      run(delete, req, res, 404);
     }
 }
 

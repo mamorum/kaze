@@ -102,12 +102,12 @@ public class EJetty {
     @Override protected void doPut(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      App.run(404, App.put, req, res);
+      App.run(App.put, req, res, 404);
     }
     @Override protected void doDelete(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      App.run(404, App.delete, req, res);
+      App.run(App.delete, req, res, 404);
     }
   }
 }

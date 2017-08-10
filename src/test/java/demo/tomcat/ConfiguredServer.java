@@ -11,7 +11,7 @@ public class ConfiguredServer {
     App.get("/err", (req, res) -> {
       throw new Exception("/err");
     });
-//    ETomcat.location("/public");
+    ETomcat.location("/public");
 //    ETomcat.session(60);
 //    ETomcat.connector(60000);
 //    ETomcat.thread(10, 10, 50000);
