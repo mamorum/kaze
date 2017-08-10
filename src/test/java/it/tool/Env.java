@@ -3,7 +3,7 @@ package it.tool;
 import com.google.gson.Gson;
 
 import kaze.App;
-import kaze.server.EJetty;
+import kaze.server.Jetty;
 
 public class Env {
   private static volatile boolean init = false;
@@ -13,8 +13,8 @@ public class Env {
       @Override public void run() {
         Gson gson = new Gson();
         App.parser(gson::fromJson, gson::toJson);
-        EJetty.location("/public");
-        EJetty.listen(8080);
+        Jetty.location("/public");
+        Jetty.listen(8080);
       }
   });
 

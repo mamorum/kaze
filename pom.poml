@@ -2,7 +2,6 @@
 pkg=com.github.mamorum:kaze:0.2.3-SNAPSHOT:jar
 depend=
   org.eclipse.jetty:jetty-servlet:9.4.6.v20170531:provided,
-  org.apache.tomcat.embed:tomcat-embed-core:8.5.16:provided,
   junit:junit:4.12:test,
   com.google.code.gson:gson:2.8.1:test,
   com.google.http-client:google-http-client:1.22.0:test

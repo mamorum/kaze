@@ -5,7 +5,7 @@ import javax.servlet.http.HttpSession;
 import com.google.gson.Gson;
 
 import kaze.App;
-import kaze.server.EJetty;
+import kaze.server.Jetty;
 
 public class AppServer {
   public static void main(String[] args) {
@@ -32,6 +32,6 @@ public class AppServer {
     App.get("/err/run", (req, res) -> {
       throw new RuntimeException("Runtime Exception");
     });
-    EJetty.listen(8080);
+    Jetty.listen(8080);
   }
 }

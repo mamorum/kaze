@@ -1,7 +1,7 @@
 package demo.jetty;
 
 import kaze.App;
-import kaze.server.EJetty;
+import kaze.server.Jetty;
 
 public class ConfiguredServer {
   public static void main(String[] args) {
@@ -11,10 +11,10 @@ public class ConfiguredServer {
     App.get("/err", (req, res) -> {
       throw new Exception("/err");
     });
-    EJetty.location("/public");
-    EJetty.session(60);
-    EJetty.connector(60000);
-    EJetty.thread(10, 10, 50000);
-    EJetty.listen("0.0.0.0", 8080);
+    Jetty.location("/public");
+    Jetty.session(60);
+    Jetty.connector(60000);
+    Jetty.thread(10, 10, 50000);
+    Jetty.listen("0.0.0.0", 8080);
   }
 }
