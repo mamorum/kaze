@@ -66,7 +66,3 @@ $ mvn exec:java -Dexec.mainClass=demo.jetty.Main -Dexec.classpathScope=test
 ## Samples
 - [kaze-sample-rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): fatjar web app, accessing relational database
 - [kaze-sample-war](https://github.com/mamorum/kaze-sample/tree/master/server): war app, running in a servlet container
-
-
-## Meaning
-Kaze means Wind in Japanese.

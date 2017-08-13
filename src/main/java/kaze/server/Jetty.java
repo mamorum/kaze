@@ -2,6 +2,7 @@ package kaze.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +46,8 @@ public class Jetty {
   public static void thread(int max, int min, int timeout) {
     thMax=max; thMin=min; thTime=timeout;
   }
+  ////-> web socket
+  static Consumer<ServletContextHandler> ws;
 
   //-> start
   public static void listen(int port) { listen(null, port); }
@@ -62,6 +65,7 @@ public class Jetty {
     http.setPort(port);
     svr.addConnector(http);
     svr.setHandler(servletHandler());
+    if (ws != null) ws.accept(hnd);
     try {
       svr.start();
       svr.join();
@@ -69,10 +73,10 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
+  private static final ServletContextHandler hnd
+    = new ServletContextHandler(ServletContextHandler.SESSIONS);
   private static final String sla = "/";
   private static final ServletContextHandler servletHandler() {
-    ServletContextHandler hnd
-      = new ServletContextHandler(ServletContextHandler.SESSIONS);
     hnd.getSessionHandler().setMaxInactiveInterval(ssnTimeSec);
     hnd.setContextPath(sla);
     if (doc == null) {
