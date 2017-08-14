@@ -2,16 +2,19 @@ package kaze;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class Req {
   public HttpServletRequest srv;
-  private Path path;
+  private String[] pathTree;
+  private Map<String, Integer> pathIndex;
 
-  public Req(HttpServletRequest r, Path path, Route route) {
-    this.srv = r; this.path=path;
-    this.path.index = route.path.index;
+  public Req(HttpServletRequest r, String[] ptree, Path path) {
+    this.srv = r;
+    this.pathTree=ptree;
+    this.pathIndex=path.index;
   }
 
   public String body() {
@@ -38,11 +41,11 @@ public class Req {
 
   public String path(String name) {
     // TODO ":" で始まるかチェック
-    Integer i = path.index.get(name);
+    Integer i = pathIndex.get(name);
     if (i == null) throw new RuntimeException("...");
     return path(i);
   }
   public String path(int index) {
-    return path.tree[index];
+    return pathTree[index];
   }
 }

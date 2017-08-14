@@ -90,7 +90,7 @@ public class Jetty {
     return hnd;
   }
   @SuppressWarnings("serial")
-  private static class AppDocServlet extends DefaultServlet {
+  public static class AppDocServlet extends DefaultServlet {
     @Override protected void doGet(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {

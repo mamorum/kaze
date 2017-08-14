@@ -12,57 +12,44 @@ import javax.servlet.http.HttpServletResponse;
 
 public class App {
   //-> routing
-  private static final List<Route>
+  private static final List<Path>
     get=new ArrayList<>(), post=new ArrayList<>(),
     put=new ArrayList<>(), delete=new ArrayList<>();
-  ////-> for init (add route)
-  private static void add(List<Route> routes, String path, Func f) {
-    Path p = Path.of(path);
-    routes.add(new Route(p, f));
+  ////-> add (for init)
+  public static void get(String path, Func f) { add(path, f, get); }
+  public static void post(String path, Func f) { add(path, f, post); }
+  public static void put(String path, Func f) { add(path, f, put); }
+  public static void delete(String path, Func f) { add(path, f, delete); }
+  private static void add(String p, Func f, List<Path> paths) {
+    paths.add(Path.of(p, f));
   }
-  public static void get(String path, Func f) { add(get, path, f); }
-  public static void post(String path, Func f) { add(post, path, f); }
-  public static void put(String path, Func f) { add(put, path, f); }
-  public static void delete(String path, Func f) { add(delete, path, f); }
-  ////-> for runtime (exec function)
+  ////-> exec (for runtime)
   public static boolean doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return run(get, req, res); }
+      throws ServletException, IOException { return exec(get, req, res); }
   public static boolean doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return run(post, req, res); }
+      throws ServletException, IOException { return exec(post, req, res); }
   public static boolean doPut(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return run(put, req, res); }
+      throws ServletException, IOException { return exec(put, req, res); }
   public static boolean doDelete(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return run(delete, req, res); }
-  private static boolean run(List<Route> routes,
-    HttpServletRequest sreq, HttpServletResponse sres
-  ) throws ServletException, IOException {
-    if (routes.isEmpty()) return false;
-    Path path = Path.of(sreq);
-    Route route = find(path, routes);
-    if (route == null) return false;
-    Req req = new Req(sreq, path, route);
-    Res res = new Res(sres);
+      throws ServletException, IOException { return exec(delete, req, res); }
+  private static boolean exec(
+    List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
+  throws ServletException, IOException
+  {
+    if (paths.isEmpty()) return false;
+    String[] ptree = Path.tree(sreq);
+    Path path = find(ptree, paths);
+    if (path == null) return false;
     encoding(sreq, sres);
-    try { route.func.exec(req, res); }
-    catch (Exception e) {
-      throw new ServletException(e);
-    }
+    Req req = new Req(sreq, ptree, path);
+    Res res = new Res(sres);
+    try { path.func.exec(req, res); }
+    catch (Exception e) { throw new ServletException(e); }
     return true;
   }
-  private static Route find(Path reqPath, List<Route> from) {
-    for (Route r: from) {
-      if (match(r.path, reqPath)) return r;
-    }
+  private static Path find(String[] ptree, List<Path> from) {
+    for (Path p: from) { if (p.match(ptree)) return p; }
     return null;
-  }
-  private static boolean match(Path a, Path r) { // a: added, r: request
-    if (a.tree.length != r.tree.length) return false;
-    for (int i=0; i<a.tree.length; i++) {
-      if (a.tree[i].startsWith(":")) continue;
-      if (a.tree[i].equals(r.tree[i])) continue;
-      return false;
-    }
-    return true;
   }
 
   //-> encoding
@@ -78,7 +65,7 @@ public class App {
     res.setCharacterEncoding(encoding);
   }
 
-  //-> json parser
+  //-> json
   public static void parser(Json2obj j2o, Obj2json o2j) {
     json2obj=j2o;  obj2json=o2j;
   }
