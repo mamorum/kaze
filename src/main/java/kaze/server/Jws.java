@@ -11,10 +11,9 @@ import javax.websocket.server.ServerContainer;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
-// Jetty WebSocket
-public class Jws {
+public class Jws { // Jetty WebSocket
   private static List<Class<?>> endpoints = new ArrayList<>();
-  private static Consumer<ServletContextHandler> ws = (sch) -> {
+  private static Consumer<ServletContextHandler> init = (sch) -> {
     try {
       ServerContainer ws =
         WebSocketServerContainerInitializer.configureContext(sch);
@@ -23,10 +22,10 @@ public class Jws {
       throw new RuntimeException(e);
     }
   };
+  public static void on() {
+    Jetty.ws = init;
+  }
   public static void add(Class<?> svrEndpoint) {
     endpoints.add(svrEndpoint);
-  }
-  public static void install() {
-    Jetty.ws = ws;
   }
 }

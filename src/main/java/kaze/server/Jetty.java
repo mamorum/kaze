@@ -64,7 +64,7 @@ public class Jetty {
     http.setHost(host);
     http.setPort(port);
     svr.addConnector(http);
-    svr.setHandler(servletHandler());
+    svr.setHandler(handler());
     if (ws != null) ws.accept(hnd);
     try {
       svr.start();
@@ -75,18 +75,18 @@ public class Jetty {
   }
   private static final ServletContextHandler hnd
     = new ServletContextHandler(ServletContextHandler.SESSIONS);
-  private static final String sla = "/";
-  private static final ServletContextHandler servletHandler() {
+  private static final ServletContextHandler handler() {
     hnd.getSessionHandler().setMaxInactiveInterval(ssnTimeSec);
-    hnd.setContextPath(sla);
+    hnd.setContextPath("/");
+    ServletHolder shld = new ServletHolder();
     if (doc == null) {
-      hnd.addServlet(App.Servlet.class, sla);
+      shld.setServlet(new App.Servlet());
     } else {
-      ServletHolder shld = new ServletHolder(new AppDocServlet());
+      shld.setServlet(new AppDocServlet());
       shld.setInitParameter("dirAllowed", "false");  // security
-      hnd.addServlet(shld, sla);
       hnd.setBaseResource(doc);
     }
+    hnd.addServlet(shld, "/");
     return hnd;
   }
   @SuppressWarnings("serial")
@@ -94,24 +94,26 @@ public class Jetty {
     @Override protected void doGet(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      boolean run = App.run(App.get, req, res);
-      if (!run) super.doGet(req, res); // static contents
+      boolean done = App.doGet(req, res);
+      if (!done) super.doGet(req, res); // static contents
     }
     @Override protected void doPost(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      boolean run = App.run(App.post, req, res);
-      if (!run) super.doGet(req, res); // static contents
+      boolean done = App.doPost(req, res);
+      if (!done) super.doPost(req, res); // static contents
     }
     @Override protected void doPut(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      App.run(App.put, req, res, 404);
+      boolean done = App.doPut(req, res);
+      if (!done) res.sendError(404);
     }
     @Override protected void doDelete(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
-      App.run(App.delete, req, res, 404);
+      boolean done = App.doDelete(req, res);
+      if (!done) res.sendError(404);
     }
   }
 }

@@ -12,27 +12,28 @@ import javax.servlet.http.HttpServletResponse;
 
 public class App {
   //-> routing
-  public static final List<Route>
+  private static final List<Route>
     get=new ArrayList<>(), post=new ArrayList<>(),
     put=new ArrayList<>(), delete=new ArrayList<>();
   ////-> for init (add route)
-  public static void get(String path, Func f) { add(get, path, f); }
-  public static void post(String path, Func f) { add(post, path, f); }
-  public static void put(String path, Func f) { add(put, path, f); }
-  public static void delete(String path, Func f) { add(delete, path, f); }
   private static void add(List<Route> routes, String path, Func f) {
     Path p = Path.of(path);
     routes.add(new Route(p, f));
   }
+  public static void get(String path, Func f) { add(get, path, f); }
+  public static void post(String path, Func f) { add(post, path, f); }
+  public static void put(String path, Func f) { add(put, path, f); }
+  public static void delete(String path, Func f) { add(delete, path, f); }
   ////-> for runtime (exec function)
-  public static void run(
-    List<Route> routes, HttpServletRequest req,
-    HttpServletResponse res, int errCode
-  ) throws ServletException, IOException {
-    boolean run = run(routes, req, res);
-    if (!run) res.sendError(errCode);
-  }
-  public static boolean run(List<Route> routes,
+  public static boolean doGet(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return run(get, req, res); }
+  public static boolean doPost(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return run(post, req, res); }
+  public static boolean doPut(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return run(put, req, res); }
+  public static boolean doDelete(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return run(delete, req, res); }
+  private static boolean run(List<Route> routes,
     HttpServletRequest sreq, HttpServletResponse sres
   ) throws ServletException, IOException {
     if (routes.isEmpty()) return false;
@@ -42,12 +43,10 @@ public class App {
     Req req = new Req(sreq, path, route);
     Res res = new Res(sres);
     encoding(sreq, sres);
-    // TODO before func
     try { route.func.exec(req, res); }
     catch (Exception e) {
       throw new ServletException(e);
     }
-    // TODO after func
     return true;
   }
   private static Route find(Path reqPath, List<Route> from) {
@@ -65,31 +64,6 @@ public class App {
     }
     return true;
   }
-
-  //-> servlet
-  @SuppressWarnings("serial")
-  public static class Servlet extends HttpServlet {
-    @Override protected void doGet(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      run(get, req, res, 404);
-    }
-    @Override protected void doPost(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      run(post, req, res, 404);
-    }
-    @Override protected void doPut(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      run(put, req, res, 404);
-    }
-    @Override protected void doDelete(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      run(delete, req, res, 404);
-    }
-}
 
   //-> encoding
   public static String encoding = "utf-8";
@@ -115,5 +89,34 @@ public class App {
   }
   @FunctionalInterface public static interface Obj2json {
     String exec(Object obj);
+  }
+
+  //-> servlet
+  @SuppressWarnings("serial")
+  public static class Servlet extends HttpServlet {
+    @Override protected void doGet(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doGet(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doPost(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doPost(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doPut(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doPut(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doDelete(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doDelete(req, res);
+      if (!done) res.sendError(404);
+    }
   }
 }
