@@ -23,28 +23,46 @@ import kaze.App;
 // Embedded Jetty
 public class Jetty {
   //-> settings
-  ////-> location of static files
-  private static Resource doc;
-  public static void location(String classpathdir) {
-    doc = Resource.newClassPathResource(classpathdir);
-  }
-  public static void location(File dir) {
-    doc = Resource.newResource(dir);
-  }
-  ////-> http session (-1: default, no timeout)
-  private static int ssnTimeSec = -1;
-  public static void session(int timeoutSec) {
-    ssnTimeSec=timeoutSec;
+  ////-> thread pool
+  private static int thMax=200, thMin=8, thTime=60000;
+  public static void thread(int max, int min, int timeout) {
+    thMax=max; thMin=min; thTime=timeout;
   }
   ////-> http connector
   private static int httpConTime=30000;
   public static void connector(int timeout) {
     httpConTime=timeout;
   }
-  ////-> thread pool
-  private static int thMax=200, thMin=8, thTime=60000;
-  public static void thread(int max, int min, int timeout) {
-    thMax=max; thMin=min; thTime=timeout;
+  ////-> http session (default: no timeout)
+  public static void session(int timeoutSec) {
+    handler.getSessionHandler().setMaxInactiveInterval(timeoutSec);
+  }
+  ////-> servlet & static files
+  private static ServletHolder servlet;
+  private static void servlet() {
+    servlet = new ServletHolder(new App.Servlet());
+  }
+  private static void servlet(Resource doc) {
+    servlet = new ServletHolder(new AppDocServlet());
+    servlet.setInitParameter("dirAllowed", "false");  // security
+    handler.setBaseResource(doc);
+  }
+  public static void location(String classpathdir) {
+    servlet(Resource.newClassPathResource(classpathdir));
+  }
+  public static void location(File dir) {
+    servlet(Resource.newResource(dir));
+  }
+  ////-> context path
+  private static String ctxtpath = "/";
+  public static void context(String path) {
+    ctxtpath=path;
+  }
+  ////-> context handler
+  private static final ServletContextHandler handler
+    = new ServletContextHandler(ServletContextHandler.SESSIONS);
+  public static ServletContextHandler handler() {
+    return handler;
   }
   ////-> web socket
   static Consumer<ServletContextHandler> ws;
@@ -64,30 +82,17 @@ public class Jetty {
     http.setHost(host);
     http.setPort(port);
     svr.addConnector(http);
-    svr.setHandler(handler());
-    if (ws != null) ws.accept(hnd);
+    if (servlet == null) servlet();
+    handler.addServlet(servlet, "/");
+    handler.setContextPath(ctxtpath);
+    svr.setHandler(handler);
+    if (ws != null) ws.accept(handler);
     try {
       svr.start();
       svr.join();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-  }
-  private static final ServletContextHandler hnd
-    = new ServletContextHandler(ServletContextHandler.SESSIONS);
-  private static final ServletContextHandler handler() {
-    hnd.getSessionHandler().setMaxInactiveInterval(ssnTimeSec);
-    hnd.setContextPath("/");
-    ServletHolder shld = new ServletHolder();
-    if (doc == null) {
-      shld.setServlet(new App.Servlet());
-    } else {
-      shld.setServlet(new AppDocServlet());
-      shld.setInitParameter("dirAllowed", "false");  // security
-      hnd.setBaseResource(doc);
-    }
-    hnd.addServlet(shld, "/");
-    return hnd;
   }
   @SuppressWarnings("serial")
   public static class AppDocServlet extends DefaultServlet {
