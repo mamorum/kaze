@@ -1,6 +1,7 @@
 package demo.jetty.servlet;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,11 +18,16 @@ public class LogFilter implements Filter {
   public void doFilter(ServletRequest rq, ServletResponse rs, FilterChain fc)
       throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) rq;
-    System.out.println("Req: " + req.getRequestURI());
+    System.out.print(LocalDateTime.now());
+    System.out.print(" Req ");
+    System.out.println(req.getRequestURI());
     long start = System.currentTimeMillis();
     fc.doFilter(rq, rs);
     long end = System.currentTimeMillis();
-    System.out.println("Res: " + (end-start) + "ms");
+    System.out.print(LocalDateTime.now());
+    System.out.print(" Res ");
+    System.out.print((end - start));
+    System.out.println("ms");
   }
   @Override
   public void destroy() {}
