@@ -3,8 +3,8 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze)
 
 - Minimal dependencies (only Servlet API)
-- Supports embedded server (Jetty)
-- Also runs in a servlet container
+- Supports embedded Jetty
+- Also runs in other servlet containers
 - Easy to create RESTful API, Web API, etc
 
 
@@ -14,18 +14,18 @@
     <dependency>
       <groupId>com.github.mamorum</groupId>
       <artifactId>kaze</artifactId>
-      <version>0.2.2</version>
+      <version>0.2.3</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
+      <artifactId>jetty-servlet</artifactId>
       <version>9.4.6.v20170531</version>
     </dependency>
 ```
 
 ### 2. Create code
 ```java
-package demo.jetty;
+package kaze.sample.hw;
 
 import kaze.App;
 import kaze.server.Jetty;
@@ -35,14 +35,16 @@ public class Main {
     App.get("/", (req, res) -> {
       res.html("<p>Hello World</p>");
     });
-    Jetty.listen(8080);
+    Jetty jetty = new Jetty();
+    jetty.listen(8080);
   }
 }
 ```
 
 ### 3. Run
 ```
-$ mvn exec:java -Dexec.mainClass=demo.jetty.Main
+$ mvn compile
+$ mvn exec:java -Dexec.mainClass=kaze.sample.hw.Main
 ```
 
 ### 4. Check
@@ -51,18 +53,7 @@ $ curl -s -X GET http://localhost:8080/
 <p>Hello World</p>
 ```
 
-### Note
-Above code is [src/test/java/demo/jetty/Main.java](src/test/java/demo/jetty/Main.java).  
-We can also run the example using following commands.
-
-```
-$ git clone https://github.com/mamorum/kaze.git
-$ cd kaze
-$ mvn test-compile
-$ mvn exec:java -Dexec.mainClass=demo.jetty.Main -Dexec.classpathScope=test
-```
-
-
 ## Samples
-- [kaze-sample-rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): fatjar web app, accessing relational database
-- [kaze-sample-war](https://github.com/mamorum/kaze-sample/tree/master/server): war app, running in a servlet container
+- [kaze-sample-hw]((https://github.com/mamorum/kaze-sample/tree/master/hw): Abobe Hello World Example.
+- [kaze-sample-rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): web app accessing relational database, packaged as fatjar.
+- [kaze-sample-war](https://github.com/mamorum/kaze-sample/tree/master/server): web app, packaged as war.
