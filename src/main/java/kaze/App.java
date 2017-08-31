@@ -12,17 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 
 public class App {
   //-> routing
-  private static final List<Path>
-    get=new ArrayList<>(), post=new ArrayList<>(),
-    put=new ArrayList<>(), delete=new ArrayList<>();
   ////-> add (for init)
   public static void get(String path, Func f) { add(path, f, get); }
   public static void post(String path, Func f) { add(path, f, post); }
   public static void put(String path, Func f) { add(path, f, put); }
   public static void delete(String path, Func f) { add(path, f, delete); }
-  private static void add(String p, Func f, List<Path> paths) {
-    paths.add(Path.of(p, f));
-  }
   ////-> exec (for runtime)
   public static boolean doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException { return exec(get, req, res); }
@@ -32,6 +26,13 @@ public class App {
       throws ServletException, IOException { return exec(put, req, res); }
   public static boolean doDelete(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException { return exec(delete, req, res); }
+  //////-> private
+  private static final List<Path>
+    get=new ArrayList<>(), post=new ArrayList<>(),
+    put=new ArrayList<>(), delete=new ArrayList<>();
+  private static void add(String p, Func f, List<Path> paths) {
+    paths.add(Path.of(p, f));
+  }
   private static boolean exec(
     List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
   throws ServletException, IOException

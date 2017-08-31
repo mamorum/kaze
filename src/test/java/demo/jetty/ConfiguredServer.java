@@ -3,21 +3,26 @@ package demo.jetty;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
+import javax.websocket.DeploymentException;
+import javax.websocket.server.ServerContainer;
+
+import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import com.google.gson.Gson;
 
-import demo.jetty.servlet.LogFilter;
-import demo.jetty.servlet.SessionListener;
 import demo.jetty.servlet.ContextListener;
 import demo.jetty.servlet.HelloServlet;
+import demo.jetty.servlet.HelloLogFilter;
+import demo.jetty.servlet.RequestListener;
+import demo.jetty.servlet.SessionListener;
 import demo.jetty.ws.ChatSocket;
 import kaze.App;
 import kaze.server.Jetty;
-import kaze.server.Jws;
 
 public class ConfiguredServer {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     Gson gson = new Gson();
     App.parser(gson::fromJson, gson::toJson);
     App.get("/", (req, res) -> {
@@ -26,38 +31,31 @@ public class ConfiguredServer {
     App.get("/err", (req, res) -> {
       throw new Exception("/err");
     });
-    App.get("/ssn/set", (req, res) -> {
+    App.get("/ssn", (req, res) -> {
       HttpSession ss = req.srv.getSession(true);
-      ss.setAttribute("ssn", "val");
-      res.json("msg", "set");
+      if (ss.isNew()) res.json("isNew", true);
+      else res.json("isNew", false);;
     });
-    App.get("/ssn/del", (req, res) -> {
-      HttpSession ss = req.srv.getSession(true);
-      ss.invalidate();
-      res.json("msg", "del");
-    });
-    App.get("/ssn/read", (req, res) -> {
-      HttpSession ss = req.srv.getSession(false);
-      res.json("msg", ss.getAttribute("ssn"));
-    });
-
-    Jetty.handler().addServlet(HelloServlet.class, "/hello");
-    Jetty.handler().addFilter(LogFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-    Jetty.handler().addEventListener(new ContextListener());
-    Jetty.handler().getSessionHandler().addEventListener(new SessionListener());
-    //<- session handler じゃないとダメ
-
-    Jws.on();
-    Jws.add(ChatSocket.class);
-    //-> NG: websocket (because of not setting server)
-//    ServerContainer ws =
-//        WebSocketServerContainerInitializer.configureContext(Jetty.handler());
-//    ws.addEndpoint(ChatSocket.class);
-
-    Jetty.location("/public");
-    Jetty.session(30); // seconds 秒（session listener より後で大丈夫）
-    Jetty.connector(60000);
-    Jetty.thread(10, 10, 50000);
-    Jetty.listen("0.0.0.0", 8080);
+    Jetty jty = new Jetty(10, 10, 50000);
+    jty.http(60000, 30);
+    jty.location("/public");
+    addServletComponent(jty);
+    addWebsocketComponent(jty);
+    jty.listen("0.0.0.0", 8080);
+  }
+  private static void addServletComponent(Jetty jty) {
+    jty.handler().addServlet(HelloServlet.class, "/hello");
+    jty.handler().addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
+    jty.handler().addEventListener(new RequestListener());
+    jty.handler().addEventListener(new ContextListener());
+    jty.handler().getSessionHandler().addEventListener(new SessionListener());
+    //<- HttpSessionListener needs to be added to SessionHandler.
+  }
+  private static void addWebsocketComponent(Jetty jty)
+    throws ServletException, DeploymentException
+  {
+    ServerContainer ws =
+      WebSocketServerContainerInitializer.configureContext(jty.handler());
+    ws.addEndpoint(ChatSocket.class);
   }
 }

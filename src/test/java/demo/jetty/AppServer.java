@@ -21,6 +21,7 @@ public class AppServer {
     App.get("/err/run", (req, res) -> {
       throw new RuntimeException("Runtime Exception");
     });
-    Jetty.listen(8080);
+    Jetty jetty = new Jetty();
+    jetty.listen(8080);
   }
 }

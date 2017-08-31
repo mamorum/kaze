@@ -11,7 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-public class LogFilter implements Filter {
+public class HelloLogFilter implements Filter {
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {}
   @Override
@@ -19,13 +19,15 @@ public class LogFilter implements Filter {
       throws IOException, ServletException {
     HttpServletRequest req = (HttpServletRequest) rq;
     System.out.print(LocalDateTime.now());
-    System.out.print(" Req ");
+    System.out.print(" Before ");
     System.out.println(req.getRequestURI());
     long start = System.currentTimeMillis();
     fc.doFilter(rq, rs);
     long end = System.currentTimeMillis();
     System.out.print(LocalDateTime.now());
-    System.out.print(" Res ");
+    System.out.print(" After ");
+    System.out.print(req.getRequestURI());
+    System.out.print(" @");
     System.out.print((end - start));
     System.out.println("ms");
   }

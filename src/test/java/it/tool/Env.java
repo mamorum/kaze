@@ -13,8 +13,9 @@ public class Env {
       @Override public void run() {
         Gson gson = new Gson();
         App.parser(gson::fromJson, gson::toJson);
-        Jetty.location("/public");
-        Jetty.listen(8080);
+        Jetty jty = new Jetty();
+        jty.location("/public");
+        jty.listen(8080);
       }
   });
 
