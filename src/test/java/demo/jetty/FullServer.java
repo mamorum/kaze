@@ -21,7 +21,7 @@ import demo.jetty.ws.ChatSocket;
 import kaze.App;
 import kaze.server.Jetty;
 
-public class ConfiguredServer {
+public class FullServer {
   public static void main(String[] args) throws Exception {
     Gson gson = new Gson();
     App.parser(gson::fromJson, gson::toJson);
@@ -36,26 +36,26 @@ public class ConfiguredServer {
       if (ss.isNew()) res.json("isNew", true);
       else res.json("isNew", false);;
     });
-    Jetty jty = new Jetty(10, 10, 50000);
-    jty.http(60000, 30);
-    jty.location("/public");
-    addServletComponent(jty);
-    addWebsocketComponent(jty);
-    jty.listen("0.0.0.0", 8080);
+    initServletComponent();
+    initWebsocketComponent();
+    Jetty.thread(20, 20, 50000);
+    Jetty.http(60000, 300); // session timeout: 5min
+    Jetty.location("/public");
+    Jetty.listen("0.0.0.0", 8080);
   }
-  private static void addServletComponent(Jetty jty) {
-    jty.handler().addServlet(HelloServlet.class, "/hello");
-    jty.handler().addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
-    jty.handler().addEventListener(new RequestListener());
-    jty.handler().addEventListener(new ContextListener());
-    jty.handler().getSessionHandler().addEventListener(new SessionListener());
+  private static void initServletComponent() {
+    Jetty.handler().addServlet(HelloServlet.class, "/hello");
+    Jetty.handler().addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
+    Jetty.handler().addEventListener(new RequestListener());
+    Jetty.handler().addEventListener(new ContextListener());
+    Jetty.handler().getSessionHandler().addEventListener(new SessionListener());
     //<- HttpSessionListener needs to be added to SessionHandler.
   }
-  private static void addWebsocketComponent(Jetty jty)
+  private static void initWebsocketComponent()
     throws ServletException, DeploymentException
   {
     ServerContainer ws =
-      WebSocketServerContainerInitializer.configureContext(jty.handler());
+      WebSocketServerContainerInitializer.configureContext(Jetty.handler());
     ws.addEndpoint(ChatSocket.class);
   }
 }

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class HelloLogFilter implements Filter {
   @Override
-  public void init(FilterConfig filterConfig) throws ServletException {}
+  public void init(FilterConfig c) throws ServletException {}
   @Override
   public void doFilter(ServletRequest rq, ServletResponse rs, FilterChain fc)
       throws IOException, ServletException {
