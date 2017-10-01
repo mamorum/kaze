@@ -19,7 +19,7 @@ public class ReqPathTest {
   public static void reg_it_path_name() {
     App.get("/it/req/path/:name", (req, res) -> {
       String name = req.path(":name");
-      res.send(name);
+      res.write("text/plain", name);
     });
   }
   @Test public void it_path_name() {
@@ -35,7 +35,7 @@ public class ReqPathTest {
   public static void reg_it_path_index() {
     App.post("/it/req/path/:name/", (req, res) -> {
       String name = req.path(3);
-      res.send(name);
+      res.write("text/plain", name);
     });
   }
   @Test public void it_path_index() {

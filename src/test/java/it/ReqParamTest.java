@@ -18,7 +18,7 @@ public class ReqParamTest {
   public static void reg_it_param() {
     App.get("/it/req/param", (req, res) -> {
       String name = req.param("name");
-      res.send(name);
+      res.write("text/plain", name);
     });
   }
   @Test public void it_param() {

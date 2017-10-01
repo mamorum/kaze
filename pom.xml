@@ -3,13 +3,13 @@
 
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.2.2</version>
+  <version>0.2.3</version>
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-server</artifactId>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>javax-websocket-server-impl</artifactId>
       <version>9.4.6.v20170531</version>
       <scope>provided</scope>
     </dependency>

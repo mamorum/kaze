@@ -1,94 +1,60 @@
 package kaze;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class App {
-  static final Map<String, List<Route>> method2routes = new HashMap<>();
-
-  //-> for app init
-  ////-> routing (http methods are in "org.eclipse.jetty.http.HttpMethod")
-  public static void get(String uri, Func f) { add("GET", uri, f); }
-  public static void post(String uri, Func f) { add("POST", uri, f); }
-  public static void head(String uri, Func f) { add("HEAD", uri, f); }
-  public static void put(String uri, Func f) { add("PUT", uri, f); }
-  public static void options(String uri, Func f) { add("OPTIONS", uri, f); }
-  public static void delete(String uri, Func f) { add("DELETE", uri, f); }
-  public static void trace(String uri, Func f) { add("TRACE", uri, f); }
-  public static void connect(String uri, Func f) { add("CONNECT", uri, f); }
-  public static void move(String uri, Func f) { add("MOVE", uri, f); }
-  public static void proxy(String uri, Func f) { add("PROXY", uri, f); }
-  public static void pri(String uri, Func f) { add("PRI", uri, f); }
-  private static void add(String method, String uri, Func f) {
-    List<Route> routes = method2routes.get(method);
-    if (routes == null) {
-      routes = new ArrayList<>();
-      method2routes.put(method, routes);
-    }
-    Path path = Path.of(uri);
-    routes.add(new Route(f, path));
+  //-> routing
+  ////-> add (for init)
+  public static void get(String path, Func f) { add(path, f, get); }
+  public static void post(String path, Func f) { add(path, f, post); }
+  public static void put(String path, Func f) { add(path, f, put); }
+  public static void delete(String path, Func f) { add(path, f, delete); }
+  ////-> exec (for runtime)
+  public static boolean doGet(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(get, req, res); }
+  public static boolean doPost(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(post, req, res); }
+  public static boolean doPut(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(put, req, res); }
+  public static boolean doDelete(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(delete, req, res); }
+  //////-> private
+  private static final List<Path>
+    get=new ArrayList<>(), post=new ArrayList<>(),
+    put=new ArrayList<>(), delete=new ArrayList<>();
+  private static void add(String p, Func f, List<Path> paths) {
+    paths.add(Path.of(p, f));
   }
-  ////-> functions
-  @FunctionalInterface public static interface Func {
-    void exec(Req req, Res res) throws Exception;
-  }
-  @FunctionalInterface public static interface FromJson {
-    <T> T exec(String json, Class<T> to);
-  }
-  @FunctionalInterface public static interface ToJson {
-    String exec(Object from);
-  }
-  ////-> json parser (functions)
-  public static FromJson fromJson;
-  public static ToJson toJson;
-  public static void parser(FromJson json2obj, ToJson obj2json) {
-    fromJson=json2obj;  toJson=obj2json;
-  }
-
-  //-> for app runtime
-  public static boolean exist() {
-    return (method2routes.size() > 0);
-  }
-  public static boolean run(
-    HttpServletRequest sreq, HttpServletResponse sres
-  ) throws Exception {
-    Path path = Path.of(sreq.getRequestURI());
-    Route route = find(sreq.getMethod(), path);
-    if (route == null) return false;  // not found
-    Req req = new Req(sreq, path, route);
-    Res res = new Res(sres);
+  private static boolean exec(
+    List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
+  throws ServletException, IOException
+  {
+    if (paths.isEmpty()) return false;
+    String[] ptree = Path.tree(sreq);
+    Path path = find(ptree, paths);
+    if (path == null) return false;
     encoding(sreq, sres);
-    // TODO before func
-    route.func.exec(req, res);
-    // TODO after func
+    Req req = new Req(sreq, ptree, path);
+    Res res = new Res(sres);
+    try { path.func.exec(req, res); }
+    catch (Exception e) { throw new ServletException(e); }
     return true;
   }
-  public static Route find(String method, Path path) {
-    List<Route> routes = method2routes.get(method);
-    if (routes == null) return null;
-    for (Route r: routes) {
-      if (match(r.path, path)) return r;
-    }
+  private static Path find(String[] ptree, List<Path> from) {
+    for (Path p: from) { if (p.match(ptree)) return p; }
     return null;
   }
-  private static boolean match(Path a, Path r) { // a: added, r: request
-    if (a.tree.length != r.tree.length) return false;
-    for (int i=0; i<a.tree.length; i++) {
-      if (a.tree[i].startsWith(":")) continue;
-      if (a.tree[i].equals(r.tree[i])) continue;
-      return false;
-    }
-    return true;
-  }
-  ////-> encoding
-  private static final String utf8 = "utf-8";
-  private static String encoding = utf8;
+
+  //-> encoding
+  public static String encoding = "utf-8";
   private static void encoding(
     HttpServletRequest req, HttpServletResponse res)
   throws UnsupportedEncodingException
@@ -99,5 +65,46 @@ public class App {
     }
     res.setCharacterEncoding(encoding);
   }
-  public static void encoding(String enc) { encoding=enc; }
+
+  //-> json
+  public static void parser(Json2obj j2o, Obj2json o2j) {
+    json2obj=j2o;  obj2json=o2j;
+  }
+  static Json2obj json2obj;
+  static Obj2json obj2json;
+  @FunctionalInterface public static interface Json2obj {
+    <T> T exec(String json, Class<T> obj);
+  }
+  @FunctionalInterface public static interface Obj2json {
+    String exec(Object obj);
+  }
+
+  //-> servlet
+  @SuppressWarnings("serial")
+  public static class Servlet extends HttpServlet {
+    @Override protected void doGet(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doGet(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doPost(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doPost(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doPut(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doPut(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doDelete(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = App.doDelete(req, res);
+      if (!done) res.sendError(404);
+    }
+  }
 }

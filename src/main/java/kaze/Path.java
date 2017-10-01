@@ -3,21 +3,46 @@ package kaze;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Path {
-  public String uri;
-  public String[] tree;
-  public Map<String, Integer> index;
+import javax.servlet.http.HttpServletRequest;
 
-  public static Path of(String uri) {
+public class Path {
+  public String[] tree;
+  public Map<String, Integer> index;  // for path param
+  public Func func;
+
+  //-> for register (+analyze path param)
+  public static Path of(String path, Func f) {
     Path p = new Path();
-    p.uri = uri;
-    p.tree = uri.substring(1).split("/");
+    p.tree = tree(path, 1);
     p.index = new HashMap<>();
     for (int i=0; i<p.tree.length; i++) {
       if (p.tree[i].startsWith(":")) {
         p.index.put(p.tree[i], i);
       }
     }
+    p.func = f;
     return p;
+  }
+
+  //-> for request
+  public static String[] tree(HttpServletRequest req) {
+    String uri = req.getRequestURI();
+    String ctx = req.getContextPath();
+    if (ctx == null) return tree(uri, 1);
+    return tree(uri, (ctx.length() + 1));
+  }
+
+  //-> common
+  private static String[] tree(String path, int ltrimLen) {
+    return path.substring(ltrimLen).split("/");
+  }
+  public boolean match(String[] ptree) {
+    if (this.tree.length != ptree.length) return false;
+    for (int i=0; i<this.tree.length; i++) {
+      if (this.tree[i].startsWith(":")) continue;
+      if (this.tree[i].equals(ptree[i])) continue;
+      return false;
+    }
+    return true;
   }
 }
