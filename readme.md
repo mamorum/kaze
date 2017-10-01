@@ -53,6 +53,6 @@ $ curl -s -X GET http://localhost:8080/
 ```
 
 ## Samples
-- [kaze-sample-hw]((https://github.com/mamorum/kaze-sample/tree/master/hw): Abobe Hello World Example.
+- [kaze-sample-hw]((https://github.com/mamorum/kaze-sample/tree/master/hw): Above Hello World Example.
 - [kaze-sample-rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): web app accessing relational database, packaged as fatjar.
 - [kaze-sample-war](https://github.com/mamorum/kaze-sample/tree/master/server): web app, packaged as war.
