@@ -11,6 +11,7 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -21,58 +22,56 @@ import kaze.App;
 
 // Embedded Jetty
 public class Jetty {
-  private static final QueuedThreadPool qtp
-    = new QueuedThreadPool(200, 8, 60000);
-  private static final ServletContextHandler handler
+  private static final QueuedThreadPool thread = new QueuedThreadPool();
+  private static final Server server = new Server(thread);
+  private static final HttpConfiguration httpconf = new HttpConfiguration();
+  private static final ServerConnector connector = new ServerConnector(
+    server, new HttpConnectionFactory(httpconf)
+  );
+  private static final ServletContextHandler context
     = new ServletContextHandler(ServletContextHandler.SESSIONS);
-  private static final Server server = new Server(qtp);
-  static { server.setHandler(handler); }
-  //-> for app
-  public static ServletContextHandler handler() { return handler; }
-  //-> settings
-  ////-> thread
-  public static void thread(int max, int min, int timeoutMill) {
-    qtp.setMaxThreads(max);
-    qtp.setMinThreads(min);
-    qtp.setIdleTimeout(timeoutMill);
+  private static final SessionHandler session
+    = context.getSessionHandler();
+  static {
+    httpconf.setSendServerVersion(false);  // security
+    server.setHandler(context);
   }
-  ////-> connector + session
-  private static int httpConTime=30000;
-  public static void http(int connectorTimeoutMill, int sessionTimeoutSec) {
-    httpConTime = connectorTimeoutMill;
-    handler.getSessionHandler().setMaxInactiveInterval(sessionTimeoutSec);
-  }
-  ////-> context path
-  private static String ctxtpath = "/";
-  public static void context(String path) {
-    ctxtpath=path;
-  }
-  ////-> static files
+  //-> for settings
+  public static QueuedThreadPool thread() { return thread; }
+  public static ServerConnector connector() { return connector; }
+  public static ServletContextHandler context() { return context; }
+  public static SessionHandler session() { return session; }
   public static void location(String classpathdir) {
-    handler.setBaseResource(Resource.newClassPathResource(classpathdir));
+    root(Resource.newClassPathResource(classpathdir));
   }
   public static void location(File dir) {
-    handler.setBaseResource(Resource.newResource(dir));
+    root(Resource.newResource(dir));
   }
-
+  private static void root(Resource staticFileDir) {
+    context.setBaseResource(staticFileDir);
+    ServletHolder s = new ServletHolder(new DefaultServlet());
+    s.setInitParameter("dirAllowed", "false");  // security
+    context.addServlet(s, "/");
+  }
   //-> start
   public static void listen(int port) { listen(null, port); }
   public static void listen(String host, int port) {
-    HttpConfiguration conf = new HttpConfiguration();
-    conf.setSendServerVersion(false);  // security
-    ServerConnector http = new ServerConnector(
-      server, new HttpConnectionFactory(conf)
-    );
-    http.setIdleTimeout(httpConTime);
-    http.setHost(host);
-    http.setPort(port);
-    server.addConnector(http);
-    handler.setContextPath(ctxtpath);
-    handler.addServlet(servlet(), "/");
-    try {
-      server.start();
-      server.join();
-    } catch (Exception e) {
+    start(host, port);
+    join();
+  }
+  private static void start(String host, int port) {
+    connector.setHost(host);
+    connector.setPort(port);
+    server.addConnector(connector);
+//    context.addServlet(servlet(), "/");
+    try { server.start();}
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+  private static void join() {
+    try { server.join(); }
+    catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -80,11 +79,11 @@ public class Jetty {
   //-> servlet
   private static ServletHolder servlet() {
     ServletHolder sh = new ServletHolder();
-    if (server == null) {
+    if (server == null) { // mistake: fix -> if (location == null) ...
       sh.setServlet(new App.Servlet());
     } else {
       sh.setServlet(new AppDocServlet());
-      sh.setInitParameter("dirAllowed", "false");  // security
+
     }
     return sh;
   }

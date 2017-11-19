@@ -38,24 +38,31 @@ public class FullServer {
     });
     initServletComponent();
     initWebsocketComponent();
-    Jetty.thread(20, 20, 50000);
-    Jetty.http(60000, 300); // session timeout: 5min
+    //-> thread pool settings
+    Jetty.thread().setMaxThreads(20);
+    Jetty.thread().setMinThreads(20);
+    Jetty.thread().setIdleTimeout(500000);
+    Jetty.connector().setIdleTimeout(60000);
+    Jetty.context().setContextPath("/");
+    Jetty.session().setMaxInactiveInterval(
+      300 // session timeout sec (300sec = 5min)
+    );
     Jetty.location("/public");
     Jetty.listen("0.0.0.0", 8080);
   }
   private static void initServletComponent() {
-    Jetty.handler().addServlet(HelloServlet.class, "/hello");
-    Jetty.handler().addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
-    Jetty.handler().addEventListener(new RequestListener());
-    Jetty.handler().addEventListener(new ContextListener());
-    Jetty.handler().getSessionHandler().addEventListener(new SessionListener());
+    Jetty.context().addServlet(HelloServlet.class, "/hello");
+    Jetty.context().addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
+    Jetty.context().addEventListener(new RequestListener());
+    Jetty.context().addEventListener(new ContextListener());
+    Jetty.context().getSessionHandler().addEventListener(new SessionListener());
     //<- HttpSessionListener needs to be added to SessionHandler.
   }
   private static void initWebsocketComponent()
     throws ServletException, DeploymentException
   {
     ServerContainer ws =
-      WebSocketServerContainerInitializer.configureContext(Jetty.handler());
+      WebSocketServerContainerInitializer.configureContext(Jetty.context());
     ws.addEndpoint(ChatSocket.class);
   }
 }
