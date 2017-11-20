@@ -24,19 +24,20 @@ import kaze.server.Jetty;
 
 public class FullServer {
   public static void main(String[] args) throws Exception {
-    Gson gson = new Gson();
-    App.parser(gson::fromJson, gson::toJson);
-    App.get("/", (req, res) -> {
+    App app = new App("/app");
+    app.get("/", (req, res) -> {
       res.html("<p>Hello World</p>");
     });
-    App.get("/err", (req, res) -> {
+    app.get("/err", (req, res) -> {
       throw new Exception("/err");
     });
-    App.get("/ssn", (req, res) -> {
+    app.get("/ssn", (req, res) -> {
       HttpSession ss = req.srv.getSession(true);
       if (ss.isNew()) res.json("isNew", true);
       else res.json("isNew", false);;
     });
+    Gson gson = new Gson();
+    app.parser(gson::fromJson, gson::toJson);
     initServletComponent();
     initWebsocketComponent();
     //-> thread pool settings
@@ -48,8 +49,8 @@ public class FullServer {
       300 // session timeout sec (300sec=5min)
     );
     Jetty.context().setContextPath("/");
-    Jetty.doc("/public", "/");
-    Jetty.servlet(App.servlet(), "/app/*");
+    Jetty.app(app);
+    Jetty.doc("/public");
     Jetty.listen("0.0.0.0", 8080);
   }
   private static void initServletComponent() {

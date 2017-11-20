@@ -6,15 +6,20 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import kaze.App.Json2obj;
+
 public class Req {
   public HttpServletRequest srv;
   private String[] pathTree;
   private Map<String, Integer> pathIndex;
+  private Json2obj json2obj;
 
-  public Req(HttpServletRequest r, String[] ptree, Path path) {
+  public Req(HttpServletRequest r,
+    String[] ptree, Path path, Json2obj j2o) {
     this.srv = r;
     this.pathTree=ptree;
     this.pathIndex=path.index;
+    this.json2obj=j2o;
   }
 
   public String body() {
@@ -32,7 +37,7 @@ public class Req {
   }
 
   public <T> T json(Class<T> to) {
-    return App.json2obj.exec(body(), to);
+    return json2obj.exec(body(), to);
   }
 
   public String param(String name) {
