@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import com.google.gson.Gson;
@@ -43,14 +44,18 @@ public class FullServer {
     Jetty.thread().setMinThreads(20);
     Jetty.thread().setIdleTimeout(500000);
     Jetty.connector().setIdleTimeout(60000);
-    Jetty.context().setContextPath("/");
     Jetty.session().setMaxInactiveInterval(
-      300 // session timeout sec (300sec = 5min)
+      300 // session timeout sec (300sec=5min)
     );
-    Jetty.location("/public");
+    Jetty.context().setContextPath("/");
+    Jetty.doc("/public", "/");
+    Jetty.servlet(App.servlet(), "/app/*");
     Jetty.listen("0.0.0.0", 8080);
   }
   private static void initServletComponent() {
+    ServletHolder sh = new ServletHolder(new HelloServlet());
+    sh.setAsyncSupported(true);
+    // TODO set async servlet.
     Jetty.context().addServlet(HelloServlet.class, "/hello");
     Jetty.context().addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
     Jetty.context().addEventListener(new RequestListener());

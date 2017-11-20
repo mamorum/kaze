@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,12 +13,18 @@ import javax.servlet.http.HttpServletResponse;
 
 public class App {
   //-> routing
-  ////-> add (for init)
+  private static final List<Path>
+  get=new ArrayList<>(), post=new ArrayList<>(),
+  put=new ArrayList<>(), delete=new ArrayList<>();
+  private static void add(String p, Func f, List<Path> paths) {
+    paths.add(Path.of(p, f));
+  }
+  ////-> add routing (for init)
   public static void get(String path, Func f) { add(path, f, get); }
   public static void post(String path, Func f) { add(path, f, post); }
   public static void put(String path, Func f) { add(path, f, put); }
   public static void delete(String path, Func f) { add(path, f, delete); }
-  ////-> exec (for runtime)
+  //-> exec (for runtime)
   public static boolean doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException { return exec(get, req, res); }
   public static boolean doPost(HttpServletRequest req, HttpServletResponse res)
@@ -26,13 +33,8 @@ public class App {
       throws ServletException, IOException { return exec(put, req, res); }
   public static boolean doDelete(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException { return exec(delete, req, res); }
-  //////-> private
-  private static final List<Path>
-    get=new ArrayList<>(), post=new ArrayList<>(),
-    put=new ArrayList<>(), delete=new ArrayList<>();
-  private static void add(String p, Func f, List<Path> paths) {
-    paths.add(Path.of(p, f));
-  }
+  public static Servlet servlet() { return new AppServlet(); }
+  ////->
   private static boolean exec(
     List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
   throws ServletException, IOException
@@ -49,7 +51,9 @@ public class App {
     return true;
   }
   private static Path find(String[] ptree, List<Path> from) {
-    for (Path p: from) { if (p.match(ptree)) return p; }
+    for (Path p: from) {
+      if (p.match(ptree)) return p;
+    }
     return null;
   }
 
@@ -81,7 +85,7 @@ public class App {
 
   //-> servlet
   @SuppressWarnings("serial")
-  public static class Servlet extends HttpServlet {
+  public static class AppServlet extends HttpServlet {
     @Override protected void doGet(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {

@@ -1,11 +1,8 @@
 package kaze.server;
 
 import java.io.File;
-import java.io.IOException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -17,8 +14,6 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-
-import kaze.App;
 
 // Embedded Jetty
 public class Jetty {
@@ -39,19 +34,22 @@ public class Jetty {
   //-> for settings
   public static QueuedThreadPool thread() { return thread; }
   public static ServerConnector connector() { return connector; }
-  public static ServletContextHandler context() { return context; }
   public static SessionHandler session() { return session; }
-  public static void location(String classpathdir) {
-    root(Resource.newClassPathResource(classpathdir));
+  public static ServletContextHandler context() { return context; }
+  public static void servlet(Servlet add, String path) {
+    context.addServlet(new ServletHolder(add), path);
   }
-  public static void location(File dir) {
-    root(Resource.newResource(dir));
+  public static void doc(String classpathdir, String path) {
+    root(Resource.newClassPathResource(classpathdir), path);
   }
-  private static void root(Resource staticFileDir) {
+  public static void doc(File dir, String path) {
+    root(Resource.newResource(dir), path);
+  }
+  private static void root(Resource staticFileDir, String path) {
     context.setBaseResource(staticFileDir);
     ServletHolder s = new ServletHolder(new DefaultServlet());
     s.setInitParameter("dirAllowed", "false");  // security
-    context.addServlet(s, "/");
+    context.addServlet(s, path);
   }
   //-> start
   public static void listen(int port) { listen(null, port); }
@@ -63,7 +61,6 @@ public class Jetty {
     connector.setHost(host);
     connector.setPort(port);
     server.addConnector(connector);
-//    context.addServlet(servlet(), "/");
     try { server.start();}
     catch (Exception e) {
       throw new RuntimeException(e);
@@ -73,45 +70,6 @@ public class Jetty {
     try { server.join(); }
     catch (InterruptedException e) {
       throw new RuntimeException(e);
-    }
-  }
-
-  //-> servlet
-  private static ServletHolder servlet() {
-    ServletHolder sh = new ServletHolder();
-    if (server == null) { // mistake: fix -> if (location == null) ...
-      sh.setServlet(new App.Servlet());
-    } else {
-      sh.setServlet(new AppDocServlet());
-
-    }
-    return sh;
-  }
-  @SuppressWarnings("serial")
-  public static class AppDocServlet extends DefaultServlet {
-    @Override protected void doGet(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doGet(req, res);
-      if (!done) super.doGet(req, res); // static contents
-    }
-    @Override protected void doPost(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doPost(req, res);
-      if (!done) super.doPost(req, res); // static contents
-    }
-    @Override protected void doPut(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doPut(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doDelete(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doDelete(req, res);
-      if (!done) res.sendError(404);
     }
   }
 }
