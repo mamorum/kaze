@@ -36,29 +36,21 @@ public class Jetty {
   public static ServerConnector connector() { return connector; }
   public static SessionHandler session() { return session; }
   public static ServletContextHandler context() { return context; }
-  public static void app(App app) {
-    context.addServlet(
-      new ServletHolder(app.servlet()), servletPath(app.path())
-    );
+  public static void app(App app, String publishPath) {
+    ServletHolder sh = new ServletHolder(app.servlet());
+    context.addServlet(sh, publishPath);
   }
-  private static String servletPath(String appPath) {
-    String aster = "/*";
-    if (appPath == null) return aster;
-    return new StringBuilder(
-      appPath
-    ).append(aster).toString();
+  public static void doc(String classpathdir, String publishPath) {
+    doc(Resource.newClassPathResource(classpathdir), publishPath);
   }
-  public static void doc(String classpathdir) {
-    doc(Resource.newClassPathResource(classpathdir));
+  public static void doc(File dir, String publishPath) {
+    doc(Resource.newResource(dir), publishPath);
   }
-  public static void doc(File dir) {
-    doc(Resource.newResource(dir));
-  }
-  private static void doc(Resource staticFileDir) {
+  private static void doc(Resource staticFileDir, String publishPath) {
     context.setBaseResource(staticFileDir);
-    ServletHolder s = new ServletHolder(new DefaultServlet());
-    s.setInitParameter("dirAllowed", "false");  // security
-    context.addServlet(s, "/");
+    ServletHolder sh = new ServletHolder(new DefaultServlet());
+    sh.setInitParameter("dirAllowed", "false");  // security
+    context.addServlet(sh, publishPath);
   }
   //-> start
   public static void listen(int port) { listen(null, port); }

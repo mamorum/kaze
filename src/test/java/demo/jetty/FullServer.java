@@ -49,8 +49,8 @@ public class FullServer {
       300 // session timeout sec (300sec=5min)
     );
     Jetty.context().setContextPath("/");
-    Jetty.app(app);
-    Jetty.doc("/public");
+    Jetty.app(app, "/app/*");
+    Jetty.doc("/public", "/");
     Jetty.listen("0.0.0.0", 8080);
   }
   private static void initServletComponent() {

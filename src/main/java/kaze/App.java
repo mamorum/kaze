@@ -93,8 +93,8 @@ public class App {
 
   //-> servlet
   @SuppressWarnings("serial")
-  public class AppServlet extends HttpServlet {
-    protected App app;  // TODO どうやって設定するか検討
+  public static class AppServlet extends HttpServlet {
+    protected App app = new App();
     @Override protected void doGet(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
