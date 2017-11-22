@@ -5,35 +5,24 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.Servlet;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class App {
-  private String path;
-  public App() { super(); }
-  public App(String path) { this.path = path; }
-  public String path() { return path; }
-  public Servlet servlet() {
-    AppServlet servlet = new AppServlet();
-    servlet.app = this;
-    return servlet;
-  }
   //-> routing
   private final List<Path>
     get=new ArrayList<>(), post=new ArrayList<>(),
     put=new ArrayList<>(), delete=new ArrayList<>();
-  private void add(String p, Func f, List<Path> paths) {
-    paths.add(Path.of(p, f));
-  }
   ////-> add routing (for init)
   public void get(String path, Func f) { add(path, f, get); }
   public void post(String path, Func f) { add(path, f, post); }
   public void put(String path, Func f) { add(path, f, put); }
   public void delete(String path, Func f) { add(path, f, delete); }
-  //-> exec (for runtime)
+  private void add(String p, Func f, List<Path> paths) {
+    paths.add(Path.of(p, f));
+  }
+  ////-> exec function (for runtime)
   public boolean doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException { return exec(get, req, res); }
   public boolean doPost(HttpServletRequest req, HttpServletResponse res)
@@ -42,7 +31,6 @@ public class App {
       throws ServletException, IOException { return exec(put, req, res); }
   public boolean doDelete(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException { return exec(delete, req, res); }
-  ////->
   private boolean exec(
     List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
   throws ServletException, IOException
@@ -64,7 +52,6 @@ public class App {
     }
     return null;
   }
-
   //-> encoding
   public static String encoding = "utf-8";
   private void encoding(
@@ -77,7 +64,6 @@ public class App {
     }
     res.setCharacterEncoding(encoding);
   }
-
   //-> json
   public void parser(Json2obj j2o, Obj2json o2j) {
     json2obj=j2o;  obj2json=o2j;
@@ -89,35 +75,5 @@ public class App {
   }
   @FunctionalInterface public static interface Obj2json {
     String exec(Object obj);
-  }
-
-  //-> servlet
-  @SuppressWarnings("serial")
-  public static class AppServlet extends HttpServlet {
-    protected App app = new App();
-    @Override protected void doGet(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = app.doGet(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doPost(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = app.doPost(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doPut(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = app.doPut(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doDelete(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = app.doDelete(req, res);
-      if (!done) res.sendError(404);
-    }
   }
 }

@@ -8,16 +8,17 @@ import kaze.server.Jetty;
 public class Env {
   public static final App app = new App();
   public static final Gson gson = new Gson();
+  private static final Jetty jetty = new Jetty();
   static {
     app.parser(gson::fromJson, gson::toJson);
-    Jetty.app(app, "/app/*");
-    Jetty.doc("/public", "/");
+    jetty.app(app, "/app/*");
+    jetty.doc("/public", "/");
   }
   private static volatile boolean init = false;
   private static final Object lock = new Object();
   private static final Thread env = new Thread(
     new Runnable() {
-      public void run() { Jetty.listen(8080); }
+      public void run() { jetty.listen(8080); }
   });
 
   public static void init() {
