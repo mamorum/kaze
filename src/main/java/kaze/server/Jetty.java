@@ -14,7 +14,6 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import kaze.App;
-import kaze.AppServlet;
 
 public class Jetty {
   private final QueuedThreadPool thread = new QueuedThreadPool();
@@ -36,9 +35,7 @@ public class Jetty {
   public SessionHandler session() { return session; }
   public ServletContextHandler context() { return context; }
   public void app(App app, String publishPath) {
-    AppServlet s = new AppServlet();
-    s.app = app;
-    ServletHolder sh = new ServletHolder(s);
+    ServletHolder sh = new ServletHolder(app.servlet());
     context.addServlet(sh, publishPath);
   }
   public void doc(String classpathDir, String publishPath) {

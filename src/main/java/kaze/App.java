@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +52,38 @@ public class App {
       if (p.match(ptree)) return p;
     }
     return null;
+  }
+  //-> servlet
+  public Servlet servlet() { return new Servlet(this);}
+  @SuppressWarnings("serial")
+  public static class Servlet extends HttpServlet {
+    protected App app;
+    public Servlet() { super(); app=new App(); }
+    public Servlet(App ap) { super(); app=ap; }
+    @Override protected void doGet(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = app.doGet(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doPost(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = app.doPost(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doPut(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = app.doPut(req, res);
+      if (!done) res.sendError(404);
+    }
+    @Override protected void doDelete(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      boolean done = app.doDelete(req, res);
+      if (!done) res.sendError(404);
+    }
   }
   //-> encoding
   public static String encoding = "utf-8";

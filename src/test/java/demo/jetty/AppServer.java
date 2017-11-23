@@ -7,8 +7,8 @@ import kaze.server.Jetty;
 
 public class AppServer {
   public static void main(String[] args) {
-    Gson gson = new Gson();
     App app = new App();
+    Gson gson = new Gson();
     app.parser(gson::fromJson, gson::toJson);
     app.get("/", (req, res) -> {
       res.json("msg", "Hello");
