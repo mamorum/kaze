@@ -27,11 +27,8 @@ public class Path {
   //-> for request
   public static String[] tree(HttpServletRequest req) {
     String c = req.getContextPath();
-    System.out.println("ContextPath:" + c);
     String s = req.getServletPath();
-    System.out.println("ServletPath:" + s);
     String uri = req.getRequestURI();
-    System.out.println("RequestURI:" + uri);
     int prefix = c.length() + s.length();
     if (uri.length() == prefix) return tree(uri, prefix);
     return tree(uri, (prefix + 1));
