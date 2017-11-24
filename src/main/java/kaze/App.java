@@ -93,8 +93,8 @@ public class App {
     res.setCharacterEncoding(encoding);
   }
   //-> json
-  Json2obj json2obj = this::noJson2obj;
-  Obj2json obj2json = this::noObj2json;
+  Json2obj json2obj = App::noJson2obj;
+  Obj2json obj2json = App::noObj2json;
   public void parser(Json2obj j2o, Obj2json o2j) {
     json2obj=j2o;  obj2json=o2j;
   }
@@ -106,10 +106,10 @@ public class App {
   }
   private static final String errMsg =
     "No json parser found. Call `App#parser(Json2obj, Obj2json)` to set.";
-  private <T> T noJson2obj(String json, Class<T> obj) {
+  static <T> T noJson2obj(String json, Class<T> obj) {
     throw new IllegalStateException(errMsg);
   }
-  private String noObj2json(Object obj) {
+  static String noObj2json(Object obj) {
     throw new IllegalStateException(errMsg);
   }
 }

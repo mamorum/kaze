@@ -16,47 +16,48 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import kaze.App;
 
 public class Jetty {
-  private final QueuedThreadPool thread = new QueuedThreadPool();
-  private final Server server = new Server(thread);
-  private final HttpConfiguration httpconf = new HttpConfiguration();
-  private final ServerConnector connector = new ServerConnector(
+  private Jetty() {};
+  private static final QueuedThreadPool thread = new QueuedThreadPool();
+  private static final Server server = new Server(thread);
+  private static final HttpConfiguration httpconf = new HttpConfiguration();
+  private static final ServerConnector connector = new ServerConnector(
     server, new HttpConnectionFactory(httpconf)
   );
-  private final ServletContextHandler context
+  private static final ServletContextHandler context
     = new ServletContextHandler(ServletContextHandler.SESSIONS);
-  private final SessionHandler session = context.getSessionHandler();
-  public Jetty() {
+  private static final SessionHandler session = context.getSessionHandler();
+  static {
     httpconf.setSendServerVersion(false);  // security
     server.setHandler(context);
   }
   //-> to setup
-  public QueuedThreadPool thread() { return thread; }
-  public ServerConnector connector() { return connector; }
-  public SessionHandler session() { return session; }
-  public ServletContextHandler context() { return context; }
-  public void app(App app, String publishPath) {
+  public static QueuedThreadPool thread() { return thread; }
+  public static ServerConnector connector() { return connector; }
+  public static SessionHandler session() { return session; }
+  public static ServletContextHandler context() { return context; }
+  public static void app(App app, String publishPath) {
     ServletHolder sh = new ServletHolder(app.servlet());
     context.addServlet(sh, publishPath);
   }
-  public void doc(String classpathDir, String publishPath) {
+  public static void doc(String classpathDir, String publishPath) {
     doc(Resource.newClassPathResource(classpathDir), publishPath);
   }
-  public void doc(File dir, String publishPath) {
+  public static void doc(File dir, String publishPath) {
     doc(Resource.newResource(dir), publishPath);
   }
-  private void doc(Resource staticFileDir, String publishPath) {
+  private static void doc(Resource staticFileDir, String publishPath) {
     context.setBaseResource(staticFileDir);
     ServletHolder sh = new ServletHolder(new DefaultServlet());
     sh.setInitParameter("dirAllowed", "false");  // security
     context.addServlet(sh, publishPath);
   }
   //-> to start
-  public void listen(int port) { listen(null, port); }
-  public void listen(String host, int port) {
+  public static void listen(int port) { listen(null, port); }
+  public static void listen(String host, int port) {
     start(host, port);
     join();
   }
-  private void start(String host, int port) {
+  private static void start(String host, int port) {
     connector.setHost(host);
     connector.setPort(port);
     server.addConnector(connector);
@@ -65,7 +66,7 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
-  private void join() {
+  private static void join() {
     try { server.join(); }
     catch (InterruptedException e) {
       throw new RuntimeException(e);

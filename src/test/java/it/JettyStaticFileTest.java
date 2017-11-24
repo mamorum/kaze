@@ -19,5 +19,4 @@ public class JettyStaticFileTest {
       "<p>Index</p>"
     ).close();
   }
-
 }
