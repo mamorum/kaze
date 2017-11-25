@@ -15,7 +15,7 @@ public class App {
   private final List<Path>
     get=new ArrayList<>(), post=new ArrayList<>(),
     put=new ArrayList<>(), delete=new ArrayList<>();
-  ////-> add (for init)
+  ////-> add
   public void get(String path, Func f) { add(path, f, get); }
   public void post(String path, Func f) { add(path, f, post); }
   public void put(String path, Func f) { add(path, f, put); }
@@ -23,7 +23,7 @@ public class App {
   private void add(String p, Func f, List<Path> paths) {
     paths.add(Path.of(p, f));
   }
-  ////-> exec (for runtime)
+  ////-> run
   public boolean runGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException { return exec(get, req, res); }
   public boolean runPost(HttpServletRequest req, HttpServletResponse res)
@@ -53,12 +53,14 @@ public class App {
     return null;
   }
   //-> servlet
-  public Servlet servlet() { return new Servlet(this);}
+  public Servlet servlet() {
+    Servlet s = new Servlet();
+    s.app = this;
+    return s;
+  }
   @SuppressWarnings("serial")
   public static class Servlet extends HttpServlet {
     protected App app;
-    public Servlet() { super(); app=new App(); }
-    public Servlet(App ap) { super(); app=ap; }
     @Override protected void doGet(
       HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
@@ -81,7 +83,7 @@ public class App {
     }
   }
   //-> encoding
-  public static String encoding = "utf-8";
+  public String encoding = "utf-8";
   private void encoding(
     HttpServletRequest req, HttpServletResponse res)
   throws UnsupportedEncodingException
@@ -104,7 +106,7 @@ public class App {
   @FunctionalInterface public static interface Obj2json {
     String exec(Object obj);
   }
-  private static final String errMsg =
+  static String errMsg =
     "No json parser found. Call `App#parser(Json2obj, Obj2json)` to set.";
   static <T> T noJson2obj(String json, Class<T> obj) {
     throw new IllegalStateException(errMsg);

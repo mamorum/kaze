@@ -28,6 +28,7 @@ public class Jetty {
   private static final SessionHandler session = context.getSessionHandler();
   static {
     httpconf.setSendServerVersion(false);  // security
+    server.addConnector(connector);
     server.setHandler(context);
   }
   //-> to setup
@@ -60,7 +61,6 @@ public class Jetty {
   private static void start(String host, int port) {
     connector.setHost(host);
     connector.setPort(port);
-    server.addConnector(connector);
     try { server.start();}
     catch (Exception e) {
       throw new RuntimeException(e);
