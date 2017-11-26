@@ -3,10 +3,9 @@ package it;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import it.tool.Env;
 import it.tool.HttpReq;
 import it.tool.HttpRes;
-import it.tool.Env;
-import kaze.App;
 
 public class ReqResJsonTest {
 
@@ -25,7 +24,7 @@ public class ReqResJsonTest {
 
   //-> Test for Req#json(Class<T>), Res#json(Object)
   public static void reg_it_json_person() {
-    App.post("/it/json/person", (req, res) -> {
+    Env.app.post("/it/json/person", (req, res) -> {
       Person p = req.json(Person.class);
       p.ver = 1;
       res.json(p);
@@ -33,7 +32,7 @@ public class ReqResJsonTest {
   }
   @Test public void it_json_person() {
     HttpRes res = HttpReq.postJson(
-      "http://localhost:8080/it/json/person",
+      "http://localhost:8080/app/it/json/person",
       "{\"id\":1,\"name\":\"Jone\"}"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
@@ -43,13 +42,13 @@ public class ReqResJsonTest {
 
   //-> Test for Res#json(Object...), size=2
   public static void reg_it_json_msg() {
-    App.get("/it/json/msg", (req, res) -> {
+    Env.app.get("/it/json/msg", (req, res) -> {
       res.json("msg", "Hello");
     });
   }
   @Test public void it_json_msg() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/it/json/msg"
+      "http://localhost:8080/app/it/json/msg"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
       "{\"msg\":\"Hello\"}"
@@ -58,7 +57,7 @@ public class ReqResJsonTest {
 
   //-> Test for Res#json(Object...), size=4
   public static void reg_it_json_msgs() {
-    App.get("/it/json/msgs", (req, res) -> {
+    Env.app.get("/it/json/msgs", (req, res) -> {
       res.json(
         "status", 1,
         "history", new String[] {"stop", "start"}
@@ -67,7 +66,7 @@ public class ReqResJsonTest {
   }
   @Test public void it_json_msgs() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/it/json/msgs"
+      "http://localhost:8080/app/it/json/msgs"
     );
     res.statusIs(200).typeIsJsonUtf8().bodyIs(
       "{\"status\":1,\"history\":[\"stop\",\"start\"]}"

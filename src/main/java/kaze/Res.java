@@ -7,9 +7,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import kaze.App.Obj2json;
+
 public class Res {
   public HttpServletResponse srv;
-  public Res(HttpServletResponse r) { this.srv = r; }
+  private Obj2json obj2json;
+  public Res(HttpServletResponse r, Obj2json o2j) {
+    this.srv = r;
+    this.obj2json = o2j;
+  }
 
   public Res status(int status) {
     srv.setStatus(status);
@@ -39,7 +45,7 @@ public class Res {
     write("text/html", html);
   }
   public void json(Object obj) {
-    write("application/json", App.obj2json.exec(obj));
+    write("application/json", obj2json.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {

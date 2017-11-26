@@ -26,10 +26,12 @@ public class Path {
 
   //-> for request
   public static String[] tree(HttpServletRequest req) {
+    String c = req.getContextPath();
+    String s = req.getServletPath();
     String uri = req.getRequestURI();
-    String ctx = req.getContextPath();
-    if (ctx == null) return tree(uri, 1);
-    return tree(uri, (ctx.length() + 1));
+    int prefix = c.length() + s.length();
+    if (uri.length() == prefix) return tree(uri, prefix);
+    return tree(uri, (prefix + 1));
   }
 
   //-> common

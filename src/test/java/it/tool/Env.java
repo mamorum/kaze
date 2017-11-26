@@ -6,31 +6,35 @@ import kaze.App;
 import kaze.server.Jetty;
 
 public class Env {
+  public static final App app = new App();
+  public static final Gson gson = new Gson();
+  public static void initJsonParser() {
+    app.parser(gson::fromJson, gson::toJson);
+  }
+  static {
+    Jetty.app(app, "/app/*");
+    Jetty.doc("/public", "/");
+    initJsonParser();
+  }
   private static volatile boolean init = false;
   private static final Object lock = new Object();
   private static final Thread env = new Thread(
     new Runnable() {
-      @Override public void run() {
-        Gson gson = new Gson();
-        App.parser(gson::fromJson, gson::toJson);
-        Jetty.location("/public");
-        Jetty.listen(8080);
-      }
+      public void run() { Jetty.listen(8080); }
   });
 
   public static void init() {
     synchronized (lock) {
       if (init) return;
-      env.start();
-      try { pause(); }  //<- main thread
+      env.start();  //<- start another thread
+      try { pause(); }
       catch (InterruptedException e) {
         e.printStackTrace();
       }
       init = true;
     }
   }
-
-  // for travis ci.
+  //-> wait for travis ci.
   private static void pause() throws InterruptedException {
     for (int i = 0; i < 5; i++) {
       Thread.State state = env.getState();

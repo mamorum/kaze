@@ -7,20 +7,22 @@ import kaze.server.Jetty;
 
 public class AppServer {
   public static void main(String[] args) {
+    App app = new App();
     Gson gson = new Gson();
-    App.parser(gson::fromJson, gson::toJson);
-    App.get("/", (req, res) -> {
+    app.parser(gson::fromJson, gson::toJson);
+    app.get("/", (req, res) -> {
       res.json("msg", "Hello");
     });
-    App.get("/id/:id", (req, res) -> {
+    app.get("/id/:id", (req, res) -> {
       res.json("id", req.path(":id"));
     });
-    App.get("/err", (req, res) -> {
+    app.get("/err", (req, res) -> {
       throw new Exception("Exception");
     });
-    App.get("/err/run", (req, res) -> {
+    app.get("/err/run", (req, res) -> {
       throw new RuntimeException("Runtime Exception");
     });
+    Jetty.app(app, "/*");
     Jetty.listen(8080);
   }
 }

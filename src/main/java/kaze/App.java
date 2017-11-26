@@ -12,50 +12,79 @@ import javax.servlet.http.HttpServletResponse;
 
 public class App {
   //-> routing
-  ////-> add (for init)
-  public static void get(String path, Func f) { add(path, f, get); }
-  public static void post(String path, Func f) { add(path, f, post); }
-  public static void put(String path, Func f) { add(path, f, put); }
-  public static void delete(String path, Func f) { add(path, f, delete); }
-  ////-> exec (for runtime)
-  public static boolean doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(get, req, res); }
-  public static boolean doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(post, req, res); }
-  public static boolean doPut(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(put, req, res); }
-  public static boolean doDelete(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(delete, req, res); }
-  //////-> private
-  private static final List<Path>
+  private final List<Path>
     get=new ArrayList<>(), post=new ArrayList<>(),
     put=new ArrayList<>(), delete=new ArrayList<>();
-  private static void add(String p, Func f, List<Path> paths) {
+  ////-> add
+  public void get(String path, Func f) { add(path, f, get); }
+  public void post(String path, Func f) { add(path, f, post); }
+  public void put(String path, Func f) { add(path, f, put); }
+  public void delete(String path, Func f) { add(path, f, delete); }
+  private void add(String p, Func f, List<Path> paths) {
     paths.add(Path.of(p, f));
   }
-  private static boolean exec(
+  ////-> run
+  public boolean runGet(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(get, req, res); }
+  public boolean runPost(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(post, req, res); }
+  public boolean runPut(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(put, req, res); }
+  public boolean runDelete(HttpServletRequest req, HttpServletResponse res)
+      throws ServletException, IOException { return exec(delete, req, res); }
+  private boolean exec(
     List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
-  throws ServletException, IOException
-  {
+  throws ServletException, IOException {
     if (paths.isEmpty()) return false;
     String[] ptree = Path.tree(sreq);
     Path path = find(ptree, paths);
     if (path == null) return false;
     encoding(sreq, sres);
-    Req req = new Req(sreq, ptree, path);
-    Res res = new Res(sres);
+    Req req = new Req(sreq, ptree, path, json2obj);
+    Res res = new Res(sres, obj2json);
     try { path.func.exec(req, res); }
     catch (Exception e) { throw new ServletException(e); }
     return true;
   }
-  private static Path find(String[] ptree, List<Path> from) {
-    for (Path p: from) { if (p.match(ptree)) return p; }
+  private Path find(String[] ptree, List<Path> from) {
+    for (Path p: from) {
+      if (p.match(ptree)) return p;
+    }
     return null;
   }
-
+  //-> servlet
+  public Servlet servlet() {
+    Servlet s = new Servlet();
+    s.app = this;
+    return s;
+  }
+  @SuppressWarnings("serial")
+  public static class Servlet extends HttpServlet {
+    protected App app;
+    @Override protected void doGet(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      if (!app.runGet(req, res)) res.sendError(404);
+    }
+    @Override protected void doPost(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException{
+      if (!app.runPost(req, res)) res.sendError(404);
+    }
+    @Override protected void doPut(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      if (!app.runPut(req, res)) res.sendError(404);
+    }
+    @Override protected void doDelete(
+      HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
+      if (!app.runDelete(req, res)) res.sendError(404);
+    }
+  }
   //-> encoding
-  public static String encoding = "utf-8";
-  private static void encoding(
+  public String encoding = "utf-8";
+  private void encoding(
     HttpServletRequest req, HttpServletResponse res)
   throws UnsupportedEncodingException
   {
@@ -65,46 +94,24 @@ public class App {
     }
     res.setCharacterEncoding(encoding);
   }
-
   //-> json
-  public static void parser(Json2obj j2o, Obj2json o2j) {
+  Json2obj json2obj = App::noJson2obj;
+  Obj2json obj2json = App::noObj2json;
+  public void parser(Json2obj j2o, Obj2json o2j) {
     json2obj=j2o;  obj2json=o2j;
   }
-  static Json2obj json2obj;
-  static Obj2json obj2json;
   @FunctionalInterface public static interface Json2obj {
     <T> T exec(String json, Class<T> obj);
   }
   @FunctionalInterface public static interface Obj2json {
     String exec(Object obj);
   }
-
-  //-> servlet
-  @SuppressWarnings("serial")
-  public static class Servlet extends HttpServlet {
-    @Override protected void doGet(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doGet(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doPost(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doPost(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doPut(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doPut(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doDelete(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doDelete(req, res);
-      if (!done) res.sendError(404);
-    }
+  static String errMsg =
+    "No json parser found. Call `App#parser(Json2obj, Obj2json)` to set.";
+  static <T> T noJson2obj(String json, Class<T> obj) {
+    throw new IllegalStateException(errMsg);
+  }
+  static String noObj2json(Object obj) {
+    throw new IllegalStateException(errMsg);
   }
 }

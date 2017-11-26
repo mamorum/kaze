@@ -1,16 +1,12 @@
 package kaze.server;
 
 import java.io.File;
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -19,100 +15,61 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 import kaze.App;
 
-// Embedded Jetty
 public class Jetty {
-  private static final QueuedThreadPool qtp
-    = new QueuedThreadPool(200, 8, 60000);
-  private static final ServletContextHandler handler
+  private Jetty() {};
+  private static final QueuedThreadPool thread = new QueuedThreadPool();
+  private static final Server server = new Server(thread);
+  private static final HttpConfiguration httpconf = new HttpConfiguration();
+  private static final ServerConnector connector = new ServerConnector(
+    server, new HttpConnectionFactory(httpconf)
+  );
+  private static final ServletContextHandler context
     = new ServletContextHandler(ServletContextHandler.SESSIONS);
-  private static final Server server = new Server(qtp);
-  static { server.setHandler(handler); }
-  //-> for app
-  public static ServletContextHandler handler() { return handler; }
-  //-> settings
-  ////-> thread
-  public static void thread(int max, int min, int timeoutMill) {
-    qtp.setMaxThreads(max);
-    qtp.setMinThreads(min);
-    qtp.setIdleTimeout(timeoutMill);
+  private static final SessionHandler session = context.getSessionHandler();
+  static {
+    httpconf.setSendServerVersion(false);  // security
+    server.addConnector(connector);
+    server.setHandler(context);
   }
-  ////-> connector + session
-  private static int httpConTime=30000;
-  public static void http(int connectorTimeoutMill, int sessionTimeoutSec) {
-    httpConTime = connectorTimeoutMill;
-    handler.getSessionHandler().setMaxInactiveInterval(sessionTimeoutSec);
+  //-> to setup
+  public static QueuedThreadPool thread() { return thread; }
+  public static ServerConnector connector() { return connector; }
+  public static SessionHandler session() { return session; }
+  public static ServletContextHandler context() { return context; }
+  public static void app(App app, String publishPath) {
+    ServletHolder sh = new ServletHolder(app.servlet());
+    context.addServlet(sh, publishPath);
   }
-  ////-> context path
-  private static String ctxtpath = "/";
-  public static void context(String path) {
-    ctxtpath=path;
+  public static void doc(String classpathDir, String publishPath) {
+    doc(Resource.newClassPathResource(classpathDir), publishPath);
   }
-  ////-> static files
-  public static void location(String classpathdir) {
-    handler.setBaseResource(Resource.newClassPathResource(classpathdir));
+  public static void doc(File dir, String publishPath) {
+    doc(Resource.newResource(dir), publishPath);
   }
-  public static void location(File dir) {
-    handler.setBaseResource(Resource.newResource(dir));
+  private static void doc(Resource staticFileDir, String publishPath) {
+    context.setBaseResource(staticFileDir);
+    ServletHolder sh = new ServletHolder(new DefaultServlet());
+    sh.setInitParameter("dirAllowed", "false");  // security
+    context.addServlet(sh, publishPath);
   }
-
-  //-> start
+  //-> to start
   public static void listen(int port) { listen(null, port); }
   public static void listen(String host, int port) {
-    HttpConfiguration conf = new HttpConfiguration();
-    conf.setSendServerVersion(false);  // security
-    ServerConnector http = new ServerConnector(
-      server, new HttpConnectionFactory(conf)
-    );
-    http.setIdleTimeout(httpConTime);
-    http.setHost(host);
-    http.setPort(port);
-    server.addConnector(http);
-    handler.setContextPath(ctxtpath);
-    handler.addServlet(servlet(), "/");
-    try {
-      server.start();
-      server.join();
-    } catch (Exception e) {
+    start(host, port);
+    join();
+  }
+  private static void start(String host, int port) {
+    connector.setHost(host);
+    connector.setPort(port);
+    try { server.start();}
+    catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
-
-  //-> servlet
-  private static ServletHolder servlet() {
-    ServletHolder sh = new ServletHolder();
-    if (server == null) {
-      sh.setServlet(new App.Servlet());
-    } else {
-      sh.setServlet(new AppDocServlet());
-      sh.setInitParameter("dirAllowed", "false");  // security
-    }
-    return sh;
-  }
-  @SuppressWarnings("serial")
-  public static class AppDocServlet extends DefaultServlet {
-    @Override protected void doGet(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doGet(req, res);
-      if (!done) super.doGet(req, res); // static contents
-    }
-    @Override protected void doPost(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doPost(req, res);
-      if (!done) super.doPost(req, res); // static contents
-    }
-    @Override protected void doPut(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doPut(req, res);
-      if (!done) res.sendError(404);
-    }
-    @Override protected void doDelete(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      boolean done = App.doDelete(req, res);
-      if (!done) res.sendError(404);
+  private static void join() {
+    try { server.join(); }
+    catch (InterruptedException e) {
+      throw new RuntimeException(e);
     }
   }
 }
