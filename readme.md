@@ -14,7 +14,7 @@
     <dependency>
       <groupId>com.github.mamorum</groupId>
       <artifactId>kaze</artifactId>
-      <version>0.2.3</version>
+      <version>0.2.4</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -25,16 +25,22 @@
 
 ### 2. Create code
 ```java
-package kaze.sample.hw;
+package kaze.sample.html;
 
 import kaze.App;
 import kaze.server.Jetty;
 
-public class Main {
+// To check:
+//  app -> http://localhost:8080/app/hello
+//  doc -> http://localhost:8080/ (or /index.html)
+public class JettyApp {
   public static void main(String[] args) {
-    App.get("/", (req, res) -> {
-      res.html("<p>Hello World</p>");
+    App app = new App();
+    app.get("/hello", (req, res) -> {
+      res.html("<p>Hello World from Jetty.</p>");
     });
+    Jetty.app(app, "/app/*");
+    Jetty.doc("/public", "/");
     Jetty.listen(8080);
   }
 }
@@ -43,16 +49,16 @@ public class Main {
 ### 3. Run
 ```
 $ mvn compile
-$ mvn exec:java -Dexec.mainClass=kaze.sample.hw.Main
+$ mvn exec:java -Dexec.mainClass=kaze.sample.html.JettyApp
 ```
 
 ### 4. Check
 ```
-$ curl -s -X GET http://localhost:8080/
-<p>Hello World</p>
+$ curl -s -X GET http://localhost:8080/app/hello
+<p>Hello World from Jetty.</p>
 ```
 
 ## Samples
-- [kaze-sample-hw](https://github.com/mamorum/kaze-sample/tree/master/hw): Above Hello World Example.
+- [kaze-sample-hw](https://github.com/mamorum/kaze-sample/tree/master/hw): hello world examples, including html and json responses.
 - [kaze-sample-rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): web app accessing relational database, packaged as fatjar.
-- [kaze-sample-war](https://github.com/mamorum/kaze-sample/tree/master/server): web app, packaged as war.
+- [kaze-sample-war](https://github.com/mamorum/kaze-sample/tree/master/war): web app, packaged as war.
