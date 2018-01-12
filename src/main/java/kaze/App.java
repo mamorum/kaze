@@ -3,7 +3,9 @@ package kaze;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,43 +14,80 @@ import javax.servlet.http.HttpServletResponse;
 
 public class App {
   //-> routing
-  private final List<Path>
-    get=new ArrayList<>(), post=new ArrayList<>(),
-    put=new ArrayList<>(), delete=new ArrayList<>();
+  private final Map<String, Func>
+    getUri=new HashMap<>(), postUri=new HashMap<>(),
+    putUri=new HashMap<>(), deleteUri=new HashMap<>();
+  private final List<Route>
+    getRoute=new ArrayList<>(), postRoute=new ArrayList<>(),
+    putRoute=new ArrayList<>(), deleteRoute=new ArrayList<>();
   ////-> add
-  public void get(String path, Func f) { add(path, f, get); }
-  public void post(String path, Func f) { add(path, f, post); }
-  public void put(String path, Func f) { add(path, f, put); }
-  public void delete(String path, Func f) { add(path, f, delete); }
-  private void add(String p, Func f, List<Path> paths) {
-    paths.add(Path.of(p, f));
+  public void get(String path, Func f) { add(path, f, getUri, getRoute); }
+  public void post(String path, Func f) { add(path, f, postUri, postRoute); }
+  public void put(String path, Func f) { add(path, f, putUri, putRoute); }
+  public void delete(String path, Func f) { add(path, f, deleteUri, deleteRoute); }
+  private void add(String path, Func f, Map<String, Func> uri, List<Route> route) {
+    if (path.indexOf(':') == -1) uri.put(path, f);  // ex. /hello
+    else route.add(new Route(Path.of(path), f));  // dynamic uri -> /emp/12, /emp/13
   }
   ////-> run
+  String path(HttpServletRequest req) {
+    String c = req.getContextPath();
+    String s = req.getServletPath();
+    String u = req.getRequestURI();
+    String path = u.substring(
+      c.length() + s.length()
+    );
+    System.out.println(
+      "ContextPath=" + c +
+      ", ServletPath=" + s +
+      ", RequestURI=" + u +
+      ", Path=" + path
+    );
+    return path;
+    // return (requestUri - (contextPath + servletPath))
+    //// ex.
+    ////  requestUri: /context/servlet/a/b
+    ////  contextPath: /context
+    ////  servletPath: /servlet
+    ////  path: /a/b
+  }
   public boolean runGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(get, req, res); }
+    throws ServletException, IOException { return exec(getUri, getRoute, req, res); }
   public boolean runPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(post, req, res); }
+    throws ServletException, IOException { return exec(postUri, postRoute, req, res); }
   public boolean runPut(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(put, req, res); }
+    throws ServletException, IOException { return exec(putUri, putRoute, req, res); }
   public boolean runDelete(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(delete, req, res); }
+    throws ServletException, IOException { return exec(deleteUri, deleteRoute, req, res); }
   private boolean exec(
-    List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
+    Map<String, Func> uri, List<Route> routes,
+    HttpServletRequest sreq, HttpServletResponse sres)
   throws ServletException, IOException {
-    if (paths.isEmpty()) return false;
-    String[] ptree = Path.tree(sreq);
-    Path path = find(ptree, paths);
-    if (path == null) return false;
-    encoding(sreq, sres);
-    Req req = new Req(sreq, ptree, path, json2obj);
+    String path = path(sreq);
+    Func func = uri.get(path);
+    if (func != null) return exec(sreq, sres, func, null, null);
+    //-> check dynamic url
+    if (path.length() < 2) return false;  // blank path "" & root path "/" -> return false
+    System.out.println("URI: dynamic");
+    String[] ptree = Path.tree(path, 1);
+    Route route = find(ptree, routes);
+    if (route == null) return false;
+    return exec(sreq, sres, route.func, ptree, route.path.index);
+  }
+  public boolean exec(
+    HttpServletRequest sreq, HttpServletResponse sres, Func func,
+    String[] pathTree, Map<String, Integer> pathIndex
+  ) throws ServletException, IOException {
+    Req req = new Req(sreq, json2obj, pathTree, pathIndex);
     Res res = new Res(sres, obj2json);
-    try { path.func.exec(req, res); }
+    encoding(req, res);
+    try { func.exec(req, res); }
     catch (Exception e) { throw new ServletException(e); }
     return true;
   }
-  private Path find(String[] ptree, List<Path> from) {
-    for (Path p: from) {
-      if (p.match(ptree)) return p;
+  private Route find(String[] ptree, List<Route> from) {
+    for (Route r: from) {
+      if (r.path.match(ptree)) return r;
     }
     return null;
   }
@@ -84,15 +123,12 @@ public class App {
   }
   //-> encoding
   public String encoding = "utf-8";
-  private void encoding(
-    HttpServletRequest req, HttpServletResponse res)
-  throws UnsupportedEncodingException
-  {
+  private void encoding(Req req, Res res) throws UnsupportedEncodingException {
     if (encoding == null) return;
-    if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(encoding);
+    if (req.srv.getCharacterEncoding() == null) {
+      req.srv.setCharacterEncoding(encoding);
     }
-    res.setCharacterEncoding(encoding);
+    res.srv.setCharacterEncoding(encoding);
   }
   //-> json
   Json2obj json2obj = App::noJson2obj;

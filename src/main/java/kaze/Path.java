@@ -8,10 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 public class Path {
   public String[] tree;
   public Map<String, Integer> index;  // for path param
-  public Func func;
+
+  public Path() { super(); };
+  public Path(String[] tree, Map<String, Integer> index) {
+    this.tree=tree; this.index=index;
+  }
 
   //-> for register (+analyze path param)
-  public static Path of(String path, Func f) {
+  public static Path of(String path) {
     Path p = new Path();
     p.tree = tree(path, 1);
     p.index = new HashMap<>();
@@ -20,7 +24,6 @@ public class Path {
         p.index.put(p.tree[i], i);
       }
     }
-    p.func = f;
     return p;
   }
 
@@ -35,7 +38,7 @@ public class Path {
   }
 
   //-> common
-  private static String[] tree(String path, int ltrimLen) {
+  public static String[] tree(String path, int ltrimLen) {
     return path.substring(ltrimLen).split("/");
   }
   public boolean match(String[] ptree) {

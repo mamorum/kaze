@@ -10,16 +10,20 @@ import kaze.App.Json2obj;
 
 public class Req {
   public HttpServletRequest srv;
+  private Json2obj json2obj;
   private String[] pathTree;
   private Map<String, Integer> pathIndex;
-  private Json2obj json2obj;
 
-  public Req(HttpServletRequest r,
-    String[] ptree, Path path, Json2obj j2o) {
+  public Req(HttpServletRequest r, Json2obj j2o) {
+    this.srv = r; this.json2obj=j2o;
+  }
+  public Req(HttpServletRequest r, Json2obj j2o,
+    String[] pathTree, Map<String, Integer> pathIndex
+  ) {
     this.srv = r;
-    this.pathTree=ptree;
-    this.pathIndex=path.index;
     this.json2obj=j2o;
+    this.pathTree=pathTree;
+    this.pathIndex=pathIndex;
   }
 
   public String body() {
