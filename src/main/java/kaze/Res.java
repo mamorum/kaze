@@ -1,6 +1,7 @@
 package kaze;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,9 +13,14 @@ import kaze.App.Obj2json;
 public class Res {
   public HttpServletResponse srv;
   private Obj2json obj2json;
+
   public Res(HttpServletResponse r, Obj2json o2j) {
-    this.srv = r;
-    this.obj2json = o2j;
+    this.srv = r; this.obj2json = o2j;
+  }
+  public static Res from(HttpServletResponse r, App ap)
+    throws UnsupportedEncodingException {
+    r.setCharacterEncoding(ap.encoding);
+    return new Res(r, ap.o2j);
   }
 
   public Res status(int status) {

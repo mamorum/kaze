@@ -2,6 +2,7 @@ package kaze;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,13 +11,22 @@ import kaze.App.Json2obj;
 
 public class Req {
   public HttpServletRequest srv;
-  private Json2obj json2obj;
-  private String[] pathTree;
-  private Map<String, Integer> pathIndex;
+  Json2obj json2obj;
+  String[] pathTree;
+  Map<String, Integer> pathIndex;
 
   public Req(HttpServletRequest r, Json2obj j2o) {
     this.srv = r; this.json2obj=j2o;
   }
+  public static Req from(HttpServletRequest r, App ap)
+    throws UnsupportedEncodingException {
+    if (r.getCharacterEncoding() == null) {
+      r.setCharacterEncoding(ap.encoding);
+    }
+    return new Req(r, ap.j2o);
+  }
+
+  // TODO delete
   public Req(HttpServletRequest r, Json2obj j2o,
     String[] pathTree, Map<String, Integer> pathIndex
   ) {

@@ -37,7 +37,7 @@ public class Jetty {
   public static SessionHandler session() { return session; }
   public static ServletContextHandler context() { return context; }
   public static void app(App app, String publishPath) {
-    ServletHolder sh = new ServletHolder(app.servlet());
+    ServletHolder sh = new ServletHolder(app);
     context.addServlet(sh, publishPath);
   }
   public static void doc(String classpathDir, String publishPath) {

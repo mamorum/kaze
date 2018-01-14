@@ -10,16 +10,16 @@ public class AppServer {
     App app = new App();
     Gson gson = new Gson();
     app.parser(gson::fromJson, gson::toJson);
-    app.get("/", (req, res) -> {
+    app.get.add("/", (req, res) -> {
       res.json("msg", "Hello");
     });
-    app.get("/id/:id", (req, res) -> {
+    app.get.add("/id/:id", (req, res) -> {
       res.json("id", req.path(":id"));
     });
-    app.get("/err", (req, res) -> {
+    app.get.add("/err", (req, res) -> {
       throw new Exception("Exception");
     });
-    app.get("/err/run", (req, res) -> {
+    app.get.add("/err/run", (req, res) -> {
       throw new RuntimeException("Runtime Exception");
     });
     Jetty.app(app, "/*");
