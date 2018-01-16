@@ -11,8 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class Route {
+  //-> common
   List<Path> staticUri = new ArrayList<>();
   List<Path> dynamicUri = new ArrayList<>();
+  String[] tree(String uri) {
+    return uri.substring(1).split("/");
+  }
+  //-> add function
   public void add(String path, Func f) {
     if (path.indexOf(':') == -1) staticUri.add(new Path(path, f));  // ex. /hello
     else dynamicUri.add(path(path, f));  // ex. /emp/:id -> /emp/12, /emp/13
@@ -25,50 +30,43 @@ public class Route {
     }
     return new Path(tree, index, func);
   }
-  public String[] tree(String uri) {
-    if (uri.length() < 2) { // uri -> "" or "/"
-      return null;
-    }
-    return uri.substring(1).split("/");
-  }
-  private static String uri(HttpServletRequest i) {
-    String c = i.getContextPath(); //-> /ctx
-    String s = i.getServletPath(); //-> /srv
-    String u = i.getRequestURI(); //-> /ctx/srv/one/two
-    return u.substring(c.length() + s.length()); //-> /one/two
-  }
+  //-> run function
   public boolean run(
     HttpServletRequest req, HttpServletResponse res, Conf conf
   ) throws ServletException, IOException {
     String uri = uri(req);
-    Path path = find(uri);
-    if (path != null) {
-      Req r = Req.from(req, uri, null, null, conf);
-      return run(path.func, r, res, conf);
+    String[] tree = null;
+    Path path = findStatic(uri);
+    if (path == null) {
+      if (isRoot(uri)) return false;
+      tree = tree(uri);
+      path = findDynamic(tree);
+      if (path == null) return false;
     }
-    String[] tree = tree(uri);
-    path = find(tree);
-    if (path != null) {
-      Req r = Req.from(req, uri, tree, path.index, conf);
-      return run(path.func, r, res, conf);
-    }
-    return false;
-  }
-  boolean run(Func f, Req req, HttpServletResponse o, Conf c)
-    throws ServletException, IOException {
-    Res res = Res.from(o, c);
-    try { f.exec(req, res);  }
+    Req i = Req.from(req, uri, tree, path.index, conf);
+    Res o = Res.from(res, conf);
+    try { path.func.exec(i, o);  }
     catch (Exception e) { throw new ServletException(e); }
     return true;
   }
-  private Path find(String uri) {
+  private String uri(HttpServletRequest i) {
+    String c = i.getContextPath(); //-> /ctx
+    String s = i.getServletPath(); //-> /srv
+    String u = i.getRequestURI(); //-> /ctx/srv/one/two
+    String uri = u.substring(c.length() + s.length()); //-> /one/two
+    if (uri.length() == 0) return "/"; //-> convert "" to "/"
+    else return uri;
+  }
+  private boolean isRoot(String uri) {
+    return (uri.length() < 2); //-> uri is "/"
+  }
+  private Path findStatic(String uri) {
     for (Path p: staticUri) {
       if (uri.equals(p.uri)) return p;
     }
     return null;
   }
-  public Path find(String[] tree) {
-    if (tree == null) return null; // uri -> "" or "/"
+  public Path findDynamic(String[] tree) {
     for (Path p: dynamicUri) {
       if (p.tree.length != tree.length) return null;
       for (int i=0; i<p.tree.length; i++) {

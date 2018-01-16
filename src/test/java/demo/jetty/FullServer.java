@@ -37,16 +37,16 @@ public class FullServer {
       else res.json("isNew", false);;
     });
     Gson gson = new Gson();
-    app.parser(gson::fromJson, gson::toJson);
+    app.conf.parser(gson::fromJson, gson::toJson);
     //-> Jetty settings
-    Jetty.thread().setMaxThreads(20);
-    Jetty.thread().setMinThreads(20);
-    Jetty.thread().setIdleTimeout(500000);  //<- msec
-    Jetty.connector().setIdleTimeout(60000);  //<- msec
-    Jetty.session().setMaxInactiveInterval(
+    Jetty.thread.setMaxThreads(20);
+    Jetty.thread.setMinThreads(20);
+    Jetty.thread.setIdleTimeout(500000);  //<- msec
+    Jetty.connector.setIdleTimeout(60000);  //<- msec
+    Jetty.session.setMaxInactiveInterval(
       300 //<- session timeout sec (300=5min)
     );
-    Jetty.context().setContextPath("/");
+    Jetty.context.setContextPath("/");
     addServletComponent();
     addWebsocketComponent();
     Jetty.app(app, "/app/*");
@@ -57,18 +57,18 @@ public class FullServer {
     ServletHolder sh = new ServletHolder(new HelloServlet());
     sh.setAsyncSupported(true);
     // TODO set async servlet.
-    Jetty.context().addServlet(HelloServlet.class, "/hello");
-    Jetty.context().addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
-    Jetty.context().addEventListener(new RequestListener());
-    Jetty.context().addEventListener(new ContextListener());
-    Jetty.session().addEventListener(new SessionListener());
+    Jetty.context.addServlet(HelloServlet.class, "/hello/*");
+    Jetty.context.addFilter(HelloLogFilter.class, "/hello", EnumSet.of(DispatcherType.REQUEST));
+    Jetty.context.addEventListener(new RequestListener());
+    Jetty.context.addEventListener(new ContextListener());
+    Jetty.session.addEventListener(new SessionListener());
     //<- HttpSessionListener needs to be added to SessionHandler.
   }
   private static void addWebsocketComponent()
     throws ServletException, DeploymentException
   {
     ServerContainer ws =
-      WebSocketServerContainerInitializer.configureContext(Jetty.context());
+      WebSocketServerContainerInitializer.configureContext(Jetty.context);
     ws.addEndpoint(ChatSocket.class);
   }
 }

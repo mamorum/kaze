@@ -16,26 +16,22 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import kaze.App;
 
 public class Jetty {
-  private Jetty() {};
-  private static final QueuedThreadPool thread = new QueuedThreadPool();
-  private static final Server server = new Server(thread);
-  private static final HttpConfiguration httpconf = new HttpConfiguration();
-  private static final ServerConnector connector = new ServerConnector(
+  Jetty() {};
+  public static final QueuedThreadPool thread = new QueuedThreadPool();
+  public static final Server server = new Server(thread);
+  public static final HttpConfiguration httpconf = new HttpConfiguration();
+  public static final ServerConnector connector = new ServerConnector(
     server, new HttpConnectionFactory(httpconf)
   );
-  private static final ServletContextHandler context
+  public static final ServletContextHandler context
     = new ServletContextHandler(ServletContextHandler.SESSIONS);
-  private static final SessionHandler session = context.getSessionHandler();
+  public static final SessionHandler session = context.getSessionHandler();
   static {
     httpconf.setSendServerVersion(false);  // security
     server.addConnector(connector);
     server.setHandler(context);
   }
   //-> to setup
-  public static QueuedThreadPool thread() { return thread; }
-  public static ServerConnector connector() { return connector; }
-  public static SessionHandler session() { return session; }
-  public static ServletContextHandler context() { return context; }
   public static void app(App app, String publishPath) {
     ServletHolder sh = new ServletHolder(app);
     context.addServlet(sh, publishPath);

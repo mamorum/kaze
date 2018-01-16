@@ -9,7 +9,7 @@ public class Env {
   public static final App app = new App();
   public static final Gson gson = new Gson();
   public static void initJsonParser() {
-    app.parser(gson::fromJson, gson::toJson);
+    app.conf.parser(gson::fromJson, gson::toJson);
   }
   static {
     Jetty.app(app, "/app/*");
