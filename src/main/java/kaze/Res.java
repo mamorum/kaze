@@ -8,7 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.App.Obj2json;
+import kaze.Conf.Obj2json;
 
 public class Res {
   public HttpServletResponse srv;
@@ -17,10 +17,10 @@ public class Res {
   public Res(HttpServletResponse r, Obj2json o2j) {
     this.srv = r; this.obj2json = o2j;
   }
-  public static Res from(HttpServletResponse r, App ap)
+  public static Res from(HttpServletResponse r, Conf c)
     throws UnsupportedEncodingException {
-    r.setCharacterEncoding(ap.encoding);
-    return new Res(r, ap.o2j);
+    r.setCharacterEncoding(c.encoding);
+    return new Res(r, c.o2j);
   }
 
   public Res status(int status) {

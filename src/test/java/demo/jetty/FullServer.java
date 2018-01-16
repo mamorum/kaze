@@ -25,13 +25,13 @@ import kaze.server.Jetty;
 public class FullServer {
   public static void main(String[] args) throws Exception {
     App app = new App();
-    app.get("/", (req, res) -> {
+    app.get.add("/", (req, res) -> {
       res.html("<p>Hello World</p>");
     });
-    app.get("/err", (req, res) -> {
+    app.get.add("/err", (req, res) -> {
       throw new Exception("/err");
     });
-    app.get("/ssn", (req, res) -> {
+    app.get.add("/ssn", (req, res) -> {
       HttpSession ss = req.srv.getSession(true);
       if (ss.isNew()) res.json("isNew", true);
       else res.json("isNew", false);;

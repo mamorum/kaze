@@ -7,33 +7,31 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.App.Json2obj;
+import kaze.Conf.Json2obj;
 
 public class Req {
   public HttpServletRequest srv;
-  Json2obj json2obj;
+  public String uri;
   String[] pathTree;
   Map<String, Integer> pathIndex;
+  Json2obj json2obj;
 
-  public Req(HttpServletRequest r, Json2obj j2o) {
-    this.srv = r; this.json2obj=j2o;
+  public Req(
+    HttpServletRequest r, String uri, String[] tree,
+    Map<String, Integer> index, Json2obj j2o
+  ) {
+    this.srv=r; this.uri=uri; this.pathTree=tree;
+    this.pathIndex=index; this.json2obj=j2o;
   }
-  public static Req from(HttpServletRequest r, App ap)
+  public static Req from(
+    HttpServletRequest r, String uri, String[] tree,
+    Map<String, Integer> index, Conf c
+  )
     throws UnsupportedEncodingException {
     if (r.getCharacterEncoding() == null) {
-      r.setCharacterEncoding(ap.encoding);
+      r.setCharacterEncoding(c.encoding);
     }
-    return new Req(r, ap.j2o);
-  }
-
-  // TODO delete
-  public Req(HttpServletRequest r, Json2obj j2o,
-    String[] pathTree, Map<String, Integer> pathIndex
-  ) {
-    this.srv = r;
-    this.json2obj=j2o;
-    this.pathTree=pathTree;
-    this.pathIndex=pathIndex;
+    return new Req(r, uri, tree, index, c.j2o);
   }
 
   public String body() {
