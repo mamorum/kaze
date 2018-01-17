@@ -12,66 +12,79 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Route {
   //-> common
-  List<Path> staticUri = new ArrayList<>();
-  List<Path> dynamicUri = new ArrayList<>();
-  String[] tree(String uri) {
-    return uri.substring(1).split("/");
+  private List<Path> staticPath = new ArrayList<>();
+  private List<Path> dynamicPath = new ArrayList<>();
+  private String[] split(String appPath) {
+    // "/path1/path2" -> {"path1", "path2"}
+    return appPath.substring(1).split("/");
   }
-  //-> add function
-  public void add(String path, Func f) {
-    if (path.indexOf(':') == -1) staticUri.add(new Path(path, f));  // ex. /hello
-    else dynamicUri.add(path(path, f));  // ex. /emp/:id -> /emp/12, /emp/13
-  }
-  Path path(String path, Func func) {
-    String[] tree = tree(path);
-    Map<String, Integer> index = new HashMap<>();
-    for (int i=0; i<tree.length; i++) {
-      if (tree[i].startsWith(":")) index.put(tree[i], i);
+  //-> add
+  public void add(String appPath, Func func) {
+    // TODO path の重複チェック
+    if (appPath.indexOf(':') > -1) {
+      String[] parts = split(appPath);
+      Map<String, Integer> index = analyze(parts);
+      dynamicPath.add(new Path(parts, index, func));
+    } else {
+      staticPath.add(new Path(appPath, func));
     }
-    return new Path(tree, index, func);
   }
-  //-> run function
+  private Map<String, Integer> analyze(String[] pathParts) {
+    Map<String, Integer> index = new HashMap<>();
+    for (int i=0; i<pathParts.length; i++) {
+      if (pathParts[i].startsWith(":")) {
+        index.put(pathParts[i], i);
+      }
+    }
+    return index;
+  }
+  //-> run
   public boolean run(
     HttpServletRequest req, HttpServletResponse res, Conf conf
   ) throws ServletException, IOException {
-    String uri = uri(req);
-    String[] tree = null;
-    Path path = findStatic(uri);
+    String[] pathParts = null;
+    String appPath = appPath(req);
+    Path path = findStatic(appPath);
     if (path == null) {
-      if (isRoot(uri)) return false;
-      tree = tree(uri);
-      path = findDynamic(tree);
+      if (isRoot(appPath)) return false;
+      pathParts = split(appPath);
+      path = findDynamic(pathParts);
       if (path == null) return false;
     }
-    Req i = Req.from(req, uri, tree, path.index, conf);
-    Res o = Res.from(res, conf);
-    try { path.func.exec(i, o);  }
+    Req rq = Req.from(req, appPath, pathParts, path.index, conf);
+    Res rs = Res.from(res, conf);
+    try { path.func.exec(rq, rs);  }
     catch (Exception e) { throw new ServletException(e); }
     return true;
   }
-  private String uri(HttpServletRequest i) {
-    String c = i.getContextPath(); //-> /ctx
-    String s = i.getServletPath(); //-> /srv
-    String u = i.getRequestURI(); //-> /ctx/srv/one/two
-    String uri = u.substring(c.length() + s.length()); //-> /one/two
-    if (uri.length() == 0) return "/"; //-> convert "" to "/"
-    else return uri;
+  private String appPath(HttpServletRequest req) {
+    String c = req.getContextPath(); //-> /ctxt
+    String s = req.getServletPath(); //-> /srvlt
+    String u = req.getRequestURI(); //-> /ctxt/srvlt/path1/path2
+    String appPath = u.substring( //-> /path1/path2
+      c.length() + s.length()
+    );
+    if (appPath.length() == 0) {
+      return "/"; // "" -> "/"
+    } else {
+      return appPath;
+    }
   }
-  private boolean isRoot(String uri) {
-    return (uri.length() < 2); //-> uri is "/"
+  private boolean isRoot(String appPath) {
+    return (appPath.length() < 2); // "/" -> true
   }
-  private Path findStatic(String uri) {
-    for (Path p: staticUri) {
-      if (uri.equals(p.uri)) return p;
+  private Path findStatic(String appPath) {
+    for (Path p: staticPath) {
+      if (appPath.equals(p.path)) return p;
     }
     return null;
   }
-  public Path findDynamic(String[] tree) {
-    for (Path p: dynamicUri) {
-      if (p.tree.length != tree.length) return null;
-      for (int i=0; i<p.tree.length; i++) {
-        if (p.tree[i].startsWith(":")) continue;
-        if (p.tree[i].equals(tree[i])) continue;
+  private Path findDynamic(String[] parts) {
+    for (Path p: dynamicPath) {
+      if (p.parts.length != parts.length) return null;
+      for (int i=0; i<p.parts.length; i++) {
+        if (p.parts[i].startsWith(":")) continue;
+        if (p.parts[i].equals(parts[i])) continue;
         return null;
       }
       return p;
