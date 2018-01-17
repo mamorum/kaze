@@ -16,7 +16,7 @@ public class ReqPathTest {
 
   //-> Test for Req#path(String)
   public static void reg_it_path_name() {
-    Env.app.get("/it/req/path/:name", (req, res) -> {
+    Env.app.get.add("/it/req/path/:name", (req, res) -> {
       String name = req.path(":name");
       res.write("text/plain", name);
     });
@@ -32,7 +32,7 @@ public class ReqPathTest {
 
   //-> Test for Req#path(int)
   public static void reg_it_path_index() {
-    Env.app.post("/it/req/path/:name/", (req, res) -> {
+    Env.app.post.add("/it/req/path/:name/", (req, res) -> {
       String name = req.path(3);
       res.write("text/plain", name);
     });

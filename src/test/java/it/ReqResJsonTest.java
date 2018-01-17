@@ -24,7 +24,7 @@ public class ReqResJsonTest {
 
   //-> Test for Req#json(Class<T>), Res#json(Object)
   public static void reg_it_json_person() {
-    Env.app.post("/it/json/person", (req, res) -> {
+    Env.app.post.add("/it/json/person", (req, res) -> {
       Person p = req.json(Person.class);
       p.ver = 1;
       res.json(p);
@@ -42,7 +42,7 @@ public class ReqResJsonTest {
 
   //-> Test for Res#json(Object...), size=2
   public static void reg_it_json_msg() {
-    Env.app.get("/it/json/msg", (req, res) -> {
+    Env.app.get.add("/it/json/msg", (req, res) -> {
       res.json("msg", "Hello");
     });
   }
@@ -57,7 +57,7 @@ public class ReqResJsonTest {
 
   //-> Test for Res#json(Object...), size=4
   public static void reg_it_json_msgs() {
-    Env.app.get("/it/json/msgs", (req, res) -> {
+    Env.app.get.add("/it/json/msgs", (req, res) -> {
       res.json(
         "status", 1,
         "history", new String[] {"stop", "start"}
