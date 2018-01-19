@@ -46,9 +46,6 @@ public class Req {
     // TODO ":" で始まるかチェック
     Integer i = index.get(name);
     if (i == null) throw new RuntimeException("...");
-    return path(i);
-  }
-  public String path(int index) {
-    return parts[index];
+    return parts[i];
   }
 }

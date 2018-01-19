@@ -12,20 +12,29 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Route {
   //-> common
+  private Path rootPath;
   private List<Path> staticPath = new ArrayList<>();
   private List<Path> dynamicPath = new ArrayList<>();
   private String[] split(String appPath) {
     String p = appPath.substring(1);
     return p.split("/"); // "/p1/p2" -> {"p1", "p2"}
   }
+  private boolean isRoot(String path) {
+    return ("/".equals(path) || "".equals(path));
+  }
   //-> add
   public void add(String path, Func func) {
     // TODO path の重複チェック
-    if (path.indexOf(':') == -1) { //-> no ':'
-      staticPath.add(new Path(path, func));
-    } else { //-> ':' exists
-      Path p = new Path(path, func);
-      dynamicPath.add(analyze(p));
+    if (isRoot(path)) {
+      rootPath = new Path(path, func);
+    } else {
+      //-> static ( path has no ':' )
+      if (path.indexOf(':') == -1) {
+        staticPath.add(new Path(path, func));
+      } else { //-> dynamic ( path has ':' )
+        Path p = new Path(path, func);
+        dynamicPath.add(analyze(p));
+      }
     }
   }
   private Path analyze(Path p) {
@@ -42,16 +51,21 @@ public class Route {
   public boolean run(
     HttpServletRequest req, HttpServletResponse res, Conf conf
   ) throws ServletException, IOException {
+    ////-> find
+    Path p; // target
     String[] parts = null;
     String path = appPath(req);
-    Path p = findStatic(path);
-    if (p == null) {
-      //-> root path is static (not dynamic)
-      if (isRoot(path)) return false;
-      parts = split(path);
-      p = findDynamic(parts);
-      if (p == null) return false;
+    if (isRoot(path)) {
+      p = rootPath;
+    } else {
+      p = findStatic(path);
+      if (p == null) {
+        parts = split(path);
+        p = findDynamic(parts);
+      }
     }
+    if (p == null) return false;
+    ////-> run
     encoding(req, res, conf.encoding);
     Req rq = new Req(req, path, parts, p.index, conf);
     Res rs = new Res(res, conf);
@@ -66,11 +80,7 @@ public class Route {
     String path = u.substring( //-> /path1/path2
       c.length() + s.length()
     );
-    if ("".equals(path)) return "/";
-    else return path;
-  }
-  private boolean isRoot(String path) {
-    return ("/".equals(path));
+    return path;
   }
   private Path findStatic(String path) {
     for (Path p: staticPath) {
