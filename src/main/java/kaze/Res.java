@@ -1,26 +1,17 @@
 package kaze;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.Conf.Obj2json;
-
 public class Res {
   public HttpServletResponse srv;
-  private Obj2json obj2json;
-
-  public Res(HttpServletResponse r, Obj2json o2j) {
-    this.srv = r; this.obj2json = o2j;
-  }
-  public static Res from(HttpServletResponse r, Conf c)
-    throws UnsupportedEncodingException {
-    r.setCharacterEncoding(c.encoding);
-    return new Res(r, c.o2j);
+  Conf conf;
+  public Res(HttpServletResponse r, Conf conf) {
+    this.srv = r; this.conf = conf;
   }
 
   public Res status(int status) {
@@ -51,7 +42,7 @@ public class Res {
     write("text/html", html);
   }
   public void json(Object obj) {
-    write("application/json", obj2json.exec(obj));
+    write("application/json", conf.o2j.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {

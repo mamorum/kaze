@@ -1,10 +1,10 @@
 package kaze;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,45 +15,47 @@ public class Route {
   private List<Path> staticPath = new ArrayList<>();
   private List<Path> dynamicPath = new ArrayList<>();
   private String[] split(String appPath) {
-    // "/path1/path2" -> {"path1", "path2"}
-    return appPath.substring(1).split("/");
+    String p = appPath.substring(1);
+    return p.split("/"); // "/p1/p2" -> {"p1", "p2"}
   }
   //-> add
-  public void add(String appPath, Func func) {
+  public void add(String path, Func func) {
     // TODO path の重複チェック
-    if (appPath.indexOf(':') > -1) {
-      String[] parts = split(appPath);
-      Map<String, Integer> index = analyze(parts);
-      dynamicPath.add(new Path(parts, index, func));
-    } else {
-      staticPath.add(new Path(appPath, func));
+    if (path.indexOf(':') == -1) { //-> no ':'
+      staticPath.add(new Path(path, func));
+    } else { //-> ':' exists
+      Path p = new Path(path, func);
+      dynamicPath.add(analyze(p));
     }
   }
-  private Map<String, Integer> analyze(String[] pathParts) {
-    Map<String, Integer> index = new HashMap<>();
-    for (int i=0; i<pathParts.length; i++) {
-      if (pathParts[i].startsWith(":")) {
-        index.put(pathParts[i], i);
+  private Path analyze(Path p) {
+    p.parts = split(p.path);
+    p.index = new HashMap<>();
+    for (int i=0; i<p.parts.length; i++) {
+      if (p.parts[i].startsWith(":")) {
+        p.index.put(p.parts[i], i);
       }
     }
-    return index;
+    return p;
   }
   //-> run
   public boolean run(
     HttpServletRequest req, HttpServletResponse res, Conf conf
   ) throws ServletException, IOException {
-    String[] pathParts = null;
-    String appPath = appPath(req);
-    Path path = findStatic(appPath);
-    if (path == null) {
-      if (isRoot(appPath)) return false;
-      pathParts = split(appPath);
-      path = findDynamic(pathParts);
-      if (path == null) return false;
+    String[] parts = null;
+    String path = appPath(req);
+    Path p = findStatic(path);
+    if (p == null) {
+      //-> root path is static (not dynamic)
+      if (isRoot(path)) return false;
+      parts = split(path);
+      p = findDynamic(parts);
+      if (p == null) return false;
     }
-    Req rq = Req.from(req, appPath, pathParts, path.index, conf);
-    Res rs = Res.from(res, conf);
-    try { path.func.exec(rq, rs);  }
+    encoding(req, res, conf.encoding);
+    Req rq = new Req(req, path, parts, p.index, conf);
+    Res rs = new Res(res, conf);
+    try { p.func.exec(rq, rs);  }
     catch (Exception e) { throw new ServletException(e); }
     return true;
   }
@@ -61,21 +63,18 @@ public class Route {
     String c = req.getContextPath(); //-> /ctxt
     String s = req.getServletPath(); //-> /srvlt
     String u = req.getRequestURI(); //-> /ctxt/srvlt/path1/path2
-    String appPath = u.substring( //-> /path1/path2
+    String path = u.substring( //-> /path1/path2
       c.length() + s.length()
     );
-    if (appPath.length() == 0) {
-      return "/"; // "" -> "/"
-    } else {
-      return appPath;
-    }
+    if ("".equals(path)) return "/";
+    else return path;
   }
-  private boolean isRoot(String appPath) {
-    return (appPath.length() < 2); // "/" -> true
+  private boolean isRoot(String path) {
+    return ("/".equals(path));
   }
-  private Path findStatic(String appPath) {
+  private Path findStatic(String path) {
     for (Path p: staticPath) {
-      if (appPath.equals(p.path)) return p;
+      if (path.equals(p.path)) return p;
     }
     return null;
   }
@@ -90,5 +89,13 @@ public class Route {
       return p;
     }
     return null;
+  }
+  private void encoding(
+    HttpServletRequest req, HttpServletResponse res, String enc)
+  throws UnsupportedEncodingException {
+    if (req.getCharacterEncoding() == null) {
+      req.setCharacterEncoding(enc);
+    }
+    res.setCharacterEncoding(enc);
   }
 }

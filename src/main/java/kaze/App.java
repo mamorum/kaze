@@ -15,18 +15,18 @@ public class App extends HttpServlet {
   public Route get=new Route(), post=new Route(),
     put=new Route(), delete=new Route();
   //-> servlet api
-  @Override protected void doGet(HttpServletRequest i, HttpServletResponse o)
-    throws ServletException, IOException { run(get, i, o); }
-  @Override protected void doPost(HttpServletRequest i, HttpServletResponse o)
-    throws ServletException, IOException { run(post, i, o); }
-  @Override protected void doPut(HttpServletRequest i, HttpServletResponse o)
-    throws ServletException, IOException { run(put, i, o); }
-  @Override protected void doDelete(HttpServletRequest i, HttpServletResponse o)
-    throws ServletException, IOException { run(delete, i, o); }
-  protected void run(Route r, HttpServletRequest i, HttpServletResponse o)
+  @Override protected void doGet(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(get, rq, rs); }
+  @Override protected void doPost(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(post, rq, rs); }
+  @Override protected void doPut(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(put, rq, rs); }
+  @Override protected void doDelete(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(delete, rq, rs); }
+  protected void run(Route rt, HttpServletRequest rq, HttpServletResponse rs)
     throws ServletException, IOException
   {
-    boolean run = r.run(i, o, conf);
-    if (!run) o.sendError(404);
+    boolean run = rt.run(rq, rs, conf);
+    if (!run) rs.sendError(404);
   }
 }

@@ -10,7 +10,4 @@ public class Path {
   public Path(String appPath, Func func) {
     this.path=appPath; this.func=func;
   }
-  public Path(String[] t, Map<String, Integer> i, Func f) {
-    parts=t; index=i; func=f;
-  }
 }
