@@ -37,7 +37,7 @@ public class FullServer {
       else res.json("isNew", false);;
     });
     Gson gson = new Gson();
-    app.conf.parser(gson::fromJson, gson::toJson);
+    app.json.parser(gson::fromJson, gson::toJson);
     //-> Jetty settings
     Jetty.thread.setMaxThreads(20);
     Jetty.thread.setMinThreads(20);

@@ -1,7 +1,6 @@
 package kaze;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,8 +56,8 @@ public class Route {
     return p;
   }
   //-> run
-  public boolean run(
-    HttpServletRequest req, HttpServletResponse res, Conf conf
+  boolean run(
+    HttpServletRequest req, HttpServletResponse res, App app
   ) throws ServletException, IOException {
     ////-> find
     Path p; // target
@@ -75,9 +74,8 @@ public class Route {
     }
     if (p == null) return false;
     ////-> run
-    encoding(req, res, conf.encoding);
-    Req rq = new Req(req, path, parts, p.index, conf);
-    Res rs = new Res(res, conf);
+    Req rq = new Req(req, path, parts, p.index, app.json);
+    Res rs = new Res(res, app.json);
     try { p.func.exec(rq, rs);  }
     catch (Exception e) { throw new ServletException(e); }
     return true;
@@ -108,13 +106,5 @@ public class Route {
       return p;
     }
     return null;
-  }
-  private void encoding(
-    HttpServletRequest req, HttpServletResponse res, String enc)
-  throws UnsupportedEncodingException {
-    if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(enc);
-    }
-    res.setCharacterEncoding(enc);
   }
 }

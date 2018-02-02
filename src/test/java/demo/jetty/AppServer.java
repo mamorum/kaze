@@ -9,7 +9,7 @@ public class AppServer {
   public static void main(String[] args) {
     App app = new App();
     Gson gson = new Gson();
-    app.conf.parser(gson::fromJson, gson::toJson);
+    app.json.parser(gson::fromJson, gson::toJson);
     app.get.add("/", (req, res) -> {
       res.json("msg", "Hello");
     });

@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Res {
   public HttpServletResponse srv;
-  Conf conf;
-  public Res(HttpServletResponse r, Conf conf) {
-    this.srv=r; this.conf=conf;
+  Json json;
+  public Res(HttpServletResponse r, Json json) {
+    this.srv=r; this.json=json;
   }
 
   public Res status(int status) {
@@ -42,7 +42,7 @@ public class Res {
     write("text/html", html);
   }
   public void json(Object obj) {
-    write("application/json", conf.o2j.exec(obj));
+    write("application/json", json.fromObj.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {

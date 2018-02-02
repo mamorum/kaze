@@ -28,7 +28,7 @@ public class Env {
       }
       checkNoJsonParser();
       Gson gson = new Gson();
-      app.conf.parser(gson::fromJson, gson::toJson);
+      app.json.parser(gson::fromJson, gson::toJson);
       init = true;
     }
   }
