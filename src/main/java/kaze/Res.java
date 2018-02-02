@@ -11,7 +11,7 @@ public class Res {
   public HttpServletResponse srv;
   Conf conf;
   public Res(HttpServletResponse r, Conf conf) {
-    this.srv = r; this.conf = conf;
+    this.srv=r; this.conf=conf;
   }
 
   public Res status(int status) {

@@ -21,6 +21,5 @@ public class Conf {
   private static String noO2j(Object obj) {
     throw new IllegalStateException(msg);
   }
-  private static String msg =
-    "No json parser found. Please set parser to App class.";
+  private static String msg = "No json parser found.";
 }

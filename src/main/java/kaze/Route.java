@@ -5,19 +5,28 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class Route {
-  //-> common
   private Path rootPath;
   private List<Path> staticPath = new ArrayList<>();
   private List<Path> dynamicPath = new ArrayList<>();
-  private String[] split(String appPath) {
-    String p = appPath.substring(1);
-    return p.split("/"); // "/p1/p2" -> {"p1", "p2"}
+  private class Path {
+    String path;
+    String[] parts;
+    Map<String, Integer> index;
+    Func func;
+    Path(String path, Func func) {
+      this.path=path; this.func=func;
+    }
+  }
+  private String[] split(String path) {
+    String p = path.substring(1); // "/1/2" -> "1/2"
+    return p.split("/"); // "1/2" -> {"1", "2"}
   }
   private boolean isRoot(String path) {
     return ("/".equals(path) || "".equals(path));
@@ -76,11 +85,11 @@ public class Route {
   private String appPath(HttpServletRequest req) {
     String c = req.getContextPath(); //-> /ctxt
     String s = req.getServletPath(); //-> /srvlt
-    String u = req.getRequestURI(); //-> /ctxt/srvlt/path1/path2
-    String path = u.substring( //-> /path1/path2
+    String r = req.getRequestURI(); //-> /ctxt/srvlt/1/2
+    String appPath = r.substring( //-> /1/2
       c.length() + s.length()
     );
-    return path;
+    return appPath;
   }
   private Path findStatic(String path) {
     for (Path p: staticPath) {

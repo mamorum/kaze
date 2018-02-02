@@ -16,7 +16,8 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import kaze.App;
 
 public class Jetty {
-  Jetty() {};
+  private Jetty() {};
+  //-> to customize jetty
   public static final QueuedThreadPool thread = new QueuedThreadPool();
   public static final Server server = new Server(thread);
   public static final HttpConfiguration httpconf = new HttpConfiguration();
@@ -27,20 +28,21 @@ public class Jetty {
     = new ServletContextHandler(ServletContextHandler.SESSIONS);
   public static final SessionHandler session = context.getSessionHandler();
   static {
-    httpconf.setSendServerVersion(false);  // security
+    httpconf.setSendServerVersion(false); // security
     server.addConnector(connector);
     server.setHandler(context);
   }
-  //-> to setup
+  //-> to publish app
   public static void app(App app, String publishPath) {
     ServletHolder sh = new ServletHolder(app);
     context.addServlet(sh, publishPath);
   }
+  //-> to publish static files
   public static void doc(String classpathDir, String publishPath) {
     doc(Resource.newClassPathResource(classpathDir), publishPath);
   }
-  public static void doc(File dir, String publishPath) {
-    doc(Resource.newResource(dir), publishPath);
+  public static void doc(File fileSystemDir, String publishPath) {
+    doc(Resource.newResource(fileSystemDir), publishPath);
   }
   private static void doc(Resource staticFileDir, String publishPath) {
     context.setBaseResource(staticFileDir);
