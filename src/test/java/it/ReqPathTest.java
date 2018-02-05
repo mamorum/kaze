@@ -15,7 +15,7 @@ public class ReqPathTest {
 
   //-> Test for Req#path(String)
   public static void reg_it_path_name() {
-    Env.app.get.add("/it/req/path/:name", (req, res) -> {
+    Env.app.get("/it/req/path/:name", (req, res) -> {
       String name = req.path(":name");
       res.write("text/plain", name);
     });

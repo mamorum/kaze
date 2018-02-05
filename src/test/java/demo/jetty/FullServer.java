@@ -25,19 +25,19 @@ import kaze.server.Jetty;
 public class FullServer {
   public static void main(String[] args) throws Exception {
     App app = new App();
-    app.get.add("/", (req, res) -> {
+    app.get("/", (req, res) -> {
       res.html("<p>Hello World</p>");
     });
-    app.get.add("/err", (req, res) -> {
+    app.get("/err", (req, res) -> {
       throw new Exception("/err");
     });
-    app.get.add("/ssn", (req, res) -> {
+    app.get("/ssn", (req, res) -> {
       HttpSession ss = req.srv.getSession(true);
       if (ss.isNew()) res.json("isNew", true);
       else res.json("isNew", false);;
     });
     Gson gson = new Gson();
-    app.json.parser(gson::fromJson, gson::toJson);
+    app.conv(gson::fromJson, gson::toJson);
     //-> Jetty settings
     Jetty.thread.setMaxThreads(20);
     Jetty.thread.setMinThreads(20);

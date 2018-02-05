@@ -26,9 +26,8 @@ public class Env {
       catch (InterruptedException e) {
         e.printStackTrace();
       }
-      checkNoJsonParser();
       Gson gson = new Gson();
-      app.json.parser(gson::fromJson, gson::toJson);
+      app.conv(gson::fromJson, gson::toJson);
       init = true;
     }
   }
@@ -38,47 +37,6 @@ public class Env {
       Thread.State state = env.getState();
       if (state == Thread.State.WAITING) break;
       else lock.wait(1000);  // server thread has not joined yet.
-    }
-  }
-  //-> for json parser
-  public static void checkNoJsonParser() {
-    //-> add function
-    app.get.add("/nojson/req", (req, res) -> {
-      try { req.json(String.class); }
-      catch (IllegalStateException e) {
-        System.out.println("Req#json: No Parser ->");
-        System.out.println(e);
-        res.status(501);
-      }
-    });
-    app.get.add("/nojson/res", (req, res) -> {
-      try { res.json("msg", "nojson"); }
-      catch (IllegalStateException e) {
-        System.out.println("Res#json: No Parser ->");
-        System.out.println(e);
-        res.status(501);
-      }
-    });
-    //-> check
-    ////-> request (from json)
-    HttpRes res = null;
-    int status = 0;
-    res = HttpReq.get(
-      "http://localhost:8080/app/nojson/req"
-    );
-    status = res.status;
-    res.close();
-    if (status == 200) {
-      throw new IllegalStateException("Json Parser found.");
-    }
-    ////-> response (to json)
-    res = HttpReq.get(
-      "http://localhost:8080/app/nojson/res"
-    );
-    status = res.status;
-    res.close();
-    if (status == 200) {
-      throw new IllegalStateException("Json Parser found.");
     }
   }
 }

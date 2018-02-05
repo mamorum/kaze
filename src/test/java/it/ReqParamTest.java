@@ -15,7 +15,7 @@ public class ReqParamTest {
 
   //-> Test for Req#param(String)
   public static void reg_it_param() {
-    Env.app.get.add("/it/req/param", (req, res) -> {
+    Env.app.get("/it/req/param", (req, res) -> {
       String name = req.param("name");
       res.write("text/plain", name);
     });

@@ -10,7 +10,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class Route {
+import kaze.App.Func;
+
+class Route {
   private Path rootPath;
   private List<Path> staticPath = new ArrayList<>();
   private List<Path> dynamicPath = new ArrayList<>();
@@ -31,7 +33,7 @@ public class Route {
     return ("/".equals(path) || "".equals(path));
   }
   //-> add
-  public void add(String path, Func func) {
+  void add(String path, Func func) {
     // TODO path の重複チェック
     if (isRoot(path)) {
       rootPath = new Path(path, func);
@@ -74,8 +76,8 @@ public class Route {
     }
     if (p == null) return false;
     ////-> run
-    Req rq = new Req(req, path, parts, p.index, app.json);
-    Res rs = new Res(res, app.json);
+    Req rq = new Req(req, path, parts, p.index, app);
+    Res rs = new Res(res, app);
     try { p.func.exec(rq, rs);  }
     catch (Exception e) { throw new ServletException(e); }
     return true;

@@ -11,13 +11,13 @@ public class Req {
   String path;
   String[] parts;
   Map<String, Integer> index;
-  Json json;
+  App app;
   public Req(
     HttpServletRequest r, String path, String[] parts,
-    Map<String, Integer> index, Json json
+    Map<String, Integer> index, App a
   ) {
     this.srv=r; this.path=path; this.parts=parts;
-    this.index=index; this.json=json;
+    this.index=index; this.app=a;
   }
 
   public String body() {
@@ -35,7 +35,7 @@ public class Req {
   }
 
   public <T> T json(Class<T> to) {
-    return json.toObj.exec(body(), to);
+    return app.j2o.exec(body(), to);
   }
 
   public String param(String name) {

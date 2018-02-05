@@ -10,11 +10,30 @@ import javax.servlet.http.HttpServletResponse;
 
 @SuppressWarnings("serial")
 public class App extends HttpServlet {
+  //-> functions
+  @FunctionalInterface
+  public interface Func { void exec(Req req, Res res) throws Exception; }
+  @FunctionalInterface
+  public interface Json2obj { <T> T exec(String json, Class<T> to); }
+  @FunctionalInterface
+  public interface Obj2json { String exec(Object obj); }
   //-> settings
-  public String encoding = "utf-8";
-  public Json json = new Json();
-  public Route get=new Route(), post=new Route(),
-    put=new Route(), delete=new Route();
+  ///-> encoding
+  String enc = "utf-8";
+  public void enc(String encoding) {
+    this.enc=encoding;
+  }
+  ///-> converter
+  Json2obj j2o; Obj2json o2j;
+  public void conv(Json2obj toObj, Obj2json toJson) {
+    this.j2o=toObj; this.o2j=toJson;
+  }
+  ///-> routing
+  Route get=new Route(), post=new Route(), put=new Route(), delete=new Route();
+  public void get(String path, Func func) { get.add(path, func); }
+  public void post(String path, Func func) { post.add(path, func); }
+  public void put(String path, Func func) { put.add(path, func); }
+  public void delete(String path, Func func) { delete.add(path, func); }
   //-> servlet api
   @Override protected void doGet(HttpServletRequest rq, HttpServletResponse rs)
     throws ServletException, IOException { run(get, rq, rs); }
@@ -35,8 +54,8 @@ public class App extends HttpServlet {
     HttpServletRequest req, HttpServletResponse res)
   throws UnsupportedEncodingException {
     if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(encoding);
+      req.setCharacterEncoding(enc);
     }
-    res.setCharacterEncoding(encoding);
+    res.setCharacterEncoding(enc);
   }
 }
