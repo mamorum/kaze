@@ -8,23 +8,23 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 public class Res {
-  public HttpServletResponse srv;
+  public HttpServletResponse $;
   App app;
   public Res(HttpServletResponse r, App a) {
-    this.srv=r; this.app=a;
+    this.$=r; this.app=a;
   }
 
   public Res status(int status) {
-    srv.setStatus(status);
+    $.setStatus(status);
     return this;
   }
 
   // Transfer-Encoding: Chunked
   public void stream(String contentType, String body) {
-    srv.setContentType(contentType);
+    $.setContentType(contentType);
     try {
-      srv.getOutputStream().print(body);
-      srv.flushBuffer();
+      $.getOutputStream().print(body);
+      $.flushBuffer();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -32,8 +32,8 @@ public class Res {
 
   // content-length
   public void write(String contentType, String body) {
-    srv.setContentType(contentType);
-    try { srv.getWriter().print(body); }
+    $.setContentType(contentType);
+    try { $.getWriter().print(body); }
     catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -58,7 +58,7 @@ public class Res {
   }
 
   public void redirect(int status, String url) {
-    srv.setStatus(status);
-    srv.setHeader("Location", srv.encodeRedirectURL(url));
+    $.setStatus(status);
+    $.setHeader("Location", $.encodeRedirectURL(url));
   }
 }

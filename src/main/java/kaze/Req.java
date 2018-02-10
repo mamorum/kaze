@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 public class Req {
-  public HttpServletRequest srv;
+  public HttpServletRequest $;
   String path;
   String[] parts;
   Map<String, Integer> index;
@@ -16,7 +16,7 @@ public class Req {
     HttpServletRequest r, String path, String[] parts,
     Map<String, Integer> index, App a
   ) {
-    this.srv=r; this.path=path; this.parts=parts;
+    this.$=r; this.path=path; this.parts=parts;
     this.index=index; this.app=a;
   }
 
@@ -24,7 +24,7 @@ public class Req {
     StringBuilder body = new StringBuilder();
     String line;
     try {
-      BufferedReader r = srv.getReader();
+      BufferedReader r = $.getReader();
       while ((line = r.readLine()) != null) {
         body.append(line);
       }
@@ -39,7 +39,7 @@ public class Req {
   }
 
   public String param(String name) {
-    return srv.getParameter(name);
+    return $.getParameter(name);
   }
 
   public String path(String name) {

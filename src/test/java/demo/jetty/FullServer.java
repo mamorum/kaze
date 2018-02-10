@@ -32,7 +32,7 @@ public class FullServer {
       throw new Exception("/err");
     });
     app.get("/ssn", (req, res) -> {
-      HttpSession ss = req.srv.getSession(true);
+      HttpSession ss = req.$.getSession(true);
       if (ss.isNew()) res.json("isNew", true);
       else res.json("isNew", false);;
     });
