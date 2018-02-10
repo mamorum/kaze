@@ -1,7 +1,6 @@
 # Release to the Central -> mvn -Dgpg.skip=false deploy
-pkg=com.github.mamorum:kaze:0.2.5:jar
+pkg=com.github.mamorum:kaze:0.2.6:jar
 depend=
-  javax.servlet:javax.servlet-api:3.1.0,
   org.eclipse.jetty.websocket:javax-websocket-server-impl:9.4.6.v20170531:provided,
   junit:junit:4.12:test,
   com.google.code.gson:gson:2.8.1:test,

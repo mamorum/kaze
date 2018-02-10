@@ -17,34 +17,32 @@ import kaze.App;
 
 public class Jetty {
   private Jetty() {};
-  private static final QueuedThreadPool thread = new QueuedThreadPool();
-  private static final Server server = new Server(thread);
-  private static final HttpConfiguration httpconf = new HttpConfiguration();
-  private static final ServerConnector connector = new ServerConnector(
+  //-> to customize jetty
+  public static final QueuedThreadPool thread = new QueuedThreadPool();
+  public static final Server server = new Server(thread);
+  public static final HttpConfiguration httpconf = new HttpConfiguration();
+  public static final ServerConnector connector = new ServerConnector(
     server, new HttpConnectionFactory(httpconf)
   );
-  private static final ServletContextHandler context
+  public static final ServletContextHandler context
     = new ServletContextHandler(ServletContextHandler.SESSIONS);
-  private static final SessionHandler session = context.getSessionHandler();
+  public static final SessionHandler session = context.getSessionHandler();
   static {
-    httpconf.setSendServerVersion(false);  // security
+    httpconf.setSendServerVersion(false); // security
     server.addConnector(connector);
     server.setHandler(context);
   }
-  //-> to setup
-  public static QueuedThreadPool thread() { return thread; }
-  public static ServerConnector connector() { return connector; }
-  public static SessionHandler session() { return session; }
-  public static ServletContextHandler context() { return context; }
+  //-> to publish app
   public static void app(App app, String publishPath) {
-    ServletHolder sh = new ServletHolder(app.servlet());
+    ServletHolder sh = new ServletHolder(app);
     context.addServlet(sh, publishPath);
   }
+  //-> to publish static files
   public static void doc(String classpathDir, String publishPath) {
     doc(Resource.newClassPathResource(classpathDir), publishPath);
   }
-  public static void doc(File dir, String publishPath) {
-    doc(Resource.newResource(dir), publishPath);
+  public static void doc(File fileSystemDir, String publishPath) {
+    doc(Resource.newResource(fileSystemDir), publishPath);
   }
   private static void doc(Resource staticFileDir, String publishPath) {
     context.setBaseResource(staticFileDir);

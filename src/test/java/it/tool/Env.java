@@ -7,14 +7,9 @@ import kaze.server.Jetty;
 
 public class Env {
   public static final App app = new App();
-  public static final Gson gson = new Gson();
-  public static void initJsonParser() {
-    app.parser(gson::fromJson, gson::toJson);
-  }
   static {
     Jetty.app(app, "/app/*");
     Jetty.doc("/public", "/");
-    initJsonParser();
   }
   private static volatile boolean init = false;
   private static final Object lock = new Object();
@@ -31,6 +26,8 @@ public class Env {
       catch (InterruptedException e) {
         e.printStackTrace();
       }
+      Gson gson = new Gson();
+      app.conv(gson::fromJson, gson::toJson);
       init = true;
     }
   }

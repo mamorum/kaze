@@ -2,116 +2,60 @@ package kaze;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class App {
-  //-> routing
-  private final List<Path>
-    get=new ArrayList<>(), post=new ArrayList<>(),
-    put=new ArrayList<>(), delete=new ArrayList<>();
-  ////-> add
-  public void get(String path, Func f) { add(path, f, get); }
-  public void post(String path, Func f) { add(path, f, post); }
-  public void put(String path, Func f) { add(path, f, put); }
-  public void delete(String path, Func f) { add(path, f, delete); }
-  private void add(String p, Func f, List<Path> paths) {
-    paths.add(Path.of(p, f));
+@SuppressWarnings("serial")
+public class App extends HttpServlet {
+  //-> functions
+  @FunctionalInterface
+  public interface Func { void exec(Req req, Res res) throws Exception; }
+  @FunctionalInterface
+  public interface Json2obj { <T> T exec(String json, Class<T> to); }
+  @FunctionalInterface
+  public interface Obj2json { String exec(Object obj); }
+  //-> settings
+  ///-> encoding
+  String enc = "utf-8";
+  public void enc(String encoding) {
+    this.enc=encoding;
   }
-  ////-> run
-  public boolean runGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(get, req, res); }
-  public boolean runPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(post, req, res); }
-  public boolean runPut(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(put, req, res); }
-  public boolean runDelete(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException { return exec(delete, req, res); }
-  private boolean exec(
-    List<Path> paths, HttpServletRequest sreq, HttpServletResponse sres)
+  ///-> converter
+  Json2obj j2o; Obj2json o2j;
+  public void conv(Json2obj toObj, Obj2json toJson) {
+    this.j2o=toObj; this.o2j=toJson;
+  }
+  ///-> routing
+  Route get=new Route(), post=new Route(), put=new Route(), delete=new Route();
+  public void get(String path, Func func) { get.add(path, func); }
+  public void post(String path, Func func) { post.add(path, func); }
+  public void put(String path, Func func) { put.add(path, func); }
+  public void delete(String path, Func func) { delete.add(path, func); }
+  //-> servlet api
+  @Override protected void doGet(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(get, rq, rs); }
+  @Override protected void doPost(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(post, rq, rs); }
+  @Override protected void doPut(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(put, rq, rs); }
+  @Override protected void doDelete(HttpServletRequest rq, HttpServletResponse rs)
+    throws ServletException, IOException { run(delete, rq, rs); }
+  protected void run(
+    Route rt, HttpServletRequest rq, HttpServletResponse rs)
   throws ServletException, IOException {
-    if (paths.isEmpty()) return false;
-    String[] ptree = Path.tree(sreq);
-    Path path = find(ptree, paths);
-    if (path == null) return false;
-    encoding(sreq, sres);
-    Req req = new Req(sreq, ptree, path, json2obj);
-    Res res = new Res(sres, obj2json);
-    try { path.func.exec(req, res); }
-    catch (Exception e) { throw new ServletException(e); }
-    return true;
+    encoding(rq, rs);
+    boolean run = rt.run(rq, rs, this);
+    if (!run) rs.sendError(404);
   }
-  private Path find(String[] ptree, List<Path> from) {
-    for (Path p: from) {
-      if (p.match(ptree)) return p;
-    }
-    return null;
-  }
-  //-> servlet
-  public Servlet servlet() {
-    Servlet s = new Servlet();
-    s.app = this;
-    return s;
-  }
-  @SuppressWarnings("serial")
-  public static class Servlet extends HttpServlet {
-    protected App app;
-    @Override protected void doGet(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      if (!app.runGet(req, res)) res.sendError(404);
-    }
-    @Override protected void doPost(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException{
-      if (!app.runPost(req, res)) res.sendError(404);
-    }
-    @Override protected void doPut(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      if (!app.runPut(req, res)) res.sendError(404);
-    }
-    @Override protected void doDelete(
-      HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
-      if (!app.runDelete(req, res)) res.sendError(404);
-    }
-  }
-  //-> encoding
-  public String encoding = "utf-8";
-  private void encoding(
+  protected void encoding(
     HttpServletRequest req, HttpServletResponse res)
-  throws UnsupportedEncodingException
-  {
-    if (encoding == null) return;
+  throws UnsupportedEncodingException {
     if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(encoding);
+      req.setCharacterEncoding(enc);
     }
-    res.setCharacterEncoding(encoding);
-  }
-  //-> json
-  Json2obj json2obj = App::noJson2obj;
-  Obj2json obj2json = App::noObj2json;
-  public void parser(Json2obj j2o, Obj2json o2j) {
-    json2obj=j2o;  obj2json=o2j;
-  }
-  @FunctionalInterface public static interface Json2obj {
-    <T> T exec(String json, Class<T> obj);
-  }
-  @FunctionalInterface public static interface Obj2json {
-    String exec(Object obj);
-  }
-  static String errMsg =
-    "No json parser found. Call `App#parser(Json2obj, Obj2json)` to set.";
-  static <T> T noJson2obj(String json, Class<T> obj) {
-    throw new IllegalStateException(errMsg);
-  }
-  static String noObj2json(Object obj) {
-    throw new IllegalStateException(errMsg);
+    res.setCharacterEncoding(enc);
   }
 }

@@ -7,27 +7,24 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.App.Obj2json;
-
 public class Res {
-  public HttpServletResponse srv;
-  private Obj2json obj2json;
-  public Res(HttpServletResponse r, Obj2json o2j) {
-    this.srv = r;
-    this.obj2json = o2j;
+  public HttpServletResponse $;
+  App app;
+  public Res(HttpServletResponse r, App a) {
+    this.$=r; this.app=a;
   }
 
   public Res status(int status) {
-    srv.setStatus(status);
+    $.setStatus(status);
     return this;
   }
 
   // Transfer-Encoding: Chunked
   public void stream(String contentType, String body) {
-    srv.setContentType(contentType);
+    $.setContentType(contentType);
     try {
-      srv.getOutputStream().print(body);
-      srv.flushBuffer();
+      $.getOutputStream().print(body);
+      $.flushBuffer();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -35,8 +32,8 @@ public class Res {
 
   // content-length
   public void write(String contentType, String body) {
-    srv.setContentType(contentType);
-    try { srv.getWriter().print(body); }
+    $.setContentType(contentType);
+    try { $.getWriter().print(body); }
     catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -45,7 +42,7 @@ public class Res {
     write("text/html", html);
   }
   public void json(Object obj) {
-    write("application/json", obj2json.exec(obj));
+    write("application/json", app.o2j.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {
@@ -61,7 +58,7 @@ public class Res {
   }
 
   public void redirect(int status, String url) {
-    srv.setStatus(status);
-    srv.setHeader("Location", srv.encodeRedirectURL(url));
+    $.setStatus(status);
+    $.setHeader("Location", $.encodeRedirectURL(url));
   }
 }
