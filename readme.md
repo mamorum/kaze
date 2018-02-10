@@ -32,7 +32,7 @@ This example is in [kaze-samples/hw](https://github.com/mamorum/kaze-sample/tree
 
 ### 2. Create code
 ```java
-package kaze.sample;
+package kaze.sample.hw;
 
 import com.google.gson.Gson;
 
@@ -59,16 +59,19 @@ public class Main {
 
 ### 3. Run
 ```
-$ mvn compile
-$ mvn exec:java -Dexec.mainClass=kaze.sample.Main
+hw> mvn compile
+hw> mvn exec:java -Dexec.mainClass=kaze.sample.hw.Main
 ```
 
 ### 4. Check
 ```
-$ curl -s -X GET http://localhost:8080/app/hello
+> curl -s -X GET http://localhost:8080/app/hello
 {"msg":"Hello, World."}
 ```
+
 
 ## Other Samples
 - [war](https://github.com/mamorum/kaze-sample/tree/master/war): depending only on servlet api, packaged as war.
 - [rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): accessing relational database, packaged as fatjar.
+- [tomcat](https://github.com/mamorum/kaze-sample/tree/master/tomcat): using embedded tomcat.
+- [jackson](https://github.com/mamorum/kaze-sample/tree/master/jackson): using [jackson](https://github.com/FasterXML/jackson) as a json converter.
