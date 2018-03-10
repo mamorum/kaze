@@ -41,8 +41,11 @@ public class Res {
   public void html(String html) {
     write("text/html", html);
   }
+  public void json(String json) {
+    write("application/json", json);
+  }
   public void json(Object obj) {
-    write("application/json", app.o2j.exec(obj));
+    json(app.o2j.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {

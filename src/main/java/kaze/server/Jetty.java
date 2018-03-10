@@ -56,7 +56,7 @@ public class Jetty {
     start(host, port);
     join();
   }
-  private static void start(String host, int port) {
+  public static void start(String host, int port) {
     connector.setHost(host);
     connector.setPort(port);
     try { server.start();}
@@ -64,7 +64,7 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
-  private static void join() {
+  public static void join() {
     try { server.join(); }
     catch (InterruptedException e) {
       throw new RuntimeException(e);
