@@ -32,23 +32,26 @@ public class Jetty {
     server.addConnector(connector);
     server.setHandler(context);
   }
+  // TODO app() と doc() で ServletHolder を返すようにする。
   //-> to publish app
-  public static void app(App app, String publishPath) {
+  public static ServletHolder app(App app, String publishPath) {
     ServletHolder sh = new ServletHolder(app);
     context.addServlet(sh, publishPath);
+    return sh;
   }
   //-> to publish static files
-  public static void doc(String classpathDir, String publishPath) {
-    doc(Resource.newClassPathResource(classpathDir), publishPath);
+  public static ServletHolder doc(String classpathDir, String publishPath) {
+    return doc(Resource.newClassPathResource(classpathDir), publishPath);
   }
-  public static void doc(File fileSystemDir, String publishPath) {
-    doc(Resource.newResource(fileSystemDir), publishPath);
+  public static ServletHolder doc(File fileSystemDir, String publishPath) {
+    return doc(Resource.newResource(fileSystemDir), publishPath);
   }
-  private static void doc(Resource staticFileDir, String publishPath) {
+  private static ServletHolder doc(Resource staticFileDir, String publishPath) {
     context.setBaseResource(staticFileDir);
     ServletHolder sh = new ServletHolder(new DefaultServlet());
     sh.setInitParameter("dirAllowed", "false");  // security
     context.addServlet(sh, publishPath);
+    return sh;
   }
   //-> to start
   public static void listen(int port) { listen(null, port); }
