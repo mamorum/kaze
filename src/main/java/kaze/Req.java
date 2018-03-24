@@ -8,10 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 
 public class Req {
   public HttpServletRequest $;
+  App app;
+  //-> for path param
   String path;
   String[] parts;
   Map<String, Integer> index;
-  App app;
   public Req(
     HttpServletRequest r, String path, String[] parts,
     Map<String, Integer> index, App a
@@ -33,19 +34,24 @@ public class Req {
     }
     return body.toString();
   }
-
   public <T> T json(Class<T> to) {
+    if (app.j2o == null) {
+      throw new IllegalStateException("No json parser found.");
+    }
     return app.j2o.exec(body(), to);
   }
-
   public String param(String name) {
     return $.getParameter(name);
   }
-
   public String path(String name) {
-    // TODO ":" で始まるかチェック
     Integer i = index.get(name);
-    if (i == null) throw new RuntimeException("...");
+    if (i == null) {
+      throw new IllegalArgumentException(
+        "Path parameter not found [arg=" + name + "]. " +
+        "Arg must be started with ':' " +
+        "(like \":id\", \":name\", etc)."
+      );
+    }
     return parts[i];
   }
 }
