@@ -10,15 +10,12 @@ public class Req {
   public HttpServletRequest $;
   App app;
   //-> for path param
-  String path;
-  String[] parts;
   Map<String, Integer> index;
+  String[] parts;
   public Req(
-    HttpServletRequest r, String path, String[] parts,
-    Map<String, Integer> index, App a
+    HttpServletRequest r, App a, Map<String, Integer> index, String[] parts
   ) {
-    this.$=r; this.path=path; this.parts=parts;
-    this.index=index; this.app=a;
+    this.$=r; this.app=a; this.index=index; this.parts=parts;
   }
 
   public String body() {
@@ -44,6 +41,7 @@ public class Req {
     return $.getParameter(name);
   }
   public String path(String name) {
+    // TODO index の null チェック？
     Integer i = index.get(name);
     if (i == null) {
       throw new IllegalArgumentException(

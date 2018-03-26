@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class ReqTest {
   @Test public void no_json_parser() {
-    Req req = new Req(null, null, null, null, new App());
+    Req req = new Req(null, new App(), null, null);
     try {
       req.json(Object.class);
       fail();
@@ -19,7 +19,7 @@ public class ReqTest {
   }
   @Test public void no_path_param() {
     Req req = new Req(
-      null, null, null, new HashMap<>(), new App()
+      null, new App(), new HashMap<>(), null
     );
     try {
       req.path("param");
