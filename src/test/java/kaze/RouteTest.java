@@ -69,4 +69,40 @@ public class RouteTest {
       msg("duplicate_dynamic_path_12() ->", e);
     }
   }
+  @Test public void duplicate_dynamic_path_21() {
+    app.delete("/cat/bob", null);
+    try {
+      app.delete("/cat/:name", null);
+      fail();
+    } catch (IllegalStateException e) {  //-> OK
+      msg("duplicate_dynamic_path_21() ->", e);
+    }
+  }
+  @Test public void duplicate_dynamic_path_22() {
+    app.get("/cat/:name", null);
+    try {
+      app.get("/cat/bob", null);
+      fail();
+    } catch (IllegalStateException e) {  //-> OK
+      msg("duplicate_dynamic_path_22() ->", e);
+    }
+  }
+  @Test public void duplicate_dynamic_path_31() {
+    app.get("/animal/cat/bob", null);
+    try {
+      app.get("/animal/:category/bob", null);
+      fail();
+    } catch (IllegalStateException e) {  //-> OK
+      msg("duplicate_dynamic_path_21() ->", e);
+    }
+  }
+  @Test public void duplicate_dynamic_path_32() {
+    app.get("/animal/:category/bob", null);
+    try {
+      app.get("/animal/cat/bob", null);
+      fail();
+    } catch (IllegalStateException e) {  //-> OK
+      msg("duplicate_dynamic_path_22() ->", e);
+    }
+  }
 }
