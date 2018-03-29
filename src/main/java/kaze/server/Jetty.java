@@ -32,7 +32,6 @@ public class Jetty {
     server.addConnector(connector);
     server.setHandler(context);
   }
-  // TODO app() と doc() で ServletHolder を返すようにする。
   //-> to publish app
   public static ServletHolder app(App app, String publishPath) {
     ServletHolder sh = new ServletHolder(app);
