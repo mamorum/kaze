@@ -18,19 +18,6 @@ public class Res {
     $.setStatus(status);
     return this;
   }
-
-  // Transfer-Encoding: Chunked
-  public void stream(String contentType, String body) {
-    $.setContentType(contentType);
-    try {
-      $.getOutputStream().print(body);
-      $.flushBuffer();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  // content-length
   public void write(String contentType, String body) {
     $.setContentType(contentType);
     try { $.getWriter().print(body); }
@@ -41,8 +28,14 @@ public class Res {
   public void html(String html) {
     write("text/html", html);
   }
+  public void json(String json) {
+    write("application/json", json);
+  }
   public void json(Object obj) {
-    write("application/json", app.o2j.exec(obj));
+    if (app.o2j == null) {
+      throw new IllegalStateException("No json parser found.");
+    }
+    json(app.o2j.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {
@@ -56,9 +49,18 @@ public class Res {
     }
     json(src);
   }
-
   public void redirect(int status, String url) {
     $.setStatus(status);
     $.setHeader("Location", $.encodeRedirectURL(url));
+  }
+  // TBD: Transfer-Encoding: Chunked
+  void stream(String contentType, String body) {
+    $.setContentType(contentType);
+    try {
+      $.getOutputStream().print(body);
+      $.flushBuffer();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

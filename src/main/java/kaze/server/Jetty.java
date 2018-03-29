@@ -33,22 +33,24 @@ public class Jetty {
     server.setHandler(context);
   }
   //-> to publish app
-  public static void app(App app, String publishPath) {
+  public static ServletHolder app(App app, String publishPath) {
     ServletHolder sh = new ServletHolder(app);
     context.addServlet(sh, publishPath);
+    return sh;
   }
   //-> to publish static files
-  public static void doc(String classpathDir, String publishPath) {
-    doc(Resource.newClassPathResource(classpathDir), publishPath);
+  public static ServletHolder doc(String classpathDir, String publishPath) {
+    return doc(Resource.newClassPathResource(classpathDir), publishPath);
   }
-  public static void doc(File fileSystemDir, String publishPath) {
-    doc(Resource.newResource(fileSystemDir), publishPath);
+  public static ServletHolder doc(File fileSystemDir, String publishPath) {
+    return doc(Resource.newResource(fileSystemDir), publishPath);
   }
-  private static void doc(Resource staticFileDir, String publishPath) {
+  private static ServletHolder doc(Resource staticFileDir, String publishPath) {
     context.setBaseResource(staticFileDir);
     ServletHolder sh = new ServletHolder(new DefaultServlet());
     sh.setInitParameter("dirAllowed", "false");  // security
     context.addServlet(sh, publishPath);
+    return sh;
   }
   //-> to start
   public static void listen(int port) { listen(null, port); }
@@ -56,7 +58,7 @@ public class Jetty {
     start(host, port);
     join();
   }
-  private static void start(String host, int port) {
+  public static void start(String host, int port) {
     connector.setHost(host);
     connector.setPort(port);
     try { server.start();}
@@ -64,7 +66,7 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
-  private static void join() {
+  public static void join() {
     try { server.join(); }
     catch (InterruptedException e) {
       throw new RuntimeException(e);
