@@ -11,10 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import kaze.App.Func;
 
 class Route {
-  private String method;
-  private Path rootPath;
+  private Path root;
   private List<Path> paths = new ArrayList<>();
-  public Route(String method) {this.method=method;}
   private String[] split(String path) {
     String p = path.substring(1); // "/1/2" -> "1/2"
     return p.split("/"); // "1/2" -> {"1", "2"}
@@ -22,42 +20,39 @@ class Route {
   private boolean isRoot(String path) {
     return ("/".equals(path) || "".equals(path));
   }
-  private boolean match( // is match both path parts ?
-    String[] add, String[] added, boolean checking
-  ) {
-    if (add.length != added.length) return false;
-    for (int i=0; i<added.length; i++) {
-      if (added[i].startsWith(":")) continue;
-      if (added[i].equals(add[i])) continue;
-      if (checking) {
-        if (add[i].startsWith(":")) continue;
+  private Path find(String[] parts, boolean checking) {
+    for (Path p: paths) {
+      if (p.match(parts, checking)) {
+        return p;
       }
-      return false;
     }
-    return true;
+    return null;
   }
   //-> add
   void add(String path, Func func) {
     if (isRoot(path)) {
-      if (rootPath != null) duplicated(path);
-      else rootPath = new Path(path, null, func);
-      return;
+      if (root == null) {
+        root = new Path(path, null, func);
+      } else {
+        duplicated(path, root);
+      }
     }
-    String[] parts = split(path);
-    if (exists(parts)) duplicated(path);
-    paths.add(new Path(path, parts, func));
-  }
-  private boolean exists(String[] parts) {
-    for (Path p: paths) {
-      if (match(parts, p.parts, true)) return true;
+    else { //-> not root path
+      String[] parts = split(path);
+      Path added = find(parts, true);
+      if (added == null) {
+        paths.add(
+          new Path(path, parts, func)
+        );
+      } else {
+        duplicated(path, added);
+      }
     }
-    return false;
   }
-  private void duplicated(String path) {
+  private void duplicated(String path, Path added) {
     throw new IllegalStateException(
-      "Path already exists. " +
-      "[path=" + path + "] " +
-      "[method=" + method + "] "
+      "Path duplicated [add=" + path + "] " +
+      "[added=" + added.path + "]."
     );
   }
   //-> run
@@ -69,10 +64,10 @@ class Route {
     String path = appPath(req);
     String[] parts = null; // splited path
     if (isRoot(path)) {
-      p = rootPath;
+      p = root;
     } else {
       parts = split(path);
-      p = find(parts);
+      p = find(parts, false);
     }
     if (p == null) return false;
     ///-> run
@@ -90,11 +85,5 @@ class Route {
       c.length() + s.length()
     );
     return appPath;
-  }
-  private Path find(String[] parts) {
-    for (Path p: paths) {
-      if (match(parts, p.parts, false)) return p;
-    }
-    return null;
   }
 }

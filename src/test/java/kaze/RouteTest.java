@@ -14,6 +14,7 @@ public class RouteTest {
     System.out.print("RouteTest#");
     System.out.println(method);
     System.out.println(e.getMessage());
+    //e.printStackTrace();
   }
   //-> root path
   @Test public void duplicate_root_path() {

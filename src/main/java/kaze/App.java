@@ -29,8 +29,7 @@ public class App extends HttpServlet {
     this.j2o=toObj; this.o2j=toJson;
   }
   ///-> routing
-  Route get=new Route("get"), post=new Route("post"),
-      put=new Route("put"), delete=new Route("delete");
+  Route get=new Route(), post=new Route(), put=new Route(), delete=new Route();
   public void get(String path, Func func) { get.add(path, func); }
   public void post(String path, Func func) { post.add(path, func); }
   public void put(String path, Func func) { put.add(path, func); }

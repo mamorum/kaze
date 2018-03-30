@@ -22,4 +22,16 @@ class Path {
       }
     }
   }
+  boolean match(String[] tParts, boolean checking) {
+    if (parts.length != tParts.length) return false;
+    for (int i=0; i<parts.length; i++) {
+      if (parts[i].startsWith(":")) continue;
+      if (parts[i].equals(tParts[i])) continue;
+      if (checking) {
+        if (tParts[i].startsWith(":")) continue;
+      }
+      return false;
+    }
+    return true;
+  }
 }
