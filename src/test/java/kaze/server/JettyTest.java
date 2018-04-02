@@ -1,17 +1,17 @@
-package it;
+package kaze.server;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import it.tool.Env;
-import it.tool.HttpReq;
-import it.tool.HttpRes;
+import tools.JettyEnv;
+import tools.HttpReq;
+import tools.HttpRes;
 
-public class JettyStaticFileTest {
+public class JettyTest {
   @BeforeClass public static void init() {
-    Env.init();
+    JettyEnv.init();
   }
-  @Test public void index() {
+  @Test public void static_file() {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/index.html"
     );

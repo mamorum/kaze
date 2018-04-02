@@ -18,6 +18,21 @@ public class Req {
     this.$=r; this.app=a; this.index=index; this.parts=parts;
   }
 
+  public String param(String name) {
+    return $.getParameter(name);
+  }
+  public String path(String name) {
+    // TODO index の null チェック？
+    Integer i = index.get(name);
+    if (i == null) {
+      throw new IllegalArgumentException(
+        "Path parameter not found [arg=" + name + "]. " +
+        "Arg must be started with ':' " +
+        "(like \":id\", \":name\", etc)."
+      );
+    }
+    return parts[i];
+  }
   public String body() {
     StringBuilder body = new StringBuilder();
     String line;
@@ -36,20 +51,5 @@ public class Req {
       throw new IllegalStateException("No json parser found.");
     }
     return app.j2o.exec(body(), to);
-  }
-  public String param(String name) {
-    return $.getParameter(name);
-  }
-  public String path(String name) {
-    // TODO index の null チェック？
-    Integer i = index.get(name);
-    if (i == null) {
-      throw new IllegalArgumentException(
-        "Path parameter not found [arg=" + name + "]. " +
-        "Arg must be started with ':' " +
-        "(like \":id\", \":name\", etc)."
-      );
-    }
-    return parts[i];
   }
 }

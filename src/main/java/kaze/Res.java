@@ -49,14 +49,15 @@ public class Res {
     }
     json(src);
   }
-  public void redirect(int status, String url) {
+  // 公開するか検討中 ->
+  void redirect(int status, String url) {
     $.setStatus(status);
     $.setHeader("Location", $.encodeRedirectURL(url));
   }
-  // TBD: Transfer-Encoding: Chunked
   void stream(String contentType, String body) {
     $.setContentType(contentType);
     try {
+      //-> Jetty だと Transfer-Encoding: Chunked になる
       $.getOutputStream().print(body);
       $.flushBuffer();
     } catch (IOException e) {

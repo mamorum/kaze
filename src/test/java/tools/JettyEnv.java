@@ -1,11 +1,11 @@
-package it.tool;
+package tools;
 
 import com.google.gson.Gson;
 
 import kaze.App;
 import kaze.server.Jetty;
 
-public class Env {
+public class JettyEnv {
   public static final App app = new App();
   static {
     Jetty.app(app, "/app/*");
