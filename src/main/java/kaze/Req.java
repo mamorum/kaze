@@ -2,28 +2,31 @@ package kaze;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class Req {
   public HttpServletRequest $;
   App app;
-  //-> for path param
-  Map<String, Integer> index;
   String[] parts;
+  Path addedPath; //-> for path param
   public Req(
-    HttpServletRequest r, App a, Map<String, Integer> index, String[] parts
+    HttpServletRequest r, App a, String[] parts, Path p
   ) {
-    this.$=r; this.app=a; this.index=index; this.parts=parts;
+    this.$=r; this.app=a; this.parts=parts; this.addedPath=p;
   }
 
   public String param(String name) {
     return $.getParameter(name);
   }
   public String path(String name) {
-    // TODO index の null チェック？
-    Integer i = index.get(name);
+    if (addedPath.index == null) {
+      throw new IllegalStateException(
+        "Path parameter not defined. " +
+        "[path=" + addedPath.path + "]"
+      );
+    }
+    Integer i = addedPath.index.get(name);
     if (i == null) {
       throw new IllegalArgumentException(
         "Path parameter not found [arg=" + name + "]. " +

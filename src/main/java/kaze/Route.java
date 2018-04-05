@@ -71,7 +71,7 @@ class Route {
     }
     if (p == null) return false;
     ///-> run
-    Req rq = new Req(req, app, p.index, parts);
+    Req rq = new Req(req, app, parts, p);
     Res rs = new Res(res, app);
     try { p.func.exec(rq, rs);  }
     catch (Exception e) { throw new ServletException(e); }

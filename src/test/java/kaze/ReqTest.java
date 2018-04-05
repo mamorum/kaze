@@ -2,8 +2,6 @@ package kaze;
 
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
-
 import org.junit.Test;
 
 public class ReqTest {
@@ -17,15 +15,29 @@ public class ReqTest {
       System.out.println(e.getMessage());
     }
   }
-  @Test public void no_path_param() {
-    Req req = new Req(
-      null, new App(), new HashMap<>(), null
+  @Test public void path_param_not_found() {
+    Path path = new Path(
+      "/cat/:name", new String[] {"cat", ":name"}, null
     );
+    Req req = new Req(null, new App(), null, path);
     try {
       req.path("param");
       fail();
     } catch (IllegalArgumentException e) {  //-> OK
-      System.out.println("ReqTest#no_path_param() ->");
+      System.out.println("ReqTest#path_param_not_found() ->");
+      System.out.println(e.getMessage());
+    }
+  }
+  @Test public void path_param_not_defined() {
+    Path path = new Path(
+      "/cat/tom", new String[] {"cat", "tom"}, null
+    );
+    Req req = new Req(null, new App(), null, path);
+    try {
+      req.path("param");
+      fail();
+    } catch (IllegalStateException e) {  //-> OK
+      System.out.println("ReqTest#path_param_not_defined() ->");
       System.out.println(e.getMessage());
     }
   }
