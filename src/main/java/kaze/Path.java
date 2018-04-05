@@ -1,37 +1,31 @@
 package kaze;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import kaze.App.Func;
+import javax.servlet.http.HttpServletRequest;
 
 class Path {
-  String path;
-  String[] parts;
-  Map<String, Integer> index;
-  Func func;
-  Path(String path, String[] parts, Func func) {
-    this.path=path; this.parts=parts; this.func=func;
-    if (path.contains(":")) index();
+  private static String root = "";
+  private static String[] roots = {root};
+  private static String sla = "/";
+  //-> common
+  static String[] split(String path) {
+    if (root.equals(path)) return roots;
+    String trimed = path.substring(1); // "/1/2" -> "1/2"
+    return trimed.split(sla); // "1/2" -> {"1", "2"}
   }
-  private void index() {
-    index = new HashMap<>();
-    for (int i=0; i<parts.length; i++) {
-      if (parts[i].startsWith(":")) {
-        index.put(parts[i], i);
-      }
-    }
+  //-> for init (add route)
+  static String get(String from) {
+    if (sla.equals(from)) return root;
+    return from;
   }
-  boolean match(String[] tParts, boolean checking) {
-    if (parts.length != tParts.length) return false;
-    for (int i=0; i<parts.length; i++) {
-      if (parts[i].startsWith(":")) continue;
-      if (parts[i].equals(tParts[i])) continue;
-      if (checking) {
-        if (tParts[i].startsWith(":")) continue;
-      }
-      return false;
-    }
-    return true;
+  //-> for runtime (find route)
+  static String get(HttpServletRequest from) {
+    String c = from.getContextPath(); //-> /ctxt
+    String s = from.getServletPath(); //-> /srvlt
+    String r = from.getRequestURI(); //-> /ctxt/srvlt/1/2
+    String path = r.substring( //-> /1/2
+      c.length() + s.length()
+    );
+    if (sla.equals(path)) return root;
+    return path;
   }
 }

@@ -16,8 +16,8 @@ public class ReqTest {
     }
   }
   @Test public void path_param_not_found() {
-    Path path = new Path(
-      "/cat/:name", new String[] {"cat", ":name"}, null
+    Route path = new Route(
+      "/cat/:name", null
     );
     Req req = new Req(null, new App(), null, path);
     try {
@@ -29,8 +29,8 @@ public class ReqTest {
     }
   }
   @Test public void path_param_not_defined() {
-    Path path = new Path(
-      "/cat/tom", new String[] {"cat", "tom"}, null
+    Route path = new Route(
+      "/cat/tom", null
     );
     Req req = new Req(null, new App(), null, path);
     try {

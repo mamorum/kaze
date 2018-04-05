@@ -8,7 +8,10 @@ public class ExitServer {
     App app = new App();
     app.get("/exit", (req, res) -> {
       res.html("<p>System Exit.</p>");
-      Jetty.exit(0);
+      Jetty.server.setStopAtShutdown(true);
+      (new Thread() {
+        public void run() { System.exit(0); }
+      }).start();
     });
     Jetty.app(app, "/app/*");
     Jetty.doc("/public", "/");

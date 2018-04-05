@@ -72,10 +72,4 @@ public class Jetty {
       throw new RuntimeException(e);
     }
   }
-  public static void exit(int vmStatus) {
-    Jetty.server.setStopAtShutdown(true);
-    (new Thread() {
-      public void run() { System.exit(vmStatus); }
-    }).start();
-  }
 }

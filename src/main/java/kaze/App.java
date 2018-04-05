@@ -29,7 +29,8 @@ public class App extends HttpServlet {
     this.j2o=toObj; this.o2j=toJson;
   }
   ///-> routing
-  Route get=new Route(), post=new Route(), put=new Route(), delete=new Route();
+  Routes get=new Routes(), post=new Routes(),
+    put=new Routes(), delete=new Routes();
   public void get(String path, Func func) { get.add(path, func); }
   public void post(String path, Func func) { post.add(path, func); }
   public void put(String path, Func func) { put.add(path, func); }
@@ -44,7 +45,7 @@ public class App extends HttpServlet {
   @Override protected void doDelete(HttpServletRequest rq, HttpServletResponse rs)
     throws ServletException, IOException { run(delete, rq, rs); }
   protected void run(
-    Route rt, HttpServletRequest rq, HttpServletResponse rs)
+    Routes rt, HttpServletRequest rq, HttpServletResponse rs)
   throws ServletException, IOException {
     encoding(rq, rs);
     boolean run = rt.run(rq, rs, this);
