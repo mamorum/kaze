@@ -1,6 +1,5 @@
 package kaze;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ class Routes {
   //-> run
   boolean run(
     HttpServletRequest req, HttpServletResponse res, App app
-  ) throws ServletException, IOException {
+  ) throws ServletException {
     ///-> find
     String path = Path.get(req);
     String[] paths = Path.split(path);

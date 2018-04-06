@@ -1,7 +1,6 @@
 package kaze;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,16 +18,13 @@ public class App extends HttpServlet {
   public interface Obj2json { String exec(Object obj); }
   //-> settings
   ///-> encoding
-  String enc = "utf-8";
-  public void enc(String encoding) {
-    this.enc=encoding;
-  }
-  ///-> converter
+  public String encoding = "utf-8";
+  ///-> json converter
   Json2obj j2o; Obj2json o2j;
   public void conv(Json2obj toObj, Obj2json toJson) {
     this.j2o=toObj; this.o2j=toJson;
   }
-  ///-> routing
+  //-> routing
   Routes get=new Routes(), post=new Routes(),
     put=new Routes(), delete=new Routes();
   public void get(String path, Func func) { get.add(path, func); }
@@ -47,16 +43,8 @@ public class App extends HttpServlet {
   protected void run(
     Routes rt, HttpServletRequest rq, HttpServletResponse rs)
   throws ServletException, IOException {
-    encoding(rq, rs);
+    if (encoding != null) Enc.apply(encoding, rq, rs);
     boolean run = rt.run(rq, rs, this);
     if (!run) rs.sendError(404);
-  }
-  protected void encoding(
-    HttpServletRequest req, HttpServletResponse res)
-  throws UnsupportedEncodingException {
-    if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(enc);
-    }
-    res.setCharacterEncoding(enc);
   }
 }
