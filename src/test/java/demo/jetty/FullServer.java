@@ -25,6 +25,7 @@ import kaze.server.Jetty;
 public class FullServer {
   public static void main(String[] args) throws Exception {
     App app = new App();
+    Jetty.app(app, "/app/*");
     app.get("/", (req, res) -> {
       res.html("<p>Hello World</p>");
     });
@@ -35,6 +36,9 @@ public class FullServer {
       HttpSession ss = req.$.getSession(true);
       if (ss.isNew()) res.json("isNew", true);
       else res.json("isNew", false);;
+    });
+    app.post("/form", (req, res) -> {
+      res.html("<p>" + req.param("msg") + "</p>");
     });
     Gson gson = new Gson();
     app.conv(gson::fromJson, gson::toJson);
@@ -49,7 +53,6 @@ public class FullServer {
     Jetty.context.setContextPath("/");
     addServletComponent();
     addWebsocketComponent();
-    Jetty.app(app, "/app/*");
     Jetty.doc("/public", "/");
     Jetty.listen("0.0.0.0", 8080);
   }

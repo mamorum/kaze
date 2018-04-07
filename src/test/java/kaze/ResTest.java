@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class ResTest {
   @Test public void no_json_parser() {
-    Res res = new Res(null, new App());
+    Res res = new Res(null, null);
     try {
       res.json(new Object());
       fail();

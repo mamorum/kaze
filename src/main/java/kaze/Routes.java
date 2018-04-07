@@ -3,49 +3,35 @@ package kaze;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import kaze.App.Func;
 
 class Routes {
   private List<Route> paths = new ArrayList<>();
-  private Route find(String[] parts, boolean checking) {
+  private Route find(Route path, boolean checking) {
     for (Route p: paths) {
-      if (p.match(parts, checking)) {
+      if (p.match(path, checking)) {
         return p;
       }
     }
     return null;
   }
-  //-> add
   void add(String path, Func func) {
     Route add = new Route(path, func);
-    Route added = find(add.paths, true);
+    Route added = find(add, true);
     if (added == null) {
       paths.add(add);
-    } else { ///-> path duplicated
+    } else {
       throw new IllegalStateException(
-        "Path duplicated [add=" + path + "] " +
+        "Path duplicated [add=" + add.path + "] " +
         "[added=" + added.path + "]."
       );
     }
   }
-  //-> run
-  boolean run(
-    HttpServletRequest req, HttpServletResponse res, App app
-  ) throws ServletException {
-    ///-> find
-    String path = Path.get(req);
-    String[] paths = Path.split(path);
-    Route route = find(paths, false);
-    if (route == null) return false;
-    ///-> run
-    Req rq = new Req(req, app, paths, route);
-    Res rs = new Res(res, app);
-    try { route.func.exec(rq, rs);  }
-    catch (Exception e) { throw new ServletException(e); }
-    return true;
+  Route resolve(String path) {
+    Route comming = new Route(path);
+    Route added = find(comming, false);
+    if (added == null) return null;
+    comming.inherit(added);
+    return comming;
   }
 }

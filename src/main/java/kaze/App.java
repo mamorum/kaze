@@ -18,19 +18,45 @@ public class App extends HttpServlet {
   public interface Obj2json { String exec(Object obj); }
   //-> settings
   ///-> encoding
-  public String encoding = "utf-8";
+  private boolean encode = true;
+  private String enc = "utf-8";
+  public void disableEncoding() { encode=false; }
+  public void encoding(String encoding) { enc=encoding; }
   ///-> json converter
-  Json2obj j2o; Obj2json o2j;
+  private Json2obj j2o; private Obj2json o2j;
   public void conv(Json2obj toObj, Obj2json toJson) {
     this.j2o=toObj; this.o2j=toJson;
   }
   //-> routing
-  Routes get=new Routes(), post=new Routes(),
+  private Routes get=new Routes(), post=new Routes(),
     put=new Routes(), delete=new Routes();
-  public void get(String path, Func func) { get.add(path, func); }
-  public void post(String path, Func func) { post.add(path, func); }
-  public void put(String path, Func func) { put.add(path, func); }
-  public void delete(String path, Func func) { delete.add(path, func); }
+  public void get(String path, Func func) { add(path, func, get); }
+  public void post(String path, Func func) { add(path, func, post); }
+  public void put(String path, Func func) { add(path, func, put); }
+  public void delete(String path, Func func) { add(path, func, delete); }
+  private void add(String path, Func func, Routes routes) {
+    routes.add(path, func);
+  }
+  private void run(
+    Routes rt, HttpServletRequest rq, HttpServletResponse rs)
+  throws ServletException, IOException {
+    if (encode) Enc.apply(enc, rq, rs);
+    Route route = rt.resolve(path(rq));
+    if (route == null) rs.sendError(404);
+    Req req = new Req(rq, j2o, route);
+    Res res = new Res(rs, o2j);
+    try { route.func.exec(req, res); }
+    catch (Exception e) { throw new ServletException(e); }
+  }
+  private String path(HttpServletRequest req) {
+    String c = req.getContextPath(); //-> /context
+    String s = req.getServletPath(); //-> /servlet
+    String r = req.getRequestURI(); //-> /context/servlet/1/2
+    String path = r.substring( //-> /1/2
+      c.length() + s.length()
+    );
+    return path;
+  }
   //-> servlet api
   @Override protected void doGet(HttpServletRequest rq, HttpServletResponse rs)
     throws ServletException, IOException { run(get, rq, rs); }
@@ -40,11 +66,4 @@ public class App extends HttpServlet {
     throws ServletException, IOException { run(put, rq, rs); }
   @Override protected void doDelete(HttpServletRequest rq, HttpServletResponse rs)
     throws ServletException, IOException { run(delete, rq, rs); }
-  protected void run(
-    Routes rt, HttpServletRequest rq, HttpServletResponse rs)
-  throws ServletException, IOException {
-    if (encoding != null) Enc.apply(encoding, rq, rs);
-    boolean run = rt.run(rq, rs, this);
-    if (!run) rs.sendError(404);
-  }
 }

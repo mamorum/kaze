@@ -5,15 +5,14 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import kaze.App.Json2obj;
+
 public class Req {
   public HttpServletRequest $;
-  App app;
-  String[] paths;
-  Route route; //-> for path param
-  public Req(
-    HttpServletRequest r, App a, String[] parts, Route p
-  ) {
-    this.$=r; this.app=a; this.paths=parts; this.route=p;
+  private Json2obj j2o;
+  private Route route;
+  Req(HttpServletRequest s, Json2obj j, Route r) {
+    this.$=s; this.j2o=j; this.route=r;
   }
 
   public String param(String name) {
@@ -34,7 +33,7 @@ public class Req {
         "(like \":id\", \":name\", etc)."
       );
     }
-    return paths[i];
+    return route.paths[i];
   }
   public String body() {
     StringBuilder body = new StringBuilder();
@@ -50,9 +49,9 @@ public class Req {
     return body.toString();
   }
   public <T> T json(Class<T> to) {
-    if (app.j2o == null) {
+    if (j2o == null) {
       throw new IllegalStateException("No json parser found.");
     }
-    return app.j2o.exec(body(), to);
+    return j2o.exec(body(), to);
   }
 }

@@ -7,11 +7,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import kaze.App.Obj2json;
+
 public class Res {
   public HttpServletResponse $;
-  App app;
-  public Res(HttpServletResponse r, App a) {
-    this.$=r; this.app=a;
+  private Obj2json o2j;
+  Res(HttpServletResponse s, Obj2json o) {
+    this.$=s; this.o2j=o;
   }
 
   public Res status(int status) {
@@ -32,10 +34,10 @@ public class Res {
     write("application/json", json);
   }
   public void json(Object obj) {
-    if (app.o2j == null) {
+    if (o2j == null) {
       throw new IllegalStateException("No json parser found.");
     }
-    json(app.o2j.exec(obj));
+    json(o2j.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {

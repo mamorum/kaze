@@ -32,11 +32,7 @@ public class Enc implements Filter {
   static void apply(
     String enc, ServletRequest req, ServletResponse res)
   throws UnsupportedEncodingException {
-    if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(enc);
-    }
-    if (res.getCharacterEncoding() == null) {
-      res.setCharacterEncoding(enc);
-    }
+    req.setCharacterEncoding(enc);
+    res.setCharacterEncoding(enc);
   }
 }

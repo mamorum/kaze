@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class ReqTest {
   @Test public void no_json_parser() {
-    Req req = new Req(null, new App(), null, null);
+    Req req = new Req(null, null, null);
     try {
       req.json(Object.class);
       fail();
@@ -19,7 +19,7 @@ public class ReqTest {
     Route path = new Route(
       "/cat/:name", null
     );
-    Req req = new Req(null, new App(), null, path);
+    Req req = new Req(null, null, path);
     try {
       req.path("param");
       fail();
@@ -32,7 +32,7 @@ public class ReqTest {
     Route path = new Route(
       "/cat/tom", null
     );
-    Req req = new Req(null, new App(), null, path);
+    Req req = new Req(null, null, path);
     try {
       req.path("param");
       fail();
