@@ -42,11 +42,14 @@ public class App extends HttpServlet {
   throws ServletException, IOException {
     if (encode) Enc.apply(enc, rq, rs);
     Route route = rt.resolve(path(rq));
-    if (route == null) rs.sendError(404);
-    Req req = new Req(rq, j2o, route);
-    Res res = new Res(rs, o2j);
-    try { route.func.exec(req, res); }
-    catch (Exception e) { throw new ServletException(e); }
+    if (route == null) {
+      rs.sendError(404);
+    } else {
+      Req req = new Req(rq, j2o, route);
+      Res res = new Res(rs, o2j);
+      try { route.func.exec(req, res); }
+      catch (Exception e) { throw new ServletException(e); }
+    }
   }
   private String path(HttpServletRequest req) {
     String c = req.getContextPath(); //-> /context
