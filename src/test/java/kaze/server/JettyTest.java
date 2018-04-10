@@ -12,11 +12,14 @@ public class JettyTest {
     JettyEnv.init();
   }
   @Test public void static_file() {
+    // test
     HttpRes res = HttpReq.get(
       "http://localhost:8080/index.html"
     );
-    res.statusIs(200).typeIs("text/html").bodyIs(
-      "<p>Index</p>"
-    ).close();
+    // check
+    res.statusIs(200);
+    res.typeIs("text/html");
+    res.bodyIs("<p>Index</p>");
+    res.close();
   }
 }

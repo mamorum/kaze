@@ -27,7 +27,8 @@ public class ReqJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/req/param?name=Jone"
     );
-    res.statusIs(200).close();
+    res.statusIs(200);
+    res.close();
   }
   //-> #path(String)
   public static void reg_it_path() {
@@ -40,7 +41,8 @@ public class ReqJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/req/path/Jone"
     );
-    res.statusIs(200).close();
+    res.statusIs(200);
+    res.close();
   }
   //-> #body()
   public static void reg_it_body() {
@@ -54,7 +56,8 @@ public class ReqJettyTest {
       "http://localhost:8080/app/it/req/body",
       "{\"name\":\"Jone\"}"
     );
-    res.statusIs(200).close();
+    res.statusIs(200);
+    res.close();
   }
   //-> #json(Class)
   static class Person {
@@ -72,6 +75,7 @@ public class ReqJettyTest {
       "http://localhost:8080/app/it/req/json",
       "{\"id\":1,\"name\":\"Jone\"}"
     );
-    res.statusIs(200).close();
+    res.statusIs(200);
+    res.close();
   }
 }

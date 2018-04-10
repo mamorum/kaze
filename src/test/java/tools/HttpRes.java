@@ -25,36 +25,29 @@ public class HttpRes {
   }
 
   //-> assertions
-  public HttpRes statusIs(int s) {
+  public void statusIs(int s) {
     assertEquals(s, this.status);
-    return this;
   }
-  public HttpRes typeIsJsonUtf8() {
+  public void typeIsJsonUtf8() {
     assertEquals(
       "application/json;charset=utf-8", this.contentType
     );
-    return this;
   }
-  public HttpRes typeIs(String type) {
+  public void typeIs(String type) {
     assertEquals(type, this.contentType);
-    return this;
   }
-  public HttpRes bodyIs(String b) {
+  public void bodyIs(String b) {
     assertEquals(b, this.body);
-    return this;
   }
-  public HttpRes bodyContains(String... str) {
+  public void bodyContains(String... str) {
     for (String s : str) assertTrue(this.body.contains(s));
-    return this;
   }
-  public HttpRes bodyIsEmpty() {
+  public void bodyIsEmpty() {
     assertTrue(this.body == null || "".equals(body));
-    return this;
   }
 
-  public HttpRes printBody() {
+  public void printBody() {
     System.out.println(this.body);
-    return this;
   }
 
   public void close() {

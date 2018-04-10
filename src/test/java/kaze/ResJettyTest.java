@@ -30,7 +30,8 @@ public class ResJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/res/status"
     );
-    res.statusIs(400).close();
+    res.statusIs(400);
+    res.close();
   }
 
   //-> #write(String, String)
@@ -43,9 +44,10 @@ public class ResJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/res/write"
     );
-    res.statusIs(200).typeIs(
-      "text/plain;charset=utf-8"
-    ).bodyIs("Text.").close();
+    res.statusIs(200);
+    res.typeIs("text/plain;charset=utf-8");
+    res.bodyIs("Text.");
+    res.close();
   }
 
   //-> #html(String)
@@ -58,9 +60,10 @@ public class ResJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/res/html"
     );
-    res.statusIs(200).typeIs(
-      "text/html;charset=utf-8"
-    ).bodyIs("<p>Html.</p>").close();
+    res.statusIs(200);
+    res.typeIs("text/html;charset=utf-8");
+    res.bodyIs("<p>Html.</p>");
+    res.close();
   }
 
   //-> #json(String)
@@ -73,9 +76,10 @@ public class ResJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/res/json/string"
     );
-    res.statusIs(200).typeIsJsonUtf8().bodyIs(
-      "{\"id\":1}"
-    ).close();
+    res.statusIs(200);
+    res.typeIsJsonUtf8();
+    res.bodyIs("{\"id\":1}");
+    res.close();
   }
   //-> #json(Object)
   public static void reg_it_json_object() {
@@ -87,9 +91,10 @@ public class ResJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/res/json/object"
     );
-    res.statusIs(200).typeIsJsonUtf8().bodyIs(
-      "{\"msg\":\"Hello.\"}"
-    ).close();
+    res.statusIs(200);
+    res.typeIsJsonUtf8();
+    res.bodyIs("{\"msg\":\"Hello.\"}");
+    res.close();
   }
   //-> #json(Object...)
   public static void reg_it_json_two_object() {
@@ -104,9 +109,10 @@ public class ResJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/res/json/2/object"
     );
-    res.statusIs(200).typeIsJsonUtf8().bodyIs(
-      "{\"id\":1,\"name\":\"Tom\"}"
-    ).close();
+    res.statusIs(200);
+    res.typeIsJsonUtf8();
+    res.bodyIs("{\"id\":1,\"name\":\"Tom\"}");
+    res.close();
   }
   public static void reg_it_json_four_object() {
     JettyEnv.app.get("/it/res/json/4/object", (req, res) -> {
@@ -122,9 +128,12 @@ public class ResJettyTest {
     HttpRes res = HttpReq.get(
       "http://localhost:8080/app/it/res/json/4/object"
     );
-    res.statusIs(200).typeIsJsonUtf8().bodyIs(
+    res.statusIs(200);
+    res.typeIsJsonUtf8();
+    res.bodyIs(
       "{\"id\":1,\"name\":\"Tom\"," +
       "\"zip\":\"111222\",\"tel\":\"111222333\"}"
-    ).close();
+    );
+    res.close();
   }
 }
