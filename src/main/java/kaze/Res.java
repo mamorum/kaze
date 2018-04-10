@@ -16,9 +16,8 @@ public class Res {
     this.$=s; this.o2j=o;
   }
 
-  public Res status(int status) {
+  public void status(int status) {
     $.setStatus(status);
-    return this;
   }
   public void write(String contentType, String body) {
     $.setContentType(contentType);
