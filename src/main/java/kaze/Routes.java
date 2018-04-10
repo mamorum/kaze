@@ -6,20 +6,20 @@ import java.util.List;
 import kaze.App.Func;
 
 class Routes {
-  private List<Route> paths = new ArrayList<>();
-  private Route find(Route path, boolean checking) {
-    for (Route p: paths) {
-      if (p.match(path, checking)) {
+  private List<Route> routes = new ArrayList<>();
+  private Route find(Route r, boolean checking) {
+    for (Route p: routes) {
+      if (p.match(r, checking)) {
         return p;
       }
     }
     return null;
   }
-  void add(String path, Func func) {
-    Route add = new Route(path, func);
+  void add(String path, Func f) {
+    Route add = new Route(path, f);
     Route added = find(add, true);
     if (added == null) {
-      paths.add(add);
+      routes.add(add);
     } else {
       throw new IllegalStateException(
         "Path duplicated [add=" + add.path + "] " +
@@ -28,10 +28,10 @@ class Routes {
     }
   }
   Route resolve(String path) {
-    Route comming = new Route(path);
-    Route added = find(comming, false);
+    Route run = new Route(path);
+    Route added = find(run, false);
     if (added == null) return null;
-    comming.inherit(added);
-    return comming;
+    run.inherit(added);
+    return run;
   }
 }

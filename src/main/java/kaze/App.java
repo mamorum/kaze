@@ -38,16 +38,16 @@ public class App extends HttpServlet {
     routes.add(path, func);
   }
   private void run(
-    Routes rt, HttpServletRequest rq, HttpServletResponse rs)
+    Routes rts, HttpServletRequest rq, HttpServletResponse rs)
   throws ServletException, IOException {
-    if (encode) Enc.apply(enc, rq, rs);
-    Route route = rt.resolve(path(rq));
-    if (route == null) {
+    Route rt = rts.resolve(path(rq));
+    if (rt == null) {
       rs.sendError(404);
     } else {
-      Req req = new Req(rq, j2o, route);
+      if (encode) Enc.apply(enc, rq, rs);
+      Req req = new Req(rq, j2o, rt);
       Res res = new Res(rs, o2j);
-      try { route.func.exec(req, res); }
+      try { rt.func.exec(req, res); }
       catch (Exception e) { throw new ServletException(e); }
     }
   }
