@@ -11,11 +11,11 @@ import org.junit.Test;
 import kaze.server.Jetty;
 import tools.HttpReq;
 import tools.HttpRes;
-import tools.JettyEnv;
+import tools.JettyThread;
 
 public class EncJettyTest {
   @BeforeClass public static void init() {
-    JettyEnv.init();
+    JettyThread.start();
   }
   //-> encoding test
   @Test public void enc_enable() {

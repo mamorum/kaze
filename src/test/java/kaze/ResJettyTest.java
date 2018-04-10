@@ -5,44 +5,40 @@ import java.util.Collections;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tools.JettyEnv;
+import com.google.gson.Gson;
+
+import kaze.server.Jetty;
+import tools.JettyThread;
 import tools.HttpReq;
 import tools.HttpRes;
 
 public class ResJettyTest {
+  private static final App app = new App();
   @BeforeClass public static void init() {
-    reg_it_status();
-    reg_it_write();
-    reg_it_html();
-    reg_it_json_string();
-    reg_it_json_object();
-    reg_it_json_two_object();
-    reg_it_json_four_object();
-    JettyEnv.init();
+    Gson gson = new Gson();
+    app.conv(null, gson::toJson);
+    Jetty.app(app, "/res/*");
+    JettyThread.start();
   }
   //-> #status(int)
-  public static void reg_it_status() {
-    JettyEnv.app.get("/it/res/status", (req, res) -> {
+  @Test public void status() {
+    app.get("/status", (req, res) -> {
       res.status(400);
     });
-  }
-  @Test public void it_status() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/res/status"
+      "http://localhost:8080/res/status"
     );
     res.statusIs(400);
     res.close();
   }
 
   //-> #write(String, String)
-  public static void reg_it_write() {
-    JettyEnv.app.get("/it/res/write", (req, res) -> {
+  @Test public void write() {
+    app.get("/write", (req, res) -> {
       res.write("text/plain", "Text.");
     });
-  }
-  @Test public void it_write() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/res/write"
+      "http://localhost:8080/res/write"
     );
     res.statusIs(200);
     res.typeIs("text/plain;charset=utf-8");
@@ -51,14 +47,12 @@ public class ResJettyTest {
   }
 
   //-> #html(String)
-  public static void reg_it_html() {
-    JettyEnv.app.get("/it/res/html", (req, res) -> {
+  @Test public void html() {
+    app.get("/html", (req, res) -> {
       res.html("<p>Html.</p>");
     });
-  }
-  @Test public void it_html() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/res/html"
+      "http://localhost:8080/res/html"
     );
     res.statusIs(200);
     res.typeIs("text/html;charset=utf-8");
@@ -67,14 +61,12 @@ public class ResJettyTest {
   }
 
   //-> #json(String)
-  public static void reg_it_json_string() {
-    JettyEnv.app.get("/it/res/json/string", (req, res) -> {
+  @Test public void json_string() {
+    app.get("/json/string", (req, res) -> {
       res.json("{\"id\":1}");
     });
-  }
-  @Test public void it_json_string() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/res/json/string"
+      "http://localhost:8080/res/json/string"
     );
     res.statusIs(200);
     res.typeIsJsonUtf8();
@@ -82,14 +74,12 @@ public class ResJettyTest {
     res.close();
   }
   //-> #json(Object)
-  public static void reg_it_json_object() {
-    JettyEnv.app.get("/it/res/json/object", (req, res) -> {
+  @Test public void json_object() {
+    app.get("/json/object", (req, res) -> {
       res.json(Collections.singletonMap("msg", "Hello."));
     });
-  }
-  @Test public void it_json_object() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/res/json/object"
+      "http://localhost:8080/res/json/object"
     );
     res.statusIs(200);
     res.typeIsJsonUtf8();
@@ -97,25 +87,23 @@ public class ResJettyTest {
     res.close();
   }
   //-> #json(Object...)
-  public static void reg_it_json_two_object() {
-    JettyEnv.app.get("/it/res/json/2/object", (req, res) -> {
+  @Test public void json_two_object() {
+    app.get("/json/2/object", (req, res) -> {
       res.json(
         "id", Integer.valueOf(1),
         "name", "Tom"
       );
     });
-  }
-  @Test public void it_json_two_object() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/res/json/2/object"
+      "http://localhost:8080/res/json/2/object"
     );
     res.statusIs(200);
     res.typeIsJsonUtf8();
     res.bodyIs("{\"id\":1,\"name\":\"Tom\"}");
     res.close();
   }
-  public static void reg_it_json_four_object() {
-    JettyEnv.app.get("/it/res/json/4/object", (req, res) -> {
+  @Test public void json_four_object() {
+    app.get("/json/4/object", (req, res) -> {
       res.json(
         "id", Integer.valueOf(1),
         "name", "Tom",
@@ -123,10 +111,8 @@ public class ResJettyTest {
         "tel", "111222333"
       );
     });
-  }
-  @Test public void it_json_four_object() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/res/json/4/object"
+      "http://localhost:8080/res/json/4/object"
     );
     res.statusIs(200);
     res.typeIsJsonUtf8();

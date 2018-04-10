@@ -3,13 +3,14 @@ package kaze.server;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tools.JettyEnv;
+import tools.JettyThread;
 import tools.HttpReq;
 import tools.HttpRes;
 
 public class JettyTest {
   @BeforeClass public static void init() {
-    JettyEnv.init();
+    Jetty.doc("/public", "/");
+    JettyThread.start();
   }
   @Test public void static_file() {
     // test

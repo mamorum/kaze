@@ -4,56 +4,51 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tools.JettyEnv;
+import com.google.gson.Gson;
+
+import kaze.server.Jetty;
+import tools.JettyThread;
 import tools.HttpReq;
 import tools.HttpRes;
 
 public class ReqJettyTest {
+  private static final App app = new App();
   @BeforeClass public static void init() {
-    reg_it_param();
-    reg_it_path();
-    reg_it_body();
-    reg_it_json();
-    JettyEnv.init();
+    Jetty.app(app, "/req/*");
+    JettyThread.start();
   }
   //-> #param(String)
-  public static void reg_it_param() {
-    JettyEnv.app.get("/it/req/param", (req, res) -> {
+  @Test public void param() {
+    app.get("/param", (req, res) -> {
       String name = req.param("name");
       assertEquals("Jone", name);
     });
-  }
-  @Test public void it_param() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/req/param?name=Jone"
+      "http://localhost:8080/req/param?name=Jone"
     );
     res.statusIs(200);
     res.close();
   }
   //-> #path(String)
-  public static void reg_it_path() {
-    JettyEnv.app.get("/it/req/path/:name", (req, res) -> {
+  @Test public void path() {
+    app.get("/path/:name", (req, res) -> {
       String name = req.path(":name");
       assertEquals("Jone", name);
     });
-  }
-  @Test public void it_path() {
     HttpRes res = HttpReq.get(
-      "http://localhost:8080/app/it/req/path/Jone"
+      "http://localhost:8080/req/path/Jone"
     );
     res.statusIs(200);
     res.close();
   }
   //-> #body()
-  public static void reg_it_body() {
-    JettyEnv.app.post("/it/req/body", (req, res) -> {
+  @Test public void body() {
+    app.post("/body", (req, res) -> {
       String b = req.body();
       assertEquals("{\"name\":\"Jone\"}", b);
     });
-  }
-  @Test public void it_body() {
     HttpRes res = HttpReq.postJson(
-      "http://localhost:8080/app/it/req/body",
+      "http://localhost:8080/req/body",
       "{\"name\":\"Jone\"}"
     );
     res.statusIs(200);
@@ -63,16 +58,16 @@ public class ReqJettyTest {
   static class Person {
     long id; String name;
   }
-  public static void reg_it_json() {
-    JettyEnv.app.post("/it/req/json", (req, res) -> {
+  @Test public void json() {
+    Gson gson = new Gson();
+    app.conv(gson::fromJson, null);
+    app.post("/json", (req, res) -> {
       Person p = req.json(Person.class);
       assertEquals(1, p.id);
       assertEquals("Jone", p.name);
     });
-  }
-  @Test public void it_json() {
     HttpRes res = HttpReq.postJson(
-      "http://localhost:8080/app/it/req/json",
+      "http://localhost:8080/req/json",
       "{\"id\":1,\"name\":\"Jone\"}"
     );
     res.statusIs(200);
