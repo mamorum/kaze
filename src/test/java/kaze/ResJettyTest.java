@@ -1,5 +1,7 @@
 package kaze;
 
+import static org.junit.Assert.fail;
+
 import java.util.Collections;
 
 import org.junit.BeforeClass;
@@ -13,13 +15,16 @@ import tools.HttpReq;
 import tools.HttpRes;
 
 public class ResJettyTest {
-  private static final App app = new App();
+  private static final
+    App app=new App(), ngApp=new App();
   @BeforeClass public static void init() {
     Gson gson = new Gson();
     app.conv(null, gson::toJson);
     Jetty.app(app, "/res/*");
+    Jetty.app(ngApp, "/res/ng/*");
     JettyThread.start();
   }
+  /* OK */
   //-> #status(int)
   @Test public void status() {
     app.get("/status", (req, res) -> {
@@ -120,6 +125,29 @@ public class ResJettyTest {
       "{\"id\":1,\"name\":\"Tom\"," +
       "\"zip\":\"111222\",\"tel\":\"111222333\"}"
     );
+    res.close();
+  }
+
+  /* NG */
+  //-> #json(Object)
+  @Test public void ng_no_json_parser_on_res() {
+    ngApp.get("/json", (req, res) -> {
+      try {
+        res.json(
+          Collections.singletonMap("msg", "Hello.")
+        );
+        fail();
+      } catch (IllegalStateException e) {
+        System.out.println("ng_no_json_parser_on_res->");
+        throw e; // expected
+      } catch (Exception e) {
+        fail();
+      }
+    });
+    HttpRes res = HttpReq.get(
+      "http://localhost:8080/res/ng/json"
+    );
+    res.statusIs(500);
     res.close();
   }
 }
