@@ -10,12 +10,12 @@ class Route {
   String[] paths;
   Func func;
   Map<String, Integer> index; //-> for path param
-  //-> for runtime (to resolve route.)
+  //-> for runtime to resolve route.
   Route(String path) {
     this.path=path;
     this.paths=split(path);
   }
-  //-> for init (to add route.)
+  //-> for init to add route.
   Route(String path, Func f) {
     this(path);
     this.func=f;
