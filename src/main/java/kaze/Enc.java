@@ -11,7 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 public class Enc implements Filter {
-  String encoding;
+  private String encoding;
   static final String param = "encoding";
   @Override public void init(FilterConfig conf)
   throws ServletException {
