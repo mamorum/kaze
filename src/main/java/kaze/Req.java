@@ -21,16 +21,16 @@ public class Req {
   public String path(String name) {
     if (route.index == null) {
       throw new IllegalStateException(
-        "Path parameter not defined. " +
-        "[path=" + route.path + "]"
+        "Path parameter not defined " +
+        "[path=" + route.path + "]."
       );
     }
     Integer i = route.index.get(name);
     if (i == null) {
       throw new IllegalArgumentException(
-        "Path parameter not found [arg=" + name + "]. " +
-        "Arg must be started with ':' " +
-        "(like \":id\", \":name\", etc)."
+        "Path parameter not found " +
+        "[arg=" + name + "] [path=" + route.path + "]. " +
+        "Arg must be started with ':' (ex. \":id\", \":name\")."
       );
     }
     return route.paths[i];
