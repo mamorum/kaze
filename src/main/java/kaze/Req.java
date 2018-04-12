@@ -9,10 +9,15 @@ import kaze.App.Json2obj;
 
 public class Req {
   public HttpServletRequest $;
-  private Json2obj j2o;
+  private String[] paths;
   private Route route;
-  Req(HttpServletRequest s, Json2obj j, Route r) {
-    this.$=s; this.j2o=j; this.route=r;
+  private Json2obj j2o;
+  Req(
+    HttpServletRequest s, String[] paths,
+    Route r, Json2obj j
+  ) {
+    this.$=s; this.paths=paths;
+    this.route=r; this.j2o=j;
   }
 
   public String param(String name) {
@@ -33,7 +38,7 @@ public class Req {
         "Arg must be started with ':' (ex. \":id\", \":name\")."
       );
     }
-    return route.paths[i];
+    return paths[i];
   }
   public String body() {
     StringBuilder body = new StringBuilder();

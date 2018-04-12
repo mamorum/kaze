@@ -34,18 +34,21 @@ public class App extends HttpServlet {
   public void post(String path, Func func) { add(path, func, post); }
   public void put(String path, Func func) { add(path, func, put); }
   public void delete(String path, Func func) { add(path, func, delete); }
-  private void add(String path, Func func, Routes routes) {
-    routes.add(path, func);
+  private void add(String path, Func func, Routes rts) {
+    String[] paths = Routes.paths(path);
+    rts.add(path, paths, func);
   }
   private void run(
     Routes rts, HttpServletRequest rq, HttpServletResponse rs)
   throws ServletException, IOException {
-    Route rt = rts.resolve(path(rq));
+    String path = path(rq);
+    String[] paths = Routes.paths(path);
+    Route rt = rts.get(path, paths);
     if (rt == null) {
       rs.sendError(404);
     } else {
       if (encode) Enc.apply(enc, rq, rs);
-      Req req = new Req(rq, j2o, rt);
+      Req req = new Req(rq, paths, rt, j2o);
       Res res = new Res(rs, o2j);
       try { rt.func.exec(req, res); }
       catch (Exception e) { throw new ServletException(e); }

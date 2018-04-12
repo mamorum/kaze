@@ -6,9 +6,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class RoutesTest {
-  Routes routes;
-  @Before public void init() {
-    routes = new Routes();
+  App app;
+  @Before public void before() {
+    app = new App();
   }
   private void msg(String method, Exception e) {
     System.out.print("RoutesTest#");
@@ -16,92 +16,93 @@ public class RoutesTest {
     System.out.println(e.getMessage());
     //e.printStackTrace();
   }
-  //-> Tests for Routes#add()
-  //-> root path
+  /* NG */
+  //-> routing: duplicated path
+  /// root path
   @Test public void duplicate_root_path() {
-    routes.add("/", null);
+    app.get("/", null);
     try {
-      routes.add("/", null);
+      app.get("/", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_root_path() ->", e);
     }
     try {
-      routes.add("", null);
+      app.get("", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_root_path() ->", e);
     }
   }
-  //-> static path
+  /// static path
   @Test public void duplicate_static_path_11() {
-    routes.add("/cat", null);
+    app.get("/cat", null);
     try {
-      routes.add("/cat", null);
+      app.get("/cat", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_static_path_11() ->", e);
     }
   }
   @Test public void duplicate_static_path_21() {
-    routes.add("/cat/mike", null);
+    app.get("/cat/mike", null);
     try {
-      routes.add("/cat/mike", null);
+      app.get("/cat/mike", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_static_path_21() ->", e);
     }
   }
-  //-> dynamic path
+  /// dynamic path
   @Test public void duplicate_dynamic_path_11() {
-    routes.add("/cat", null);
+    app.get("/cat", null);
     try {
-      routes.add("/:animal", null);
+      app.get("/:animal", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_dynamic_path_11() ->", e);
     }
   }
   @Test public void duplicate_dynamic_path_12() {
-    routes.add("/:animal", null);
+    app.get("/:animal", null);
     try {
-      routes.add("/cat", null);
+      app.get("/cat", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_dynamic_path_12() ->", e);
     }
   }
   @Test public void duplicate_dynamic_path_21() {
-    routes.add("/cat/bob", null);
+    app.get("/cat/bob", null);
     try {
-      routes.add("/cat/:name", null);
+      app.get("/cat/:name", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_dynamic_path_21() ->", e);
     }
   }
   @Test public void duplicate_dynamic_path_22() {
-    routes.add("/cat/:name", null);
+    app.get("/cat/:name", null);
     try {
-      routes.add("/cat/bob", null);
+      app.get("/cat/bob", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_dynamic_path_22() ->", e);
     }
   }
   @Test public void duplicate_dynamic_path_31() {
-    routes.add("/animal/cat/bob", null);
+    app.get("/animal/cat/bob", null);
     try {
-      routes.add("/animal/:category/bob", null);
+      app.get("/animal/:category/bob", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_dynamic_path_21() ->", e);
     }
   }
   @Test public void duplicate_dynamic_path_32() {
-    routes.add("/animal/:category/bob", null);
+    app.get("/animal/:category/bob", null);
     try {
-      routes.add("/animal/cat/bob", null);
+      app.get("/animal/cat/bob", null);
       fail();
     } catch (IllegalStateException e) {  //-> OK
       msg("duplicate_dynamic_path_22() ->", e);
