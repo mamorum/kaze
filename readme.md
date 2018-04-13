@@ -70,5 +70,5 @@ gs> mvn exec:java -Dexec.mainClass=kaze.sample.gs.json.GsonMain
 ## Examples
 - [gs](https://github.com/mamorum/kaze-sample/tree/master/gs): above hello world and basic examples.
 - [rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): web app accessing relational database, packaged as fatjar.
-- [war](https://github.com/mamorum/kaze-sample/tree/master/war): web app for servlet container (tomcat, etc).
+- [war](https://github.com/mamorum/kaze-sample/tree/master/war): web app for servlet container, packaged as war.
 
