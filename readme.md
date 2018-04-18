@@ -78,4 +78,4 @@ gs> mvn exec:java -Dexec.mainClass=kaze.sample.gs.json.GsonMain
 - Servlet 3.1
 - Jetty 9.4.6 (Optional)
 
-Or compatible higher versions (not checked).
+And compatible higher versions.
