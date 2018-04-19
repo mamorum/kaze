@@ -14,7 +14,7 @@
 <dependency>
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
 </dependency>
 <dependency>
   <groupId>org.eclipse.jetty</groupId>
