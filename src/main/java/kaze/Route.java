@@ -3,14 +3,12 @@ package kaze;
 import java.util.HashMap;
 import java.util.Map;
 
-import kaze.App.Func;
-
 class Route {
   String path;
   String[] paths;
-  Func func;
+  Fn func;
   Map<String, Integer> index; //-> for path param
-  Route(String path, String[] paths, Func f) {
+  Route(String path, String[] paths, Fn f) {
     this.path=path;
     this.paths=paths;
     this.func=f;

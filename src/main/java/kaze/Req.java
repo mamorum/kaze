@@ -5,16 +5,17 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.App.Json2obj;
+import kaze.json.J2o;
 
 public class Req {
   public HttpServletRequest $;
+  private String path;
   private String[] paths;
   private Route route;
-  private Json2obj j2o;
+  private J2o j2o;
   Req(
     HttpServletRequest s, String[] paths,
-    Route r, Json2obj j
+    Route r, J2o j
   ) {
     this.$=s; this.paths=paths;
     this.route=r; this.j2o=j;
@@ -27,14 +28,14 @@ public class Req {
     if (route.index == null) {
       throw new IllegalStateException(
         "Path parameter not defined " +
-        "[path=" + route.path + "]."
+        "[route=" + route.path + "]."
       );
     }
     Integer i = route.index.get(name);
     if (i == null) {
       throw new IllegalArgumentException(
-        "Path parameter not found " +
-        "[arg=" + name + "] [path=" + route.path + "]. " +
+        "Path parameter not found [path=" + path + "] " +
+        "[route=" + route.path + "] [arg=" + name + "]. " +
         "Arg must be started with ':' (ex. \":id\", \":name\")."
       );
     }

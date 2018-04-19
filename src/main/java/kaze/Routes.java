@@ -3,8 +3,6 @@ package kaze;
 import java.util.ArrayList;
 import java.util.List;
 
-import kaze.App.Func;
-
 class Routes {
   private List<Route> rts = new ArrayList<>();
   private Route find(
@@ -17,7 +15,7 @@ class Routes {
     }
     return null;
   }
-  void add(String path, String[] paths, Func f) {
+  void add(String path, String[] paths, Fn f) {
     Route rt = find(path, paths, true);
     if (rt == null) {
       rts.add(new Route(path, paths, f));

@@ -20,7 +20,7 @@ import demo.jetty.servlet.RequestListener;
 import demo.jetty.servlet.SessionListener;
 import demo.jetty.ws.ChatSocket;
 import kaze.App;
-import kaze.server.Jetty;
+import kaze.opt.Jetty;
 
 public class FullServer {
   public static void main(String[] args) throws Exception {

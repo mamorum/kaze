@@ -1,6 +1,6 @@
 package tools;
 
-import kaze.server.Jetty;
+import kaze.opt.Jetty;
 
 public class JettyThread {
   private static volatile boolean started = false;

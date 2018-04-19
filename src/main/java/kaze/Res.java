@@ -7,48 +7,50 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.App.Obj2json;
+import kaze.json.O2j;
 
 public class Res {
   public HttpServletResponse $;
-  private Obj2json o2j;
-  Res(HttpServletResponse s, Obj2json o) {
+  private O2j o2j;
+  Res(HttpServletResponse s, O2j o) {
     this.$=s; this.o2j=o;
   }
 
   public void status(int status) {
     $.setStatus(status);
   }
-  public void write(String contentType, String body) {
+  public void write(String contentType, String toSend) {
     $.setContentType(contentType);
-    try { $.getWriter().print(body); }
+    try { $.getWriter().print(toSend); }
     catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-  public void html(String html) {
-    write("text/html", html);
+  public void json(String toSend) {
+    write("application/json", toSend);
   }
-  public void json(String json) {
-    write("application/json", json);
-  }
-  public void json(Object obj) {
+  public void json(Object toSend) {
     if (o2j == null) {
       throw new IllegalStateException("No json parser found.");
     }
-    json(o2j.exec(obj));
+    json(o2j.exec(toSend));
   }
-  public void json(Object... kv) {
-    if (kv.length == 2) {
-      json(Collections.singletonMap(kv[0], kv[1]));
+  public void json(Object... kvToSend) {
+    if (kvToSend.length == 2) {
+      json(Collections.singletonMap(
+        kvToSend[0], kvToSend[1])
+      );
       return;
     }
-    int size = kv.length / 2;
+    int size = kvToSend.length / 2;
     Map<Object, Object> src = new LinkedHashMap<>(size);
-    for (int i=0; i<kv.length; i=i+2) {
-      src.put(kv[i], kv[i+1]);
+    for (int i=0; i<kvToSend.length; i=i+2) {
+      src.put(kvToSend[i], kvToSend[i+1]);
     }
     json(src);
+  }
+  public void html(String toSend) {
+    write("text/html", toSend);
   }
   // 公開するか検討中 ->
   void redirect(int status, String url) {
