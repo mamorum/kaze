@@ -1,40 +1,30 @@
-package it.tool;
+package tools;
 
-import com.google.gson.Gson;
-
-import kaze.App;
 import kaze.server.Jetty;
 
-public class Env {
-  public static final App app = new App();
-  static {
-    Jetty.app(app, "/app/*");
-    Jetty.doc("/public", "/");
-  }
-  private static volatile boolean init = false;
+public class JettyThread {
+  private static volatile boolean started = false;
   private static final Object lock = new Object();
-  private static final Thread env = new Thread(
+  private static final Thread thread = new Thread(
     new Runnable() {
       public void run() { Jetty.listen(8080); }
   });
 
-  public static void init() {
+  public static void start() {
     synchronized (lock) {
-      if (init) return;
-      env.start();  //<- start another thread
+      if (started) return;
+      thread.start();  //<- not main thread
       try { pause(); }
       catch (InterruptedException e) {
         e.printStackTrace();
       }
-      Gson gson = new Gson();
-      app.conv(gson::fromJson, gson::toJson);
-      init = true;
+      started = true;
     }
   }
   //-> wait for travis ci.
   private static void pause() throws InterruptedException {
     for (int i = 0; i < 5; i++) {
-      Thread.State state = env.getState();
+      Thread.State state = thread.getState();
       if (state == Thread.State.WAITING) break;
       else lock.wait(1000);  // server thread has not joined yet.
     }

@@ -2,22 +2,44 @@ package kaze;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import kaze.App.Json2obj;
+
 public class Req {
   public HttpServletRequest $;
-  App app;
-  //-> for path param
-  Map<String, Integer> index;
-  String[] parts;
-  public Req(
-    HttpServletRequest r, App a, Map<String, Integer> index, String[] parts
+  private String[] paths;
+  private Route route;
+  private Json2obj j2o;
+  Req(
+    HttpServletRequest s, String[] paths,
+    Route r, Json2obj j
   ) {
-    this.$=r; this.app=a; this.index=index; this.parts=parts;
+    this.$=s; this.paths=paths;
+    this.route=r; this.j2o=j;
   }
 
+  public String param(String name) {
+    return $.getParameter(name);
+  }
+  public String path(String name) {
+    if (route.index == null) {
+      throw new IllegalStateException(
+        "Path parameter not defined " +
+        "[path=" + route.path + "]."
+      );
+    }
+    Integer i = route.index.get(name);
+    if (i == null) {
+      throw new IllegalArgumentException(
+        "Path parameter not found " +
+        "[arg=" + name + "] [path=" + route.path + "]. " +
+        "Arg must be started with ':' (ex. \":id\", \":name\")."
+      );
+    }
+    return paths[i];
+  }
   public String body() {
     StringBuilder body = new StringBuilder();
     String line;
@@ -32,24 +54,9 @@ public class Req {
     return body.toString();
   }
   public <T> T json(Class<T> to) {
-    if (app.j2o == null) {
+    if (j2o == null) {
       throw new IllegalStateException("No json parser found.");
     }
-    return app.j2o.exec(body(), to);
-  }
-  public String param(String name) {
-    return $.getParameter(name);
-  }
-  public String path(String name) {
-    // TODO index の null チェック？
-    Integer i = index.get(name);
-    if (i == null) {
-      throw new IllegalArgumentException(
-        "Path parameter not found [arg=" + name + "]. " +
-        "Arg must be started with ':' " +
-        "(like \":id\", \":name\", etc)."
-      );
-    }
-    return parts[i];
+    return j2o.exec(body(), to);
   }
 }

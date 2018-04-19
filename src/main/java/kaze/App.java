@@ -1,7 +1,6 @@
 package kaze;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,22 +18,51 @@ public class App extends HttpServlet {
   public interface Obj2json { String exec(Object obj); }
   //-> settings
   ///-> encoding
-  String enc = "utf-8";
-  public void enc(String encoding) {
-    this.enc=encoding;
-  }
-  ///-> converter
-  Json2obj j2o; Obj2json o2j;
+  private boolean encode = true;
+  private String enc = "utf-8";
+  public void disableEncoding() { encode=false; }
+  public void encoding(String encoding) { enc=encoding; }
+  ///-> json converter
+  private Json2obj j2o; private Obj2json o2j;
   public void conv(Json2obj toObj, Obj2json toJson) {
     this.j2o=toObj; this.o2j=toJson;
   }
-  ///-> routing
-  Route get=new Route("get"), post=new Route("post"),
-      put=new Route("put"), delete=new Route("delete");
-  public void get(String path, Func func) { get.add(path, func); }
-  public void post(String path, Func func) { post.add(path, func); }
-  public void put(String path, Func func) { put.add(path, func); }
-  public void delete(String path, Func func) { delete.add(path, func); }
+  //-> routing
+  private Routes get=new Routes(), post=new Routes(),
+    put=new Routes(), delete=new Routes();
+  public void get(String path, Func func) { add(path, func, get); }
+  public void post(String path, Func func) { add(path, func, post); }
+  public void put(String path, Func func) { add(path, func, put); }
+  public void delete(String path, Func func) { add(path, func, delete); }
+  private void add(String path, Func func, Routes rts) {
+    String[] paths = Routes.paths(path);
+    rts.add(path, paths, func);
+  }
+  private void run(
+    Routes rts, HttpServletRequest rq, HttpServletResponse rs)
+  throws ServletException, IOException {
+    String path = path(rq);
+    String[] paths = Routes.paths(path);
+    Route rt = rts.get(path, paths);
+    if (rt == null) {
+      rs.sendError(404);
+    } else {
+      if (encode) Enc.apply(enc, rq, rs);
+      Req req = new Req(rq, paths, rt, j2o);
+      Res res = new Res(rs, o2j);
+      try { rt.func.exec(req, res); }
+      catch (Exception e) { throw new ServletException(e); }
+    }
+  }
+  private String path(HttpServletRequest req) {
+    String c = req.getContextPath(); //-> /context
+    String s = req.getServletPath(); //-> /servlet
+    String r = req.getRequestURI(); //-> /context/servlet/1/2
+    String path = r.substring( //-> /1/2
+      c.length() + s.length()
+    );
+    return path;
+  }
   //-> servlet api
   @Override protected void doGet(HttpServletRequest rq, HttpServletResponse rs)
     throws ServletException, IOException { run(get, rq, rs); }
@@ -44,19 +72,4 @@ public class App extends HttpServlet {
     throws ServletException, IOException { run(put, rq, rs); }
   @Override protected void doDelete(HttpServletRequest rq, HttpServletResponse rs)
     throws ServletException, IOException { run(delete, rq, rs); }
-  protected void run(
-    Route rt, HttpServletRequest rq, HttpServletResponse rs)
-  throws ServletException, IOException {
-    encoding(rq, rs);
-    boolean run = rt.run(rq, rs, this);
-    if (!run) rs.sendError(404);
-  }
-  protected void encoding(
-    HttpServletRequest req, HttpServletResponse res)
-  throws UnsupportedEncodingException {
-    if (req.getCharacterEncoding() == null) {
-      req.setCharacterEncoding(enc);
-    }
-    res.setCharacterEncoding(enc);
-  }
 }
