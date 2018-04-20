@@ -7,13 +7,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.json.O2j;
-
 public class Res {
   public HttpServletResponse $;
-  private O2j o2j;
-  Res(HttpServletResponse s, O2j o) {
-    this.$=s; this.o2j=o;
+  private Json.Stringify jsnStr;
+  public Res(HttpServletResponse s, Json.Stringify jsnStr) {
+    this.$=s; this.jsnStr=jsnStr;
   }
 
   public void status(int status) {
@@ -30,10 +28,10 @@ public class Res {
     write("application/json", toSend);
   }
   public void json(Object toSend) {
-    if (o2j == null) {
-      throw new IllegalStateException("No json parser found.");
+    if (jsnStr == null) {
+      throw new IllegalStateException("No json converter found.");
     }
-    json(o2j.exec(toSend));
+    json(jsnStr.exec(toSend));
   }
   public void json(Object... kvToSend) {
     if (kvToSend.length == 2) {

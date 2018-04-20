@@ -5,20 +5,18 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.json.J2o;
-
 public class Req {
   public HttpServletRequest $;
   private String path;
   private String[] paths;
   private Route route;
-  private J2o j2o;
-  Req(
-    HttpServletRequest s, String[] paths,
-    Route r, J2o j
+  private Json.Parse jsnPrs;
+  public Req(
+    HttpServletRequest s, String path,
+    String[] paths, Route rt, Json.Parse jsnPrs
   ) {
-    this.$=s; this.paths=paths;
-    this.route=r; this.j2o=j;
+    this.$=s; this.path=path; this.paths=paths;
+    this.route=rt; this.jsnPrs=jsnPrs;
   }
 
   public String param(String name) {
@@ -55,9 +53,9 @@ public class Req {
     return body.toString();
   }
   public <T> T json(Class<T> to) {
-    if (j2o == null) {
-      throw new IllegalStateException("No json parser found.");
+    if (jsnPrs == null) {
+      throw new IllegalStateException("No json converter found.");
     }
-    return j2o.exec(body(), to);
+    return jsnPrs.exec(body(), to);
   }
 }
