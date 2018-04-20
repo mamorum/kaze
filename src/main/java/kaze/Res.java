@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Res {
   public HttpServletResponse $;
-  private Json.Stringify jsnStr;
-  public Res(HttpServletResponse s, Json.Stringify jsnStr) {
-    this.$=s; this.jsnStr=jsnStr;
+  private Json.Stringify jsnStrfy;
+  public Res(HttpServletResponse s, Json.Stringify jsnStrfy) {
+    this.$=s; this.jsnStrfy=jsnStrfy;
   }
 
   public void status(int status) {
@@ -28,10 +28,10 @@ public class Res {
     write("application/json", toSend);
   }
   public void json(Object toSend) {
-    if (jsnStr == null) {
+    if (jsnStrfy == null) {
       throw new IllegalStateException("No json converter found.");
     }
-    json(jsnStr.exec(toSend));
+    json(jsnStrfy.exec(toSend));
   }
   public void json(Object... kvToSend) {
     if (kvToSend.length == 2) {

@@ -7,4 +7,5 @@ public class Json {
   @FunctionalInterface public interface Stringify {
     String exec(Object from);
   }
+  private Json() {}
 }

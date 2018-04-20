@@ -6,12 +6,12 @@ import java.util.Map;
 class Route {
   String path;
   String[] paths;
-  Fn func;
+  Fn fn;
   Map<String, Integer> index; //-> for path param
-  Route(String path, String[] paths, Fn f) {
+  Route(String path, String[] paths, Fn fn) {
     this.path=path;
     this.paths=paths;
-    this.func=f;
+    this.fn=fn;
     if (path.contains(":")) {
       createIndex();
     }

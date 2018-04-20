@@ -14,21 +14,22 @@ public class App extends HttpServlet {
   private String enc = "utf-8";
   public void disableEncoding() { encode=false; }
   public void encoding(String encoding) { enc=encoding; }
-  //-> json converter
-  private Json.Parse jsnPrs; private Json.Stringify js;
+  //-> converter
+  private Json.Parse jsnPrs;
+  private Json.Stringify jsnStrfy;
   public void conv(Json.Parse p, Json.Stringify s) {
-    jsnPrs=p; js=s;
+    jsnPrs=p; jsnStrfy=s;
   }
   //-> routing
   private Routes get=new Routes(), post=new Routes(),
     put=new Routes(), delete=new Routes();
-  public void get(String path, Fn f) { add(path, f, get); }
-  public void post(String path, Fn f) { add(path, f, post); }
-  public void put(String path, Fn f) { add(path, f, put); }
-  public void delete(String path, Fn f) { add(path, f, delete); }
-  private void add(String path, Fn f, Routes rts) {
+  public void get(String path, Fn fn) { add(path, fn, get); }
+  public void post(String path, Fn fn) { add(path, fn, post); }
+  public void put(String path, Fn fn) { add(path, fn, put); }
+  public void delete(String path, Fn fn) { add(path, fn, delete); }
+  private void add(String path, Fn fn, Routes rts) {
     String[] paths = Routes.paths(path);
-    rts.add(path, paths, f);
+    rts.add(path, paths, fn);
   }
   private void run(
     Routes rts, HttpServletRequest rq, HttpServletResponse rs)
@@ -41,8 +42,8 @@ public class App extends HttpServlet {
     } else {
       if (encode) Enc.apply(enc, rq, rs);
       Req req = new Req(rq, path, paths, rt, jsnPrs);
-      Res res = new Res(rs, js);
-      try { rt.func.exec(req, res); }
+      Res res = new Res(rs, jsnStrfy);
+      try { rt.fn.exec(req, res); }
       catch (Exception e) { throw new ServletException(e); }
     }
   }

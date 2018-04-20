@@ -32,8 +32,8 @@ public class Req {
     Integer i = route.index.get(name);
     if (i == null) {
       throw new IllegalArgumentException(
-        "Path parameter not found [path=" + path + "] " +
-        "[route=" + route.path + "] [arg=" + name + "]. " +
+        "Path parameter not found [route=" + route.path + "] " +
+        "[path=" + path + "]  [arg=" + name + "]. " +
         "Arg must be started with ':' (ex. \":id\", \":name\")."
       );
     }
@@ -52,10 +52,10 @@ public class Req {
     }
     return body.toString();
   }
-  public <T> T json(Class<T> to) {
+  public <T> T json(Class<T> toObj) {
     if (jsnPrs == null) {
       throw new IllegalStateException("No json converter found.");
     }
-    return jsnPrs.exec(body(), to);
+    return jsnPrs.exec(body(), toObj);
   }
 }
