@@ -15,7 +15,7 @@ class Routes {
     }
     return null;
   }
-  void add(String path, String[] paths, Fn f) {
+  void add(String path, String[] paths, Func f) {
     Route rt = find(path, paths, true);
     if (rt == null) {
       rts.add(new Route(path, paths, f));

@@ -23,13 +23,13 @@ public class App extends HttpServlet {
   //-> routing
   private Routes get=new Routes(), post=new Routes(),
     put=new Routes(), delete=new Routes();
-  public void get(String path, Fn fn) { add(path, fn, get); }
-  public void post(String path, Fn fn) { add(path, fn, post); }
-  public void put(String path, Fn fn) { add(path, fn, put); }
-  public void delete(String path, Fn fn) { add(path, fn, delete); }
-  private void add(String path, Fn fn, Routes rts) {
+  public void get(String path, Func f) { add(path, f, get); }
+  public void post(String path, Func f) { add(path, f, post); }
+  public void put(String path, Func f) { add(path, f, put); }
+  public void delete(String path, Func f) { add(path, f, delete); }
+  private void add(String path, Func f, Routes rts) {
     String[] paths = Routes.paths(path);
-    rts.add(path, paths, fn);
+    rts.add(path, paths, f);
   }
   private void run(
     Routes rts, HttpServletRequest rq, HttpServletResponse rs)
@@ -43,7 +43,7 @@ public class App extends HttpServlet {
       if (encode) Enc.apply(enc, rq, rs);
       Req req = new Req(rq, path, paths, rt, jsnPrs);
       Res res = new Res(rs, jsnStrfy);
-      try { rt.fn.exec(req, res); }
+      try { rt.func.exec(req, res); }
       catch (Exception e) { throw new ServletException(e); }
     }
   }

@@ -1,5 +1,5 @@
 package kaze;
 
-@FunctionalInterface public interface Fn {
+@FunctionalInterface public interface Func {
   void exec(Req req, Res res) throws Exception;
 }
