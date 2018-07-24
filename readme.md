@@ -14,38 +14,29 @@
 <dependency>
   <groupId>com.github.mamorum</groupId>
   <artifactId>kaze</artifactId>
-  <version>0.4.0</version>
+  <version>1.0.0</version>
 </dependency>
 <dependency>
   <groupId>org.eclipse.jetty</groupId>
   <artifactId>jetty-servlet</artifactId>
   <version>9.4.6.v20170531</version>
 </dependency>
-<dependency>
-  <groupId>com.google.code.gson</groupId>
-  <artifactId>gson</artifactId>
-  <version>2.8.2</version>
-</dependency>
 ```
 
 ### 2. Create code
 ```java
-package kaze.sample.gs.json;
-
-import com.google.gson.Gson;
+package kaze.sample.gs.html;
 
 import kaze.App;
-import kaze.server.Jetty;
+import kaze.opt.Jetty;
 
-// app -> http://localhost:8080/app/msg
+// app -> http://localhost:8080/app/hello
 // doc -> http://localhost:8080/*
-public class GsonMain {
-  static final Gson gson = new Gson();
+public class Main {
   public static void main(String[] args) {
     App app = new App();
-    app.conv(gson::fromJson, gson::toJson);
-    app.get("/msg", (req, res) -> {
-      res.json("msg", "Hello World.");
+    app.get("/hello", (req, res) -> {
+      res.html("<p>Hello, World.</p>");
     });
     Jetty.app(app, "/app/*");
     Jetty.doc("/public", "/");
@@ -57,18 +48,18 @@ public class GsonMain {
 ### 3. Run
 ```
 gs> mvn compile
-gs> mvn exec:java -Dexec.mainClass=kaze.sample.gs.json.GsonMain
+gs> mvn exec:java -Dexec.mainClass=kaze.sample.gs.html.Main
 ```
 
 ### 4. Check
 ```
-> curl -s -X GET http://localhost:8080/app/msg
-{"msg":"Hello, World."}
+> curl -s -X GET http://localhost:8080/app/hello
+<p>Hello, World.</p>
 ```
 
 
 ## Examples
-- [gs](https://github.com/mamorum/kaze-sample/tree/master/gs): basic examples, including above hello world.
+- [gs](https://github.com/mamorum/kaze-sample/tree/master/gs): basic examples (above and json response).
 - [rdb](https://github.com/mamorum/kaze-sample/tree/master/rdb): web app accessing relational database, packaged as fatjar.
 - [war](https://github.com/mamorum/kaze-sample/tree/master/war): web app for servlet container, packaged as war.
 
