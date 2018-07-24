@@ -5,19 +5,18 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import kaze.App.Json2obj;
-
 public class Req {
   public HttpServletRequest $;
+  private String path;
   private String[] paths;
   private Route route;
-  private Json2obj j2o;
-  Req(
-    HttpServletRequest s, String[] paths,
-    Route r, Json2obj j
+  private Json.Parse jsnPrs;
+  public Req(
+    HttpServletRequest s, String path,
+    String[] paths, Route rt, Json.Parse jsnPrs
   ) {
-    this.$=s; this.paths=paths;
-    this.route=r; this.j2o=j;
+    this.$=s; this.path=path; this.paths=paths;
+    this.route=rt; this.jsnPrs=jsnPrs;
   }
 
   public String param(String name) {
@@ -27,14 +26,14 @@ public class Req {
     if (route.index == null) {
       throw new IllegalStateException(
         "Path parameter not defined " +
-        "[path=" + route.path + "]."
+        "[route=" + route.path + "]."
       );
     }
     Integer i = route.index.get(name);
     if (i == null) {
       throw new IllegalArgumentException(
-        "Path parameter not found " +
-        "[arg=" + name + "] [path=" + route.path + "]. " +
+        "Path parameter not found [route=" + route.path + "] " +
+        "[path=" + path + "]  [arg=" + name + "]. " +
         "Arg must be started with ':' (ex. \":id\", \":name\")."
       );
     }
@@ -53,10 +52,10 @@ public class Req {
     }
     return body.toString();
   }
-  public <T> T json(Class<T> to) {
-    if (j2o == null) {
-      throw new IllegalStateException("No json parser found.");
+  public <T> T json(Class<T> toObj) {
+    if (jsnPrs == null) {
+      throw new IllegalStateException("No json converter found.");
     }
-    return j2o.exec(body(), to);
+    return jsnPrs.exec(body(), toObj);
   }
 }

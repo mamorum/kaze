@@ -3,8 +3,6 @@ package kaze;
 import java.util.HashMap;
 import java.util.Map;
 
-import kaze.App.Func;
-
 class Route {
   String path;
   String[] paths;
@@ -14,15 +12,12 @@ class Route {
     this.path=path;
     this.paths=paths;
     this.func=f;
-    if (path.contains(":")) {
-      createIndex();
-    }
-  }
-  private void createIndex() {
-    index = new HashMap<>();
-    for (int i=0; i<paths.length; i++) {
-      if (paths[i].startsWith(":")) {
-        index.put(paths[i], i);
+    if (path.contains(":")) { //-> create index for path param
+      index = new HashMap<>();
+      for (int i=0; i<paths.length; i++) {
+        if (paths[i].startsWith(":")) {
+          index.put(paths[i], i);
+        }
       }
     }
   }

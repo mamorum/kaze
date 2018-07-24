@@ -3,6 +3,7 @@ package kaze.server;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import kaze.opt.Jetty;
 import tools.JettyThread;
 import tools.HttpReq;
 import tools.HttpRes;

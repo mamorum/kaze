@@ -3,8 +3,6 @@ package kaze;
 import java.util.ArrayList;
 import java.util.List;
 
-import kaze.App.Func;
-
 class Routes {
   private List<Route> rts = new ArrayList<>();
   private Route find(

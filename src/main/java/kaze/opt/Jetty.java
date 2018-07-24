@@ -1,4 +1,4 @@
-package kaze.server;
+package kaze.opt;
 
 import java.io.File;
 

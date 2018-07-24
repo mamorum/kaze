@@ -3,7 +3,7 @@ package demo.jetty;
 import com.google.gson.Gson;
 
 import kaze.App;
-import kaze.server.Jetty;
+import kaze.opt.Jetty;
 
 public class AppServer {
   public static void main(String[] args) {

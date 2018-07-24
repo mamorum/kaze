@@ -7,13 +7,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import kaze.App.Obj2json;
-
 public class Res {
   public HttpServletResponse $;
-  private Obj2json o2j;
-  Res(HttpServletResponse s, Obj2json o) {
-    this.$=s; this.o2j=o;
+  private Json.Stringify jsnStrfy;
+  public Res(HttpServletResponse s, Json.Stringify jsnStrfy) {
+    this.$=s; this.jsnStrfy=jsnStrfy;
   }
 
   public void status(int status) {
@@ -26,21 +24,20 @@ public class Res {
       throw new RuntimeException(e);
     }
   }
-  public void html(String html) {
-    write("text/html", html);
-  }
   public void json(String json) {
     write("application/json", json);
   }
   public void json(Object obj) {
-    if (o2j == null) {
-      throw new IllegalStateException("No json parser found.");
+    if (jsnStrfy == null) {
+      throw new IllegalStateException("No json converter found.");
     }
-    json(o2j.exec(obj));
+    json(jsnStrfy.exec(obj));
   }
   public void json(Object... kv) {
     if (kv.length == 2) {
-      json(Collections.singletonMap(kv[0], kv[1]));
+      json(Collections.singletonMap(
+        kv[0], kv[1])
+      );
       return;
     }
     int size = kv.length / 2;
@@ -50,7 +47,10 @@ public class Res {
     }
     json(src);
   }
-  // 公開するか検討中 ->
+  public void html(String html) {
+    write("text/html", html);
+  }
+  //-> TODO Decide to make methods public.
   void redirect(int status, String url) {
     $.setStatus(status);
     $.setHeader("Location", $.encodeRedirectURL(url));
@@ -58,7 +58,8 @@ public class Res {
   void stream(String contentType, String body) {
     $.setContentType(contentType);
     try {
-      //-> Jetty だと Transfer-Encoding: Chunked になる
+      // Jetty makes response as "Transfer-Encoding: Chunked",
+      // when we use "HttpServletResponse.getOutputStream().print(String)".
       $.getOutputStream().print(body);
       $.flushBuffer();
     } catch (IOException e) {

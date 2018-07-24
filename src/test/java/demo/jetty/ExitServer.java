@@ -1,7 +1,7 @@
 package demo.jetty;
 
 import kaze.App;
-import kaze.server.Jetty;
+import kaze.opt.Jetty;
 
 public class ExitServer {
   public static void main(String[] args) {

@@ -8,7 +8,7 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kaze.server.Jetty;
+import kaze.opt.Jetty;
 import tools.HttpReq;
 import tools.HttpRes;
 import tools.JettyThread;
