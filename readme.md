@@ -1,6 +1,6 @@
 # Kaze: Java simple web app framework
 [![Build Status](https://travis-ci.org/mamorum/kaze.svg?branch=master)](https://travis-ci.org/mamorum/kaze)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze)
+<a href="https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze" rel="nofollow"><img src="https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg" alt="Maven Central"></a>
 
 - Easy to create RESTful API, Web API, etc
 - Runs on servlet containers
