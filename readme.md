@@ -1,7 +1,5 @@
 # Kaze: Java simple web app framework
-[![Build Status](https://travis-ci.org/mamorum/kaze.svg?branch=master)](https://travis-ci.org/mamorum/kaze)
-<a href="https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze" rel="nofollow"><img src="https://maven-badges.herokuapp.com/maven-central/com.github.mamorum/kaze/badge.svg" alt="Maven Central"></a>
-
+## Features
 - Easy to create RESTful API, Web API, etc
 - Runs on servlet containers
 - Supports embedded Jetty (Optional)
@@ -9,7 +7,7 @@
 
 
 ## Hello World Example
-### 1. Add dependencies
+### 1. Add Maven dependencies
 ```xml
 <dependency>
   <groupId>com.github.mamorum</groupId>
@@ -70,3 +68,7 @@ gs> mvn exec:java -Dexec.mainClass=kaze.sample.gs.html.Main
 - Jetty 9.4.6 (Optional)
 
 And compatible higher versions.
+
+
+## Build Status
+[Travis CI](https://travis-ci.org/mamorum/kaze)
