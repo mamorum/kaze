@@ -71,4 +71,4 @@ And compatible higher versions.
 
 
 ## Build Status
-[Travis CI](https://travis-ci.org/mamorum/kaze)
+- [Travis CI](https://travis-ci.org/mamorum/kaze)
